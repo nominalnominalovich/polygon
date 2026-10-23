@@ -303,3 +303,7 @@ blockquote { margin: 0; padding: 10px 14px; border-radius: 10px; background: var
 .pg-preset:hover { border-color: var(--blue-500); }
 .pg-preset:focus-visible { outline: 2px solid var(--blue-500); }
 @media (max-width: 720px) { .pg-presets { grid-template-columns: 1fr; } }
+.pg-doc__actions { align-items: center; }
+.pg-doc__badge { display: inline-flex; margin-left: 4px; }
+.pg-md img { max-width: 100%; border-radius: 10px; border: 1px solid var(--gray-200); margin: 8px 0; }
+.pg-md em { color: var(--muted); }

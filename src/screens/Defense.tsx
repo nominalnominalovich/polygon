@@ -44,7 +44,11 @@ export function Defense({ section }: { section?: string }) {
           <Button size="m" before={<Icon20FullscreenOutline />} onClick={() => navigate('/deck')}>Презентация</Button>
           <Button size="m" mode="secondary" before={<Icon20DownloadOutline />} href={`${BASE}files/report.pdf`} target="_blank">Отчёт PDF</Button>
           <Button size="m" mode="secondary" before={<Icon20DownloadOutline />} href={`${BASE}files/report.docx`}>Отчёт DOCX</Button>
+          <Button size="m" mode="secondary" before={<Icon20DownloadOutline />} href={`${BASE}files/deck.pdf`} target="_blank">Презентация PDF</Button>
           <Button size="m" mode="tertiary" href={`${BASE}files/canvas.pdf`} target="_blank">Канва</Button>
+          <a className="pg-doc__badge" href="https://github.com/nominalnominalovich/polygon/actions/workflows/deploy.yml" target="_blank" rel="noreferrer" title="Сборка и автотесты на GitHub Actions">
+            <img src="https://github.com/nominalnominalovich/polygon/actions/workflows/deploy.yml/badge.svg" alt="Статус сборки и автотестов" height="20" />
+          </a>
         </div>
         <div className="pg-md" dangerouslySetInnerHTML={{ __html: intro }} />
         {sections.map((s) => (
