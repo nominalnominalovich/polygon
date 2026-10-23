@@ -81,8 +81,8 @@ export function Outcome1() {
 
       <Panel title="Сообщения">
         <div className="pg-stack pg-stack--s">
-          {m.total.m2 < 18 && <Msg name="Ирина" role="Руководитель направления" tone="warn" text="Автопополнение упало! Что сломалось? Давай срочно баллы." />}
-          {m.total.m2 >= 18 && m.total.m2 < 25 && <Msg name="Ирина" role="Руководитель направления" text="Ждали больше. Может, всё-таки баллы?" />}
+          {m.total.m2 < 18 && <Msg name="Ирина" role="Руководитель направления" tone="warn" text={e1.includes('A') ? 'Автопополнение упало, хотя баллы уже запущены! Что сломалось?' : 'Автопополнение упало! Что сломалось? Давай срочно баллы.'} />}
+          {m.total.m2 >= 18 && m.total.m2 < 25 && <Msg name="Ирина" role="Руководитель направления" text={e1.includes('A') ? 'Ждали больше. Может, баллов мало?' : 'Ждали больше. Может, всё-таки баллы?'} />}
           {m.total.m2 >= 25 && <Msg name="Ирина" role="Руководитель направления" text="Неплохо. Что дальше?" />}
           {e1.includes('B') && <Msg name="Олег" role="Маркетинг" tone="warn" text="Отписки от пушей выросли с 1,2 до 2,0%. Нужно решение по частоте." />}
           {e1.includes('A') && <Msg name="Артём" role="Тимлид" text="Баллы запустились только в середине месяца. На поддержку программы уйдёт 3 очка следующего спринта." />}
@@ -107,9 +107,10 @@ export function Outcome1() {
           <Headline level="2" weight="2">Почему не настраивают автопополнение (по интервью и обращениям)</Headline>
           <div className="pg-reveal">
             {RESEARCH_REVEAL.split.map((r) => (
-              <div key={r.seg} className="pg-reveal__item"><b>{r.share}%</b><Text>{SEGMENT_INFO[r.seg].name}</Text><Caption level="1" className="pg-muted">{SEGMENT_INFO[r.seg].why}</Caption></div>
+              <div key={r.seg} className="pg-reveal__item"><b>{r.approx}</b><Text>{SEGMENT_INFO[r.seg].name}</Text><Caption level="1" className="pg-muted">{r.level} · {SEGMENT_INFO[r.seg].why}</Caption></div>
             ))}
           </div>
+          <Caption level="1" className="pg-amber">{RESEARCH_REVEAL.caveat}</Caption>
           <Text>{RESEARCH_REVEAL.bias}</Text>
           <blockquote>{RESEARCH_REVEAL.quote}</blockquote>
         </Panel>

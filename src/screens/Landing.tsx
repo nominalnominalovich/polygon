@@ -31,14 +31,11 @@ export function Landing() {
         <div className="pg-hero__preview" aria-hidden="true">
           <div className="pg-preview">
             <div className="pg-preview__bar"><span /><span /><span /></div>
-            <Caption level="1" className="pg-muted">Эпизод 2 · последствия</Caption>
+            <Caption level="1" className="pg-muted">Эпизод 1 · месяц спустя</Caption>
             <Headline level="1" weight="2">Автопополнение: 18% → 15,1%</Headline>
-            <div className="pg-preview__split">
-              <div><Caption level="1" className="pg-muted">Прежняя аудитория</Caption><div className="pg-preview__num pg-positive">18,9%</div></div>
-              <div><Caption level="1" className="pg-muted">Пришли по партнёрству</Caption><div className="pg-preview__num pg-negative">5,5%</div></div>
-            </div>
-            <div className="pg-msg pg-msg--warn"><div className="pg-msg__avatar">И</div><div><Text weight="2">Ирина <span className="pg-muted">· руководитель</span></Text><Text>Автопополнение упало! Что сломалось?</Text></div></div>
-            <Caption level="1" className="pg-muted">Релиз сработал — упал общий показатель из-за новой аудитории. Это и нужно заметить.</Caption>
+            <div className="pg-msg pg-msg--warn"><div className="pg-msg__avatar">И</div><div><Text weight="2">Ирина <span className="pg-muted">· руководитель</span></Text><Text>Автопополнение упало! Что сломалось? Давай срочно баллы.</Text></div></div>
+            <div className="pg-msg"><div className="pg-msg__avatar">Я</div><div><Text weight="2">Вы <span className="pg-muted">· младший продакт</span></Text><Text>…</Text></div></div>
+            <Caption level="1" className="pg-muted">Что вы ответите? Релиз провалился — или дело в чём-то другом?</Caption>
           </div>
         </div>
       </section>

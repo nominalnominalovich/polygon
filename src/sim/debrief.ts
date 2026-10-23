@@ -36,6 +36,11 @@ const quote = (text: string, word?: string) => {
   return `«${i > 0 ? '…' : ''}${s}${i + 140 < t.length ? '…' : ''}»`;
 };
 
+/** Текст без вставленных ссылок-чипов вида «[Источник: …]» — только свои слова участника. */
+const own = (text: string) => text.replace(/\[[^\]]*\]/g, ' ').replace(/\s+/g, ' ').trim();
+const words = (text: string) => own(text).split(' ').filter((w) => w.length > 2).length;
+const NEGATION = ['не важн', 'неважн', 'не нужн', 'не имеет значения', 'не влияет'];
+
 function expectation(d: { metric: string; dir: string; value: string; term: string }) {
   const full = d.metric && d.dir && d.value && d.term;
   return full ? 2 : d.metric ? 1 : 0;
@@ -49,16 +54,21 @@ export function judge(d1: Decision1, d2: Decision2, split: boolean): Verdict[] {
   const out: Verdict[] = [];
 
   // К1
-  const dataWord = has(d1.rationale, ['воронк', '56', 'повтор', '42%', 'поведен', '70%', 'обращен', 'настройк']);
-  const biasWord = has(d1.rationale, ['смещ', 'отклик', '9%', 'вовлеч', 'нерепрезент']);
-  const opinionWord = has(d1.rationale, ['опрос', 'отзыв', 'ирина', 'конкурент']);
+  const r1 = own(d1.rationale);
+  const chips = /\[[^\]]+\]/.test(d1.rationale);
+  const dataWord = has(r1, ['воронк', '56', 'повтор', '42%', 'поведен', '70%', 'обращен', 'настройк']) ?? (chips ? has(d1.rationale, ['воронк', 'повтор', 'поддержк']) : undefined);
+  const biasWord = has(r1, ['смещ', 'отклик', '9%', 'вовлеч', 'нерепрезент', 'не верю опрос', 'ненадёжн', 'ненадежн']);
+  const opinionWord = has(r1, ['опрос', 'отзыв', 'ирина', 'конкурент']);
+  const negated = has(r1, NEGATION);
   if (!d1.rationale.trim()) out.push({ id: 'K1', status: 'nodata', evidence: '—', comment: 'Обоснование не заполнено, оценить опору на данные нельзя.' });
-  else if (dataWord && (biasWord || e1.includes('G')))
-    out.push({ id: 'K1', status: 'seen', evidence: quote(d1.rationale, dataWord), comment: 'Решение опирается на поведенческие данные, а надёжность опроса проверена или поставлена под вопрос.' });
+  else if (words(d1.rationale) < 8) out.push({ id: 'K1', status: 'partial', evidence: quote(d1.rationale), comment: chips ? 'Ссылки на источники есть, но своего вывода из них нет: что они значат для решения?' : 'Обоснование слишком короткое, чтобы увидеть, как вы читаете данные.' });
+  else if (negated) out.push({ id: 'K1', status: 'unseen', evidence: quote(r1, negated), comment: 'В обосновании данные отброшены как неважные. Воронка показывала, что 56% уходят с экрана настройки, а у 70% бросивших деньги были.' });
+  else if (dataWord && (biasWord || e1.includes('G')) && words(d1.rationale) >= 20)
+    out.push({ id: 'K1', status: 'seen', evidence: quote(r1, dataWord), comment: 'Решение опирается на поведенческие данные, а надёжность опроса проверена или поставлена под вопрос.' });
   else if (dataWord)
-    out.push({ id: 'K1', status: 'partial', evidence: quote(d1.rationale, dataWord), comment: 'Поведенческие данные использованы, но не обсуждено, насколько можно верить опросу с откликом 9%.' });
+    out.push({ id: 'K1', status: 'partial', evidence: quote(r1 || d1.rationale, dataWord), comment: 'Поведенческие данные упомянуты, но не видно, как вы оценили надёжность опроса с откликом 9% и что из данных следует для решения.' });
   else
-    out.push({ id: 'K1', status: 'unseen', evidence: quote(d1.rationale, opinionWord), comment: 'Аргументы держатся на мнениях (опрос, отзывы, стейкхолдеры). Воронка показывала, что 56% уходят с экрана настройки, а у 70% бросивших деньги были.' });
+    out.push({ id: 'K1', status: 'unseen', evidence: quote(r1, opinionWord), comment: 'Аргументы держатся на мнениях (опрос, отзывы, стейкхолдеры). Воронка показывала, что 56% уходят с экрана настройки, а у 70% бросивших деньги были.' });
 
   // К2
   const need = MATCH[d1.problem];
@@ -81,13 +91,15 @@ export function judge(d1: Decision1, d2: Decision2, split: boolean): Verdict[] {
   if (d2.explanation === 'failed') out.push({ id: 'K4', status: 'unseen', evidence: 'Объяснение: «релиз не сработал»', comment: 'Общий показатель смешал прежнюю аудиторию и 4 000 новых клиентов. У прежней аудитории эффект релиза был положительным.' });
   else if ((d2.explanation === 'audience' || d2.explanation === 'insufficient') && (split || research)) out.push({ id: 'K4', status: 'seen', evidence: split ? 'Запрошен срез по аудиториям' : 'Срез был доступен благодаря исследованию', comment: 'Вы отделили эффект своего релиза от изменения состава аудитории.' });
   else if (d2.explanation === 'audience') out.push({ id: 'K4', status: 'partial', evidence: 'Объяснение верное, но срез не запрошен', comment: 'Гипотеза о смене аудитории верна, но не проверена данными — срез был доступен одним действием.' });
+  else if (d2.explanation === 'insufficient') out.push({ id: 'K4', status: 'partial', evidence: 'Отмечена нехватка данных, срез не посмотрен', comment: 'Вы честно отметили, что данных мало, но срез по аудиториям так и не открыли — вывод остался без проверки.' });
   else out.push({ id: 'K4', status: 'nodata', evidence: quote(d2.explanationText), comment: 'Своё объяснение — оценит эксперт.' });
 
   // К5
   const refWord = has(d2.changeText, ['месяц', 'срез', 'аудитор', 'результат', 'упал', 'вырос', 'эпизод', 'п.п', '%']);
-  if (d2.changeText.trim().length > 20 && refWord && d2.explanation === 'failed') out.push({ id: 'K5', status: 'partial', evidence: quote(d2.changeText, refWord), comment: 'Пересмотр ссылается на итоги месяца, но опирается на неверный вывод «релиз не сработал» — поэтому и новое решение бьёт мимо.' });
-  else if (d2.changeText.trim().length > 20 && refWord) out.push({ id: 'K5', status: 'seen', evidence: quote(d2.changeText, refWord), comment: 'Пересмотр опирается на то, что произошло после первого релиза.' });
-  else if (d2.changeText.trim()) out.push({ id: 'K5', status: 'partial', evidence: quote(d2.changeText), comment: 'Изменение описано, но не связано с результатами эпизода 1.' });
+  const changeWords = words(d2.changeText);
+  if (changeWords >= 12 && refWord && d2.explanation === 'failed') out.push({ id: 'K5', status: 'partial', evidence: quote(d2.changeText, refWord), comment: 'Пересмотр ссылается на итоги месяца, но опирается на неверный вывод «релиз не сработал» — поэтому и новое решение бьёт мимо.' });
+  else if (changeWords >= 12 && refWord) out.push({ id: 'K5', status: 'seen', evidence: quote(d2.changeText, refWord), comment: 'Пересмотр опирается на то, что произошло после первого релиза.' });
+  else if (d2.changeText.trim()) out.push({ id: 'K5', status: 'partial', evidence: quote(d2.changeText), comment: 'Изменение названо, но не объяснено через результаты эпизода 1: какие метрики, у какой аудитории.' });
   else out.push({ id: 'K5', status: 'unseen', evidence: '—', comment: 'Не объяснено, что изменилось по сравнению с первым решением.' });
 
   // К6
@@ -97,18 +109,22 @@ export function judge(d1: Decision1, d2: Decision2, split: boolean): Verdict[] {
   if (e2.includes('A') && !has(`${d2.changeText} ${d2.rationale}`, ['комплаенс', 'согласован', 'бюджет'])) misses.push('комплаенс и бюджет баллов');
   if ((e1.includes('A') && !e2.includes('EA')) || e2.includes('A')) misses.push('накрутка баллов: средняя сумма пополнения упала');
   if (e1.includes('B') && d2.push === 'keep' && !e2.includes('EB')) misses.push('рост отписок от пушей');
-  if (misses.length === 0) out.push({ id: 'K6', status: 'seen', evidence: 'Ограничения учтены', comment: 'Решения укладываются в ёмкость и не создают неучтённых побочных эффектов.' });
+  const k6neg = has(own(`${d1.rationale} ${d2.changeText} ${d2.rationale}`), NEGATION);
+  if (k6neg && misses.length === 0) out.push({ id: 'K6', status: 'partial', evidence: quote(own(`${d1.rationale} ${d2.changeText}`), k6neg), comment: 'Ограничения в решении соблюдены, но в обосновании они названы неважными — на реальном продукте это дорого.' });
+  else if (misses.length === 0) out.push({ id: 'K6', status: 'seen', evidence: 'Ограничения учтены', comment: 'Решения укладываются в ёмкость и не создают неучтённых побочных эффектов.' });
   else out.push({ id: 'K6', status: misses.length > 1 ? 'unseen' : 'partial', evidence: `Не учтено: ${misses.join('; ')}`, comment: 'Побочные эффекты видны в метриках разбора — стоит учесть их до запуска.' });
 
   return out;
 }
 
-export function lessons(d1: Decision1, d2: Decision2): string[] {
+export function lessons(d1: Decision1, d2: Decision2, avgTopup = 2400): string[] {
   const e1 = d1.initiatives as E1Id[];
   const e2 = d2.initiatives as E2Id[];
   const out: string[] = [];
   if (e1.includes('A') || e2.includes('A'))
-    out.push('Баллы подняли активность за счёт тех, кто раньше не копил: средняя сумма пополнения упала с 2 400 до 1 500–1 900 ₽. M1 вырос, а регулярные накопления почти нет. Это прокси-метрика, которую легко накрутить.');
+    out.push(e2.includes('EA')
+      ? `Баллы подняли активность за счёт тех, кто раньше не копил, и средняя сумма пополнения падала. Ограничение «от 500 ₽ и серия 3 месяца» вернуло её к ${avgTopup.toLocaleString('ru-RU')} ₽: прокси-метрику удалось частично защитить от накрутки.`
+      : `Баллы подняли активность за счёт тех, кто раньше не копил: средняя сумма пополнения упала с 2 400 до ${avgTopup.toLocaleString('ru-RU')} ₽. M1 вырос, а регулярные накопления почти нет. Это прокси-метрика, которую легко накрутить.`);
   if (e1.includes('B'))
     out.push(`Напоминания помогли тем, кто забывает (+20 п.п. у этого сегмента)${e1.includes('V') ? '' : ', но не тем, кто не доверяет автопереводу: 56% по-прежнему уходят с экрана настройки'}. ${e2.includes('EB') ? 'Привязка пуша к дню поступления денег не дала эффекту затухнуть.' : 'Если не привязать пуш к моменту, когда у человека есть деньги, через месяц эффект затухает.'}`);
   if (e1.includes('V'))

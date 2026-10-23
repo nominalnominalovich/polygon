@@ -1,9 +1,9 @@
-import { Button, Caption, Headline, Text, Title } from '@vkontakte/vkui';
+import { Accordion, Button, Caption, Headline, Text, Title } from '@vkontakte/vkui';
 import { Icon20LockOutline, Icon24PlayOutline } from '@vkontakte/icons';
 import { navigate } from '../router';
 import { STEPS, useStore } from '../store';
 import { Trace } from '../components/Trace';
-import { Panel, Pill } from '../components/ui';
+import { Pill } from '../components/ui';
 import { PRESETS, loadPreset } from '../demo';
 
 const LOCKED = [
@@ -41,17 +41,22 @@ export function Program() {
             <Button size="l" before={<Icon24PlayOutline />} onClick={() => navigate('/play')}>{started ? 'Продолжить' : 'Начать'}</Button>
           </article>
         </Trace>
-        <Panel title="Быстрое демо для защиты" tone="pale" aside={<Pill tone="amber">демо-режим</Pill>}>
-          <Text className="pg-muted">Решения уже заполнены примером — сразу к последствиям месяца 1. Решение 2 подставлено, его можно изменить перед фиксацией.</Text>
-          <div className="pg-presets">
-            {PRESETS.map((p) => (
-              <button key={p.id} type="button" className="pg-preset" onClick={() => { loadPreset(p.id); navigate('/play'); }}>
-                <Text weight="2">{p.title}</Text>
-                <Caption level="1" className="pg-muted">{p.text}</Caption>
-              </button>
-            ))}
-          </div>
-        </Panel>
+        <div className="pg-demo-acc"><Accordion>
+          <Accordion.Summary>Для защиты проекта: готовые прохождения (раскрывают ответы)</Accordion.Summary>
+          <Accordion.Content>
+            <div className="pg-demo-acc__body">
+              <Text className="pg-muted">Решения уже заполнены примером — сразу к последствиям месяца 1. Решение 2 подставлено, его можно изменить перед фиксацией. Если проходите модуль впервые, не открывайте.</Text>
+              <div className="pg-presets">
+                {PRESETS.map((p) => (
+                  <button key={p.id} type="button" className="pg-preset" onClick={() => { loadPreset(p.id); navigate('/play'); }}>
+                    <Text weight="2">{p.title}</Text>
+                    <Caption level="1" className="pg-muted">{p.text}</Caption>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </Accordion.Content>
+        </Accordion></div>
         <Trace ids={['И1']} status="mock" note="Библиотека модулей — за границами MVP (карта историй, нижняя строка).">
           <div className="pg-modules__locked">
             {LOCKED.map(([t, d], i) => (

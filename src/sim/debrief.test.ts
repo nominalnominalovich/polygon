@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { judge } from './debrief';
+import { simulate2 } from './engine';
 import { PRESETS } from '../demo';
 import { initial } from '../store';
 
@@ -27,5 +28,33 @@ describe('разбор по критериям', () => {
     const p = PRESETS.find((x) => x.id === 'strong')!;
     const v = judge({ ...initial.d1, ...p.d1 }, { ...initial.d2, ...p.d2 }, false);
     expect(v.find((x) => x.id === 'K4')!.status).toBe('partial');
+  });
+
+  it('бессмыслица со словами из словаря не засчитывается', () => {
+    const p = PRESETS.find((x) => x.id === 'strong')!;
+    const d1 = { ...initial.d1, ...p.d1, rationale: 'воронка 9% пуш' };
+    const d2 = { ...initial.d2, ...p.d2, changeText: 'в этом месяце всё поменяю, %' };
+    const v = Object.fromEntries(judge(d1, d2, true).map((x) => [x.id, x.status]));
+    expect(v.K1).not.toBe('seen');
+    expect(v.K5).not.toBe('seen');
+  });
+
+  it('данные, названные неважными, не засчитываются', () => {
+    const p = PRESETS.find((x) => x.id === 'strong')!;
+    const d1 = { ...initial.d1, ...p.d1, rationale: 'Воронка не важна, опрос с откликом 9% доказывает: нужны баллы, лимит пушей не важен, всё остальное мелочи и шум.' };
+    const v = Object.fromEntries(judge(d1, { ...initial.d2, ...p.d2 }, true).map((x) => [x.id, x.status]));
+    expect(v.K1).toBe('unseen');
+    expect(v.K6).not.toBe('seen');
+  });
+
+  it('обоснование из одних ссылок на источники — «частично»', () => {
+    const p = PRESETS.find((x) => x.id === 'strong')!;
+    const d1 = { ...initial.d1, ...p.d1, rationale: '[Воронка: 56% открывших настройку автоперевода уходят без сохранения] [Опрос: n = 420, отклик 9%] ' };
+    const v = judge(d1, { ...initial.d2, ...p.d2 }, true);
+    expect(v.find((x) => x.id === 'K1')!.status).toBe('partial');
+  });
+
+  it('пресет «Сильный путь» — лучшая ветка по обеим метрикам', () => {
+    expect(simulate2(['B', 'V'], ['D', 'EV'], 'cut').m.total).toEqual({ m1: 56.6, m2: 34.5 });
   });
 });

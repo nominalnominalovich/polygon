@@ -25,15 +25,19 @@ function Line({ title, series }: { title: string; series: { name: string; values
             <text x={x(i)} y={H - 8} textAnchor="middle" className="pg-line__axis">{['Старт', 'Месяц 1', 'Месяц 2'][i]}</text>
           </g>
         ))}
-        {series.map((s) => (
+        {series.map((s, si) => (
           <g key={s.name}>
             <polyline points={s.values.map((v, i) => `${x(i)},${y(v)}`).join(' ')} fill="none" stroke={s.tone} strokeWidth="2.5" strokeDasharray={s.dash ? '5 4' : undefined} />
-            {s.values.map((v, i) => (
-              <g key={i}>
-                <circle cx={x(i)} cy={y(v)} r="4" fill={s.tone} />
-                <text x={x(i)} y={y(v) - 9} textAnchor="middle" className="pg-line__val" fill={s.tone}>{fmt(v)}</text>
-              </g>
-            ))}
+            {s.values.map((v, i) => {
+              const below = si > 0;
+              const dup = si > 0 && series[0].values[i] === v;
+              return (
+                <g key={i}>
+                  <circle cx={x(i)} cy={y(v)} r="4" fill={s.tone} />
+                  {!dup && <text x={x(i)} y={below ? y(v) + 18 : y(v) - 9} textAnchor="middle" className="pg-line__val" fill={s.tone}>{fmt(v)}</text>}
+                </g>
+              );
+            })}
           </g>
         ))}
       </svg>
@@ -45,6 +49,7 @@ function Line({ title, series }: { title: string; series: { name: string; values
 }
 
 const PATHS: { name: string; e1: E1Id[]; e2: E2Id[]; push: PushChoice | null }[] = [
+  { name: 'Б+В → Д + Е-В, пуши реже', e1: ['B', 'V'], e2: ['D', 'EV'], push: 'cut' },
   { name: 'В+Г → Д (по интервью) + Е-В', e1: ['V', 'G'], e2: ['D', 'EV'], push: null },
   { name: 'Б → пуши реже + баллы', e1: ['B'], e2: ['A'], push: 'cut' },
   { name: 'Б+В → умные пуши + Д', e1: ['B', 'V'], e2: ['EB', 'D'], push: null },
@@ -60,7 +65,7 @@ export function Debrief() {
   const r2 = simulate2(e1, e2, s.d2.push);
   const m = r2.m;
   const verdicts = judge(s.d1, s.d2, s.split);
-  const notes = lessons(s.d1, s.d2);
+  const notes = lessons(s.d1, s.d2, m.side.avgTopup);
   const same = (p: (typeof PATHS)[number]) => JSON.stringify([...p.e1].sort()) === JSON.stringify([...e1].sort()) && JSON.stringify([...p.e2].sort()) === JSON.stringify([...e2].sort());
 
   return (
@@ -148,13 +153,14 @@ export function Debrief() {
       )}
 
       {s.d1.alternative.trim() && (
-        <Panel title="Альтернативы для обсуждения с экспертом" tone="pale">
+        <Panel title="Ваша альтернатива" tone="pale">
           <Text className="pg-prewrap">{s.d1.alternative}</Text>
-          <Caption level="1" className="pg-muted">Симуляция её не считает — обсудите с экспертом.</Caption>
+          <Caption level="1" className="pg-muted">Симуляция её не считает. Эксперт банка видит только самостоятельную работу — альтернативу можно обсудить на интервью.</Caption>
         </Panel>
       )}
 
-      <Panel title="Единственно верного пути нет: как прошли бы другие ветки">
+      <Panel title="Как прошли бы другие ветки">
+        <Text className="pg-muted">В эпизоде 1 единственно верного хода нет: разные наборы дают сопоставимый итог. В эпизоде 2 сильнейший ход — гибкое пополнение (Д): событие касается людей с нерегулярным доходом. Это «ответ автора» кейса, и мы его не прячем: на перенос навыка проверяет самостоятельная задача, а не угадывание этой ветки.</Text>
         <table className="pg-table">
           <thead><tr><th>Ветка</th><th>M1 общий</th><th>M2 общий</th><th>Средняя сумма</th></tr></thead>
           <tbody>

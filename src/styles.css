@@ -307,3 +307,12 @@ blockquote { margin: 0; padding: 10px 14px; border-radius: 10px; background: var
 .pg-doc__badge { display: inline-flex; margin-left: 4px; }
 .pg-md img { max-width: 100%; border-radius: 10px; border: 1px solid var(--gray-200); margin: 8px 0; }
 .pg-md em { color: var(--muted); }
+.pg-demo-acc { background: var(--blue-50); border: 1px solid var(--blue-100); border-radius: var(--r-card); overflow: hidden; }
+.pg-demo-acc__body { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+.pg-md, .pg-doc__nav a { overflow-wrap: anywhere; }
+@media (max-width: 720px) {
+  .pg-header__inner { flex-wrap: wrap; row-gap: 8px; }
+  .pg-header__right { margin-left: 0; width: 100%; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+}
+.pg-module__top { flex-wrap: wrap; }
+.pg-module__top .pg-pill { white-space: normal; }
