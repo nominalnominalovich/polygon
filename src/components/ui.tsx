@@ -31,11 +31,11 @@ export function Delta({ value, unit = 'п.п.', invert = false }: { value: numbe
   return <span className={`pg-delta ${good ? 'pg-delta--up' : 'pg-delta--down'}`}>{v > 0 ? '+' : '−'}{fmt(Math.abs(v))} {unit}</span>;
 }
 
-export function Tile({ label, value, unit = '%', delta, deltaUnit, invert, hint }: { label: string; value: number; unit?: string; delta?: number; deltaUnit?: string; invert?: boolean; hint?: string }) {
+export function Tile({ label, value, unit = '%', delta, deltaUnit, invert, hint, digits = 1 }: { label: string; value: number; unit?: string; delta?: number; deltaUnit?: string; invert?: boolean; hint?: string; digits?: number }) {
   return (
     <div className="pg-tile">
       <Caption level="1" className="pg-muted">{label}</Caption>
-      <div className="pg-tile__value">{fmt(value)}<span className="pg-tile__unit">{unit}</span></div>
+      <div className="pg-tile__value">{fmt(value, digits)}<span className="pg-tile__unit">{unit}</span></div>
       {delta !== undefined && <Delta value={delta} unit={deltaUnit} invert={invert} />}
       {hint && <Caption level="2" className="pg-muted pg-tile__hint">{hint}</Caption>}
     </div>

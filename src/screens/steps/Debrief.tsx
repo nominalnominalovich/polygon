@@ -87,7 +87,7 @@ export function Debrief() {
             <Tile label="M3 · Обращения" value={m.side.support} unit="" delta={m.side.support - 340} deltaUnit="" invert />
             <Tile label="Средняя сумма пополнения" value={m.side.avgTopup} unit=" ₽" delta={m.side.avgTopup - 2400} deltaUnit="₽" />
             <Tile label="Отписки от пушей" value={m.side.unsub} delta={m.side.unsub - 1.2} invert />
-            {m.side.bonusCost > 0 && <Tile label="Расходы на баллы" value={m.side.bonusCost} unit=" млн ₽/мес" />}
+            {m.side.bonusCost > 0 && <Tile label="Расходы на баллы" value={m.side.bonusCost} digits={2} unit=" млн ₽/мес" />}
           </div>
         </Panel>
       </Trace>

@@ -297,3 +297,9 @@ blockquote { margin: 0; padding: 10px 14px; border-radius: 10px; background: var
 .pg-grid--side-left aside .pg-table th, .pg-grid--side-left aside .pg-table td { padding: 6px 4px; }
 .pg-grid--side-left aside .pg-table td:nth-child(2), .pg-grid--side-left aside .pg-table th:nth-child(2) { display: none; }
 @media (max-width: 560px) { .pg-hero__title { font-size: 32px !important; line-height: 38px !important; } }
+@media (max-width: 720px) { .pg-table { display: block; overflow-x: auto; } .pg-header__right .vkui__Button__content { font-size: 13px; } }
+.pg-presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pg-preset { all: unset; cursor: pointer; background: #fff; border: 1.5px solid var(--blue-200); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.pg-preset:hover { border-color: var(--blue-500); }
+.pg-preset:focus-visible { outline: 2px solid var(--blue-500); }
+@media (max-width: 720px) { .pg-presets { grid-template-columns: 1fr; } }

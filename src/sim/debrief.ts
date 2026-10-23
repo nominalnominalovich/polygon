@@ -64,6 +64,7 @@ export function judge(d1: Decision1, d2: Decision2, split: boolean): Verdict[] {
   const need = MATCH[d1.problem];
   if (d1.problem === 'own' || !need) out.push({ id: 'K2', status: 'nodata', evidence: d1.problemText || '—', comment: 'Своя формулировка проблемы — соответствие оценит эксперт.' });
   else if (need === 'D') out.push({ id: 'K2', status: e2.includes('D') ? 'seen' : 'partial', evidence: 'Проблема: нерегулярный доход', comment: e2.includes('D') ? 'Проблема нерегулярного дохода закрыта гибким пополнением в эпизоде 2.' : 'В эпизоде 1 нет инициативы под нерегулярный доход; она появляется только в эпизоде 2 (Д).' });
+  else if (e1.includes(need) && d1.problem !== 'motivation' && d1.segment === 'all') out.push({ id: 'K2', status: 'partial', evidence: 'Сегмент: все, у кого нет автопополнения', comment: 'Действие подходит к проблеме, но сегмент «все» слишком широк: у разных групп разные причины не копить.' });
   else if (e1.includes(need) && d1.problem !== 'motivation') out.push({ id: 'K2', status: 'seen', evidence: `Проблема и действие согласованы`, comment: d1.problem === 'forget' ? 'Забывающим нужны напоминания, и вы выбрали именно их.' : 'Тем, кто боится автоперевода, нужна прозрачность условий, и вы выбрали именно её.' });
   else if (d1.problem === 'motivation') out.push({ id: 'K2', status: 'partial', evidence: 'Проблема: нет мотивации копить', comment: 'Данные не подтверждают нехватку мотивации: у 70% бросивших деньги были, а 56% уходили с экрана настройки. Баллы поднимают активность тех, кто и не собирался копить.' });
   else if (e1.length === 1 && e1[0] === 'G') out.push({ id: 'K2', status: 'partial', evidence: 'Только исследование', comment: 'Разумно сначала проверить причины, но спринт прошёл без релиза.' });
@@ -84,7 +85,8 @@ export function judge(d1: Decision1, d2: Decision2, split: boolean): Verdict[] {
 
   // К5
   const refWord = has(d2.changeText, ['месяц', 'срез', 'аудитор', 'результат', 'упал', 'вырос', 'эпизод', 'п.п', '%']);
-  if (d2.changeText.trim().length > 20 && refWord) out.push({ id: 'K5', status: 'seen', evidence: quote(d2.changeText, refWord), comment: 'Пересмотр опирается на то, что произошло после первого релиза.' });
+  if (d2.changeText.trim().length > 20 && refWord && d2.explanation === 'failed') out.push({ id: 'K5', status: 'partial', evidence: quote(d2.changeText, refWord), comment: 'Пересмотр ссылается на итоги месяца, но опирается на неверный вывод «релиз не сработал» — поэтому и новое решение бьёт мимо.' });
+  else if (d2.changeText.trim().length > 20 && refWord) out.push({ id: 'K5', status: 'seen', evidence: quote(d2.changeText, refWord), comment: 'Пересмотр опирается на то, что произошло после первого релиза.' });
   else if (d2.changeText.trim()) out.push({ id: 'K5', status: 'partial', evidence: quote(d2.changeText), comment: 'Изменение описано, но не связано с результатами эпизода 1.' });
   else out.push({ id: 'K5', status: 'unseen', evidence: '—', comment: 'Не объяснено, что изменилось по сравнению с первым решением.' });
 
@@ -92,7 +94,8 @@ export function judge(d1: Decision1, d2: Decision2, split: boolean): Verdict[] {
   const misses: string[] = [];
   if (e1.includes('A') && !has(d1.rationale, ['комплаенс', 'согласован', 'бюджет'])) misses.push('комплаенс и бюджет баллов');
   if (e1.includes('B') && !has(d1.rationale, ['лимит', 'пуш', 'отпис'])) misses.push('общий лимит пушей');
-  if (e1.includes('A') && !e2.includes('EA')) misses.push('накрутка баллов: средняя сумма пополнения упала');
+  if (e2.includes('A') && !has(`${d2.changeText} ${d2.rationale}`, ['комплаенс', 'согласован', 'бюджет'])) misses.push('комплаенс и бюджет баллов');
+  if ((e1.includes('A') && !e2.includes('EA')) || e2.includes('A')) misses.push('накрутка баллов: средняя сумма пополнения упала');
   if (e1.includes('B') && d2.push === 'keep' && !e2.includes('EB')) misses.push('рост отписок от пушей');
   if (misses.length === 0) out.push({ id: 'K6', status: 'seen', evidence: 'Ограничения учтены', comment: 'Решения укладываются в ёмкость и не создают неучтённых побочных эффектов.' });
   else out.push({ id: 'K6', status: misses.length > 1 ? 'unseen' : 'partial', evidence: `Не учтено: ${misses.join('; ')}`, comment: 'Побочные эффекты видны в метриках разбора — стоит учесть их до запуска.' });

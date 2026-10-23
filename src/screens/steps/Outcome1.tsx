@@ -73,7 +73,7 @@ export function Outcome1() {
           <Tile label="M1 · Активные цели" value={m.total.m1} delta={m.total.m1 - baseline.old.m1} hint="было 37,2%" />
           <Tile label="M2 · С автопополнением" value={m.total.m2} delta={m.total.m2 - baseline.old.m2} hint="было 18%" />
           <Tile label="M3 · Обращения" value={m.side.support} unit="" delta={m.side.support - 340} deltaUnit="" invert hint="было 340" />
-          {e1.includes('A') && <Tile label="Средняя сумма пополнения" value={m.side.avgTopup} unit=" ₽" delta={m.side.avgTopup - 2400} deltaUnit="₽" hint={`баллы: ${fmt(m.side.bonusCost)} млн ₽/мес`} />}
+          {e1.includes('A') && <Tile label="Средняя сумма пополнения" value={m.side.avgTopup} unit=" ₽" delta={m.side.avgTopup - 2400} deltaUnit="₽" hint={`баллы: ${fmt(m.side.bonusCost, 2)} млн ₽/мес`} />}
           {e1.includes('B') && <Tile label="Отписки от пушей" value={m.side.unsub} delta={m.side.unsub - 1.2} invert hint="было 1,2%" />}
         </div>
         <Caption level="1" className="pg-muted">Общий показатель по всем новым целям месяца — {fmt(14000, 0)}.</Caption>
