@@ -145,6 +145,10 @@ table.cmp{position:absolute;left:53px;top:128px;width:854px;border-collapse:coll
 .steps li{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:8.6px;background:var(--blue-200);font-size:14px;line-height:17px;font-weight:500}
 .steps .num{width:22px;height:22px;border-radius:50%;background:var(--blue-700);color:var(--white);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
 .steps .nm{flex:1}
+.steps.auto li{height:auto;min-height:34px;padding:7px 10px;font-weight:500}
+.fill{color:var(--blue-700);font-weight:600;border-bottom:1.2px dashed var(--blue-700)}
+.bars li.gate{background:var(--white);border:1.5px solid var(--blue-700);color:var(--blue-700);padding:5.5px 8.5px}
+.rm-legend i.gate{background:var(--white);border:1.5px solid var(--blue-700)}
 .hero-n{font-size:30px;line-height:32px;font-weight:700;color:var(--blue-700)}
 
 /* Демо */
@@ -336,7 +340,7 @@ table.br{width:100%;border-collapse:collapse}
 
 <!-- 3. Проблема -->
 <section class="slide">
-  <h2 class="t">Начинающие продакты знают термины, но не умеют разобрать ситуацию и увидеть последствия решений</h2>
+  <h2 class="t">Гипотеза: <em>начинающие продакты знают термины, но не умеют разобрать ситуацию и увидеть последствия</em></h2>
   <div class="cols" style="grid-template-columns:1.1fr 1fr">
     <div class="col">
       <div class="sr"><svg class="ic"><use href="#i-error"/></svg>Наблюдения команды</div>
@@ -432,7 +436,7 @@ table.br{width:100%;border-collapse:collapse}
 
 <!-- 5. Рынок -->
 <section class="slide">
-  <h2 class="t">Рынок: <em>симуляторы есть, но без последствий и связи с наймом</em></h2>
+  <h2 class="t">Рынок: <em>симуляторы и отбор через задания есть, но последствия не копятся и не проверяются на переносе</em></h2>
   <table class="cmp">
     <colgroup><col style="width:196px"><col style="width:150px"><col style="width:128px"><col style="width:124px"><col style="width:136px"><col style="width:120px"></colgroup>
     <thead><tr>
@@ -543,23 +547,26 @@ table.br{width:100%;border-collapse:collapse}
           <li><span class="num">4</span><span class="nm">Пересмотр</span><span class="code s">Э2</span></li>
           <li><span class="num">5</span><span class="nm">Разбор</span><span class="code s">Э3</span></li>
           <li><span class="num">6</span><span class="nm">Самостоятельная задача</span><span class="code s">Э4</span></li>
-          <li><span class="num">7</span><span class="nm">Карточка эксперта</span><span class="code s">Э5</span></li>
+          <li><span class="num">7</span><span class="nm">Карточка эксперта: К1–К6</span><span class="code s">Э5</span></li>
         </ol>
       </div>
     </div>
     <div class="col">
       <div class="sr"><svg class="ic"><use href="#i-flash"/></svg>Ключевая механика</div>
       <div class="body">
-        <div class="card sm c-blue"><p class="ct">Решение 1 не стирается</p><p class="cb mt4">Пересмотр идёт рядом с ним</p></div>
-        <div class="card sm c-blue"><p class="ct">Эпизод 2 учитывает его</p><p class="cb mt4">Очки и эффекты переходят дальше</p></div>
-        <div class="card sm c-pale grow"><p class="hero-n">+4 000</p><p class="ct mt4">клиентов с нерегулярным доходом</p><p class="cb mt4">В общем дашборде — вместе с эффектом релиза</p></div>
+        <div class="card sm c-blue"><p class="ct">Решение 1 не стирается</p><p class="cb mt4">Эпизод 2 учитывает его</p></div>
+        <div class="card sm c-pale"><p class="hero-n">+4 000</p><p class="ct mt4">клиентов с нерегулярным доходом</p><p class="cb mt4">В общем дашборде — вместе с эффектом релиза</p></div>
+        <div class="card sm c-blue grow"><p class="ct">В Э4 — свой «месяц спустя»</p><p class="cb mt4">Внешнее событие и разбивка по причинам доходят до карточки</p></div>
       </div>
     </div>
   </div>
   <div class="ev">
     <p class="ev-cap" style="top:26px">Э2 · пересмотр: решение 1 видно рядом</p>
-    <div class="shot" style="top:50px"><div class="bar"><i></i><i></i><i></i></div>
-      <div class="win" style="height:420px"><img src="img/07-пересмотр.png" alt="Экран пересмотра решения" style="width:830px;left:-51px;top:-76px"></div></div>
+    <div class="shot" style="top:48px"><div class="bar"><i></i><i></i><i></i></div>
+      <div class="win" style="height:214px"><img src="img/07-пересмотр.png" alt="Экран пересмотра решения" style="width:830px;left:-51px;top:-76px"></div></div>
+    <p class="ev-cap" style="top:300px">Э4 · месяц спустя: событие и разбивка</p>
+    <div class="shot" style="top:322px"><div class="bar"><i></i><i></i><i></i></div>
+      <div class="win" style="height:132px"><img src="img/10b-месяц-спустя.png" alt="Самостоятельная задача: новость о тарифах и дашборд" style="width:700px;left:-49px;top:-68px"></div></div>
   </div>
   <div class="foot narrow">Экраны Э1–Э5. Банк «Кварц», люди и данные вымышлены</div>
 </section>
@@ -587,9 +594,9 @@ table.br{width:100%;border-collapse:collapse}
     </div>
   </div>
   <div class="ev">
-    <p class="ev-cap" style="top:26px">К пункту 1 · дашборд против среза</p>
+    <p class="ev-cap" style="top:26px">К пункту 1 · Ирина видит падение</p>
     <div class="shot" style="top:48px"><div class="bar"><i></i><i></i><i></i></div>
-      <div class="win" style="height:182px"><img src="img/01-вход.png" alt="Фрагмент главной: автопополнение по аудиториям" style="width:800px;left:-454px;top:-46px"></div></div>
+      <div class="win" style="height:176px"><img src="img/01-вход.png" alt="Фрагмент главной: реплика руководителя о падении автопополнения" style="width:800px;left:-454px;top:-76px"></div></div>
     <p class="ev-cap" style="top:264px">К пункту 3 · разбор без итогового балла</p>
     <div class="shot" style="top:286px"><div class="bar"><i></i><i></i><i></i></div>
       <div class="win" style="height:190px"><img src="img/13-эксперт-разбор.png" alt="Фрагмент кабинета эксперта: критерии разбора" style="width:700px;left:-350px;top:-63px"></div></div>
@@ -658,24 +665,24 @@ table.br{width:100%;border-collapse:collapse}
       </div>
     </div>
     <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-shuffle"/></svg>Пять веток: единственно верной нет</div>
+      <div class="sr"><svg class="ic"><use href="#i-shuffle"/></svg>Пять веток: в эпизоде 1 верного хода нет</div>
       <div class="body">
         <table class="br">
           <thead><tr><th>Ветка: эпизод 1 → эпизод 2</th><th class="v">M1, %</th><th class="v">M2, %</th><th>Побочное</th></tr></thead>
           <tbody>
-            <tr class="start"><td>Старт</td><td class="v">37,2</td><td class="v">18,0</td><td></td></tr>
-            <tr><td>Б+В → умные пуши + Д</td><td class="v best">55,7</td><td class="v">32,9</td><td>отписки 1,3%</td></tr>
-            <tr><td>В+Г → Д по интервью + Е-В</td><td class="v">52,7</td><td class="v best">35,0</td><td>обращения 330 → 275</td></tr>
+            <tr><td>Б+В → Д + Е-В, пуши реже</td><td class="v best">56,6</td><td class="v">34,5</td><td>отписки 1,5%</td></tr>
+            <tr><td>В+Г → Д + Е-В</td><td class="v">52,7</td><td class="v best">35,0</td><td>обращения 330 → 275</td></tr>
             <tr><td>Б → пуши реже + баллы</td><td class="v">44,0</td><td class="v">15,1</td><td>сумма 1 900 ₽</td></tr>
             <tr><td>А+Г → баллы без накрутки</td><td class="v">40,0</td><td class="v">14,3</td><td>сумма 2 100 ₽</td></tr>
             <tr><td>Б → пуши как были + Д</td><td class="v">46,7</td><td class="v">25,6</td><td>отписки 3,0%</td></tr>
           </tbody>
         </table>
-        <div class="metric"><span class="big">10</span><p class="cb">автотестов: 7 на движок и 3 на разбор. Повторное прохождение ветки даёт тот же результат</p></div>
+        <div class="card sm c-gray row" style="gap:10px;padding:9px 14px"><svg class="ic"><use href="#i-info"/></svg><p class="cb">В эпизоде 2 доминирует Д — это ответ автора кейса; перенос проверяет самостоятельная задача</p></div>
+        <div class="metric"><span class="big">15</span><p class="cb">автотестов: 8 на движок и 7 на разбор. Повторное прохождение ветки даёт тот же результат</p></div>
       </div>
     </div>
   </div>
-  <div class="foot">M1 — активные цели, M2 — с автопополнением; месяц 2, все 14 000 целей. Доля — в прежней аудитории. Данные вымышлены</div>
+  <div class="foot">Старт: M1 37,2%, M2 18%. M1 — активные цели, M2 — с автопополнением; месяц 2, все 14 000 целей. Данные вымышлены</div>
 </section>
 
 <!-- 12. Технические решения -->
@@ -704,7 +711,7 @@ table.br{width:100%;border-collapse:collapse}
     <div class="col">
       <div class="sr"><svg class="ic"><use href="#i-shield"/></svg>Требования к качеству</div>
       <div class="body tight">
-        <div class="card sm c-out grow"><p class="ct">Причинная согласованность</p><p class="cb mt4">Проверка — 10 автотестов</p></div>
+        <div class="card sm c-out grow"><p class="ct">Причинная согласованность</p><p class="cb mt4">Проверка — 15 автотестов</p></div>
         <div class="card sm c-out grow"><p class="ct">Разделение режимов</p><p class="cb mt4">Эксперт не видит тренировку</p></div>
       </div>
     </div>
@@ -723,8 +730,9 @@ table.br{width:100%;border-collapse:collapse}
           <li class="c-blue">Весь путь кандидата</li>
           <li class="c-blue">Расчёт последствий</li>
           <li class="c-blue">Разбор К2–К4 правилами</li>
-          <li class="c-blue">Передача работы эксперту</li>
-          <li class="c-blue">Кабинет эксперта</li>
+          <li class="c-blue">Э4 «месяц спустя»: событие и разбивка</li>
+          <li class="c-blue">Передача работы, карточка с К1–К6</li>
+          <li class="c-blue">Кабинет эксперта и сводка по потоку</li>
           <li class="c-blue">Режим обоснования</li>
         </ul>
       </div>
@@ -759,68 +767,95 @@ table.br{width:100%;border-collapse:collapse}
   <ol class="agenda">
     <li><span class="n">01</span><span>Проблема и пользователи</span></li>
     <li><span class="n">02</span><span>Продукт</span></li>
-    <li class="on"><span class="n">03</span><span>Стратегия<small>Вывод на рынок · Roadmap</small></span></li>
+    <li class="on"><span class="n">03</span><span>Стратегия<small>Позиционирование · Пороги пилота · Roadmap</small></span></li>
   </ol>
 </section>
 
-<!-- 15. Стратегия -->
+<!-- 15. Стратегия: позиционирование -->
 <section class="slide">
-  <h2 class="t">Выходим на рынок через пилот в одной карьерной школе банка</h2>
-  <div class="cols" style="grid-template-columns:1fr 1fr 1fr;column-gap:30.7px;bottom:224px">
+  <h2 class="t">Полигон — этап между шорт-листом и структурированным интервью в карьерной школе банка</h2>
+  <div class="cols" style="grid-template-columns:1fr 1fr 1fr;column-gap:30.7px">
     <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-coins"/></svg>Модель</div>
+      <div class="sr"><svg class="ic"><use href="#i-coins"/></svg>Бюджет: две гипотезы</div>
       <div class="body">
-        <div class="card sm c-blue grow"><p class="ct">Банк платит за поток участников</p><p class="cb mt4">Кандидат — бесплатно</p>
-          <div class="row mt8" style="align-items:flex-start;gap:6px"><span class="code g xs">Г</span><span class="cb">15–40 тыс. ₽ за участника</span></div></div>
+        <div class="card sm c-hyp"><div class="row"><span class="code g">Г</span><span class="ct">Отбор</span></div><p class="cb mt6">от 15 тыс. ₽ за участника</p></div>
+        <div class="card sm c-hyp"><div class="row"><span class="code g">Г</span><span class="ct">Подготовка</span></div><p class="cb mt6">около 7 тыс. ₽ на человека</p></div>
+        <p class="cb">Выбор — вопрос к первому разговору с банком</p>
       </div>
     </div>
     <div class="col">
       <div class="sr"><svg class="ic"><use href="#i-wrench"/></svg>Полная стоимость</div>
-      <div class="body" style="gap:8px">
-        <div class="card sm c-blue"><p class="ct">Главная статья — авторинг сценариев</p></div>
-        <div class="card sm c-risk grow"><p class="lbl">Риск, урок Pearson</p><p class="cb mt4">Контент отстаёт от продукта</p></div>
+      <div class="body">
+        <div class="card sm c-blue">
+          <ul class="b cb" style="display:flex;flex-direction:column;gap:5px">
+            <li>Авторинг модуля</li><li>Адаптация под банк</li><li>Ротация закрытой задачи на поток</li><li>Минуты эксперта на карточку</li><li>Сопровождение</li>
+          </ul>
+          <p class="cb mt8">Модуль 1: <span class="fill">[вписать факт: N ч]</span></p>
+        </div>
+        <div class="card sm c-risk"><p class="lbl">Риск, урок Pearson</p><p class="cb mt4">Контент отстаёт от продукта</p></div>
       </div>
     </div>
     <div class="col">
       <div class="sr"><svg class="ic"><use href="#i-flag"/></svg>Пилот</div>
       <div class="body">
-        <div class="card sm c-blue grow" style="display:flex;gap:18px;align-items:center">
+        <div class="card sm c-blue" style="display:flex;gap:18px;align-items:center">
           <div><p class="hero-n">1</p><p class="cb">модуль</p></div>
           <div><p class="hero-n">1</p><p class="cb">поток</p></div>
           <div><p class="hero-n">30–60</p><p class="cb">кандидатов</p></div>
         </div>
+        <ol class="steps auto">
+          <li><span class="num">1</span><span class="nm">Финалисты тренируются на модуле</span></li>
+          <li><span class="num">2</span><span class="nm">Закрытая задача с «месяцем спустя»</span></li>
+          <li><span class="num">3</span><span class="nm">Интервью с трассой решений</span></li>
+        </ol>
       </div>
     </div>
   </div>
-  <div class="cols" style="grid-template-columns:2fr 1fr;top:333px">
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-done"/></svg>Расширяем, если</div>
-      <div class="body tight" style="gap:8px">
-        <div class="card sm c-out cb crit">Доля завершивших</div>
-        <div class="card sm c-out cb crit">Перенос по К1, К2, К3, К6 выше, чем у контрольной группы с обычным кейсом</div>
-        <div class="card sm c-out cb crit">Эксперт использует карточку на интервью</div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-info"/></svg>Останавливаем, если</div>
-      <div class="body tight">
-        <div class="card sm c-gray grow"><p class="ct">Критерии остановки задаём до старта</p><p class="cb mt6">Stage-Gate: обоснование → пилот → решение о расширении</p></div>
-      </div>
-    </div>
-  </div>
-  <div class="foot"><span class="lg"><i class="sw g"></i>Г — расчёт команды по ценам аналогов, проверить у банков</span>Pearson — кейс Ivey, 2012; Stage-Gate — SE-02, сл. 71</div>
+  <div class="foot"><span class="lg"><i class="sw g"></i>Г — расчёт команды по ценам аналогов</span>Не фильтр отбора и не решение о найме. Pearson — кейс Ivey, 2012</div>
 </section>
 
-<!-- 16. Roadmap -->
+<!-- 16. Стратегия: пороги пилота -->
+<section class="slide">
+  <h2 class="t">Пилот: <em>пороги расширения и остановки — числа, зафиксированные до старта</em></h2>
+  <div class="cols" style="grid-template-columns:1.25fr 1fr;bottom:136px">
+    <div class="col">
+      <div class="sr"><svg class="ic"><use href="#i-done"/></svg>Расширяем, если выполнено всё</div>
+      <div class="body" style="gap:8px">
+        <div class="card sm c-out cb crit">Модуль завершили ≥ 70% начавших</div>
+        <div class="card sm c-out cb crit">Эксперт задал вопрос из карточки в ≥ 2 из 3 интервью</div>
+        <div class="card sm c-out cb crit">«Угадывали правила» ≤ 1 из 5 участников</div>
+        <div class="card sm c-out cb crit">Медиана разбора карточки ≤ 10 минут</div>
+        <div class="card sm c-solid cb crit"><b style="font-weight:600">Денежные ворота:</b> второй поток от 15 тыс. ₽ × ≥ 60 участников в год ≈ 0,9 млн ₽</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="sr"><svg class="ic"><use href="#i-error"/></svg>Останавливаем, если хоть одно</div>
+      <div class="body" style="gap:8px">
+        <div class="card sm c-gray cb crit">Утечка персональных данных</div>
+        <div class="card sm c-gray cb crit">Кадровое решение только по карточке</div>
+        <div class="card sm c-gray cb crit">Банк платит лишь из бюджета обучения ≤ 7 тыс. ₽ — останавливаем вариант «отбор», считаем гипотезу «подготовка»</div>
+      </div>
+    </div>
+  </div>
+  <div class="card sm c-pale row" style="position:absolute;left:53px;right:53px;top:404px;gap:12px;align-items:flex-start">
+    <svg class="ic" style="color:var(--blue-700)"><use href="#i-shield"/></svg>
+    <div><p class="lbl acc">Персональные данные</p>
+      <p class="cb mt4">Псевдонимы, таблицу держит банк · согласие и срок хранения · хостинг в РФ или в контуре банка · ИИ у названного провайдера, с проверкой экспертом · без автоматических решений о найме (152‑ФЗ, ст. 16)</p></div>
+  </div>
+  <div class="foot">Числа — предложение команды; фиксируем до старта по логике Stage-Gate (SE-02, сл. 71)</div>
+</section>
+
+<!-- 17. Roadmap -->
 <section class="slide">
   <h2 class="t">Roadmap в три горизонта: <em>сначала проверяем, учит ли симуляция лучше обычного кейса</em></h2>
-  <div class="cols" style="grid-template-columns:1fr 1fr 1fr;column-gap:30.7px;bottom:236px">
+  <div class="cols" style="grid-template-columns:1fr 1fr 1fr;column-gap:30.7px;bottom:200px">
     <div class="col">
       <div class="sr"><svg class="ic"><use href="#i-check"/></svg>Сейчас</div>
       <div class="body tight">
         <ol class="bars">
           <li class="ph-del">MVP: путь кандидата и эксперта</li>
-          <li class="ph-dis">Интервью: 5 кандидатов, 2 эксперта<small>«ситуация → действия → результат»</small></li>
+          <li class="ph-dis">5 прохождений вслух и разговор с банком</li>
+          <li class="ph-dis">Слепая проверка ключа двумя практиками</li>
         </ol>
       </div>
     </div>
@@ -829,8 +864,9 @@ table.br{width:100%;border-collapse:collapse}
       <div class="body tight">
         <ol class="bars">
           <li class="ph-ana">Пилот: 1 модуль, 1 поток</li>
-          <li class="ph-del">Авторинг второго модуля</li>
-          <li class="ph-del">ИИ-разбор по рубрике с проверкой экспертом</li>
+          <li class="gate">Ворота: второй поток от 15 тыс. ₽</li>
+          <li class="ph-del">Модуль 2 — только после ворот</li>
+          <li class="ph-del">ИИ-разбор по рубрике + эксперт</li>
         </ol>
       </div>
     </div>
@@ -845,9 +881,9 @@ table.br{width:100%;border-collapse:collapse}
       </div>
     </div>
   </div>
-  <div class="rm-legend">
+  <div class="rm-legend" style="top:322px">
     <span><i class="ph-dis"></i>Исследование</span><span><i class="ph-del"></i>Разработка</span>
-    <span><i class="ph-ana"></i>Проверка в пилоте</span><span><i class="ph-und"></i>Решим по итогам пилота</span>
+    <span><i class="ph-ana"></i>Проверка</span><span><i class="gate"></i>Денежные ворота</span><span><i class="ph-und"></i>Решим по итогам пилота</span>
   </div>
   <div class="cols" style="grid-template-columns:1.3fr 1fr;top:346px">
     <div class="col">
@@ -860,10 +896,9 @@ table.br{width:100%;border-collapse:collapse}
     <div class="col">
       <div class="sr"><svg class="ic"><use href="#i-question"/></svg>Чего MVP не доказывает</div>
       <div class="body tight">
-        <div class="card sm c-hyp grow">
-          <div class="row"><span class="code g">Г</span><span class="ct">Образовательный эффект</span></div>
-          <div class="row mt6"><span class="code g">Г</span><span class="ct">Качество найма</span></div>
-          <p class="cb mt6">Это гипотезы пилота</p>
+        <div class="card sm c-hyp">
+          <div class="row"><span class="code g">Г</span><span class="ct">Эффект обучения</span><span class="cb">— на потоках вузов</span></div>
+          <div class="row mt8"><span class="code g">Г</span><span class="ct">Качество найма</span><span class="cb">— в пилоте</span></div>
         </div>
       </div>
     </div>
