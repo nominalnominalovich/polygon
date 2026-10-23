@@ -290,3 +290,10 @@ blockquote { margin: 0; padding: 10px 14px; border-radius: 10px; background: var
 .pg-seg button { all: unset; cursor: pointer; flex: 1; text-align: center; padding: 7px 8px; border-radius: 8px; font-size: 14px; }
 .pg-seg button.is-selected { background: #fff; color: var(--blue-700); font-weight: 600; box-shadow: 0 0 0 1px var(--blue-300); }
 .pg-seg button:focus-visible { outline: 2px solid var(--blue-500); }
+.pg-hero__title { font-size: 46px !important; line-height: 52px !important; }
+.pg-defense-cta > :last-child { flex: none; }
+.pg-table-wrap { overflow-x: auto; }
+.pg-grid--side-left aside .pg-table { font-size: 13px; }
+.pg-grid--side-left aside .pg-table th, .pg-grid--side-left aside .pg-table td { padding: 6px 4px; }
+.pg-grid--side-left aside .pg-table td:nth-child(2), .pg-grid--side-left aside .pg-table th:nth-child(2) { display: none; }
+@media (max-width: 560px) { .pg-hero__title { font-size: 32px !important; line-height: 38px !important; } }

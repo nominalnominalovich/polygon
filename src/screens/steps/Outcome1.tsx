@@ -13,7 +13,7 @@ export function SplitTable({ m, base = baseline }: { m: Month; base?: Month }) {
     ['Общий показатель', '14 000 целей', m.total],
   ] as const;
   return (
-    <table className="pg-table">
+    <div className="pg-table-wrap"><table className="pg-table">
       <thead><tr><th>Аудитория</th><th>Объём</th><th>M1 · активные</th><th>M2 · автопополнение</th></tr></thead>
       <tbody>
         {rows.map(([name, n, c]) => (
@@ -25,7 +25,7 @@ export function SplitTable({ m, base = baseline }: { m: Month; base?: Month }) {
           </tr>
         ))}
       </tbody>
-    </table>
+    </table></div>
   );
 }
 
