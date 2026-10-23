@@ -21,6 +21,9 @@ const DEMO: { id: string; name: string; t: Transfer }[] = [
       expectation: 'Доля отключений в первый месяц: 38% → 25% за 2 месяца',
       rationale: '61% отключений — в два дня после списания; 61% ответов опроса — про сумму или момент списания. Опрос показывается в момент отключения, отклик 55% — ему можно доверять больше, чем обычному. Кешбэк не решает проблему неожиданной суммы.',
       check: 'Доля отключений в первые два дня; обращения «почему списали столько».',
+      explanation: 'external',
+      split: true,
+      changeText: 'Разбивка показала: отключений из-за неожиданной суммы стало почти впятеро меньше (12,9 → 2,7 п.п.), а рост дала смена оператора (+9 п.п.). Решение оставляю и добавляю подсказку перенести автоплатёж при смене номера.',
     },
   },
   {
@@ -33,6 +36,9 @@ const DEMO: { id: string; name: string; t: Transfer }[] = [
       expectation: 'Больше подключений автоплатежа',
       rationale: 'Руководитель предлагает кешбэк, клиенты любят кешбэк. Напоминание увеличит подключения.',
       check: '',
+      explanation: 'failed',
+      split: false,
+      changeText: 'Отключений стало больше, кешбэк не сработал — увеличим кешбэк до 5%.',
     },
   },
 ];
@@ -41,7 +47,7 @@ const FRAGMENTS = ['Проблема', 'Сегмент', 'Инициативы',
 
 export function Expert({ workId }: { workId?: string }) {
   const s = useStore();
-  const works = [...(s.shared && s.transferDone ? [{ id: OWN_WORK_ID, name: 'Ваша работа (демо-прохождение)', t: s.transfer }] : []), ...DEMO];
+  const works = [...(s.shared && s.transfer2Done ? [{ id: OWN_WORK_ID, name: 'Ваша работа (демо-прохождение)', t: s.transfer }] : []), ...DEMO];
   const work = works.find((w) => w.id === workId);
 
   if (!work)
@@ -50,6 +56,24 @@ export function Expert({ workId }: { workId?: string }) {
         <Caption level="1" className="pg-muted">Продуктовый эксперт · банк «Кварц»</Caption>
         <Title level="1" className="pg-page__title">Переданные работы</Title>
         <Text className="pg-muted pg-page__lead">Только самостоятельные работы, которые участники сами передали. Тренировочные попытки сюда не попадают.</Text>
+        <Trace ids={['И6', 'Ф4']} status="mock" note="Сводка для руководителя школы: что показать после пилота. В MVP считается по разборам в этом браузере.">
+          <Panel title="Сводка по потоку" tone="pale">
+            {(() => {
+              const done = works.filter((w) => s.reviews[w.id]?.savedAt);
+              const mins = done.map((w) => s.reviews[w.id]!.minutes ?? 0).filter(Boolean).sort((a, b) => a - b);
+              const med = mins.length ? mins[Math.floor((mins.length - 1) / 2)] : null;
+              const q = done.filter((w) => s.reviews[w.id]!.question.trim()).length;
+              return (
+                <div className="pg-tiles">
+                  <div className="pg-tile"><Caption level="1" className="pg-muted">Передано работ</Caption><div className="pg-tile__value">{works.length}</div></div>
+                  <div className="pg-tile"><Caption level="1" className="pg-muted">Разобрано</Caption><div className="pg-tile__value">{done.length}</div></div>
+                  <div className="pg-tile"><Caption level="1" className="pg-muted">Минут на разбор, медиана</Caption><div className="pg-tile__value">{med ?? '—'}</div></div>
+                  <div className="pg-tile"><Caption level="1" className="pg-muted">С вопросом для интервью</Caption><div className="pg-tile__value">{q}</div></div>
+                </div>
+              );
+            })()}
+          </Panel>
+        </Trace>
         <Trace ids={['И6', 'Ф4', 'Э5']}>
           <Panel>
             {works.map((w) => (
@@ -57,7 +81,7 @@ export function Expert({ workId }: { workId?: string }) {
                 {w.name}
               </SimpleCell>
             ))}
-            {!(s.shared && s.transferDone) && <Caption level="1" className="pg-muted pg-pad">Пройдите модуль за кандидата и передайте работу — она появится в этом списке.</Caption>}
+            {!(s.shared && s.transfer2Done) && <Caption level="1" className="pg-muted pg-pad">Пройдите модуль за кандидата и передайте работу — она появится в этом списке.</Caption>}
           </Panel>
         </Trace>
       </div>
@@ -70,6 +94,7 @@ function ReviewForm({ id, name, t, initial }: { id: string; name: string; t: Tra
   const [review, setReview] = useState<Review>(initial ?? { criteria: {}, question: '' });
   const [frag, setFrag] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState(false);
+  const [openedAt] = useState(() => Date.now());
   const setC = (c: CriterionId, p: Partial<{ status: Status; comment: string }>) =>
     setReview((r) => ({ ...r, criteria: { ...r.criteria, [c]: { status: 'nodata', comment: '', ...r.criteria[c], ...p } } }));
 
@@ -117,7 +142,7 @@ function ReviewForm({ id, name, t, initial }: { id: string; name: string; t: Tra
               <Textarea rows={2} value={review.question} onChange={(e) => setReview((r) => ({ ...r, question: e.target.value }))} />
             </FormItem>
             <Text className="pg-muted">Итоговой оценки и решения о найме здесь нет: карточка — материал для разговора с кандидатом.</Text>
-            <Button size="l" after={<Icon20ChevronRight />} onClick={() => { setState((st) => ({ reviews: { ...st.reviews, [id]: { ...review, savedAt: new Date().toISOString() } } })); setSaved(true); }}>Сохранить разбор</Button>
+            <Button size="l" after={<Icon20ChevronRight />} onClick={() => { setState((st) => ({ reviews: { ...st.reviews, [id]: { ...review, savedAt: new Date().toISOString(), minutes: Math.max(1, Math.round((Date.now() - openedAt) / 60000)) } } })); setSaved(true); }}>Сохранить разбор</Button>
             {saved && <Text className="pg-positive">Сохранено. {id === OWN_WORK_ID ? 'Кандидат увидит комментарий в своей карточке.' : ''}</Text>}
           </Panel>
         </Trace>

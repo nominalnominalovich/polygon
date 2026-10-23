@@ -1,7 +1,7 @@
 import {
-  BASE_ACTIVE, BASE_AUTO, BASE_SIDE, CAPACITY, E1_INITIATIVES, E2_INITIATIVES, EFFECTS,
+  BASE_ACTIVE, BASE_AUTO, BASE_SIDE, CAPACITY, E1_INITIATIVES, E2_INITIATIVES, E4_EFFECTS, E4_EVENT, E4_REASONS, EFFECTS,
   MIX_OLD, MIX_PARTNER, OLD_N, PARTNER_N, SEGMENTS,
-  type Delta, type E1Id, type E2Id, type Seg,
+  type Delta, type E1Id, type E2Id, type E4Id, type E4Reason, type Seg,
 } from './scenario';
 
 export type Rates = { active: Record<Seg, number>; auto: Record<Seg, number> };
@@ -158,4 +158,16 @@ export function simulate2(e1: E1Id[], e2: E2Id[], push: PushChoice | null): { m:
     side.support -= 70;
   }
   return { m: month(rates, side, true), trace };
+}
+
+/** Самостоятельная задача: доля отключений по причинам до и после, с внешним событием. */
+export function simulateE4(ids: E4Id[]) {
+  const rows = E4_REASONS.map((r) => {
+    let after = r.base;
+    for (const id of ids) after *= 1 - (E4_EFFECTS[id][r.id as E4Reason] ?? 0);
+    if (r.id === 'number') after += E4_EVENT.extra;
+    return { ...r, after: r1(after) };
+  });
+  const total = r1(rows.reduce((a, r) => a + r.after, 0));
+  return { rows, total };
 }

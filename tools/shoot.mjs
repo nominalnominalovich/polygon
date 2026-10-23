@@ -21,10 +21,12 @@ const transfer = {
   expectation: 'Доля отключений в первый месяц: 38% → 25% за 2 месяца',
   rationale: '61% отключений — в два дня после списания, 61% ответов опроса — про сумму или момент списания. Опрос в моменте с откликом 55% надёжнее обычного. Кешбэк не решает проблему неожиданной суммы.',
   check: 'Доля отключений в первые два дня; обращения «почему списали столько»',
+  explanation: 'external', split: true,
+  changeText: 'Разбивка показала: отключений из-за неожиданной суммы стало почти впятеро меньше, а рост дала смена оператора (+9 п.п.). Решение оставляю и добавляю подсказку перенести автоплатёж при смене номера.',
 };
 const bonus1 = { metric: 'M1', dir: 'up', value: '', term: '', problem: 'forget', problemText: '', segment: 'all', segmentText: '', initiatives: ['B'], alternative: '', rationale: 'Ирина и отзывы говорят, что людям нужна мотивация. Напоминания дешёвые и быстрые.' };
 const bonus2 = { metric: 'M1', dir: 'up', value: 'больше', term: '', explanation: 'failed', explanationText: '', initiatives: ['A'], push: 'cut', rationale: '', changeText: 'Автопополнение упало, напоминания не помогли — запускаем баллы, как просит руководитель.' };
-const full = { role: 'candidate', notes: ['Опрос смещён к вовлечённым?'], d1, d1Done: true, split: true, d2, d2Done: true, transfer, transferDone: true, shared: true, reviews: {}, trace: false };
+const full = { role: 'candidate', notes: ['Опрос смещён к вовлечённым?'], d1, d1Done: true, split: true, d2, d2Done: true, transfer, transferDone: true, transfer2Done: true, shared: true, reviews: {}, trace: false };
 
 const shots = [
   { name: '01-вход', hash: '/', state: { role: null } },
@@ -36,7 +38,8 @@ const shots = [
   { name: '07-пересмотр', hash: '/play', state: { ...full, d2Done: false, step: 'decision2', reached: 'decision2' } },
   { name: '08-разбор', hash: '/play', state: { ...full, step: 'debrief', reached: 'debrief' }, fullPage: true },
   { name: '09-разбор-обоснование', hash: '/play', state: { ...full, step: 'debrief', reached: 'debrief', trace: true } },
-  { name: '10-самостоятельная', hash: '/play', state: { ...full, transferDone: false, shared: false, step: 'transfer', reached: 'transfer' } },
+  { name: '10-самостоятельная', hash: '/play', state: { ...full, transferDone: false, transfer2Done: false, shared: false, step: 'transfer', reached: 'transfer' } },
+  { name: '10b-месяц-спустя', hash: '/play', state: { ...full, transfer2Done: false, shared: false, step: 'transfer', reached: 'transfer' }, fullPage: true },
   { name: '11-карточка', hash: '/play', state: { ...full, step: 'card', reached: 'card' } },
   { name: '12-эксперт-список', hash: '/expert', state: { ...full, role: 'expert' } },
   { name: '13-эксперт-разбор', hash: '/expert/me', state: { ...full, role: 'expert' } },
@@ -53,7 +56,7 @@ for (const s of shots) {
   await page.evaluate((st) => localStorage.setItem('polygon:v1', JSON.stringify(st)), {
     role: null, step: 'dossier', reached: 'dossier', notes: [], d1: { ...d1, initiatives: [], rationale: '', problem: '', segment: '', metric: '', dir: '', value: '', term: '' },
     d1Done: false, split: false, d2: { ...d2, initiatives: [], explanation: '', changeText: '', metric: '', dir: '', value: '', term: '' }, d2Done: false,
-    transfer: { problem: '', segment: '', initiatives: [], expectation: '', rationale: '', check: '' }, transferDone: false, shared: false, reviews: {}, trace: false,
+    transfer: { problem: '', segment: '', initiatives: [], expectation: '', rationale: '', check: '' }, transferDone: false, transfer2Done: false, shared: false, reviews: {}, trace: false,
     ...s.state,
   });
   await page.goto(`${base}#${s.hash}`);

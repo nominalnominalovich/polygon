@@ -31,9 +31,13 @@ export type Transfer = {
   expectation: string;
   rationale: string;
   check: string;
+  explanation?: string;
+  explanationText?: string;
+  split?: boolean;
+  changeText?: string;
 };
 
-export type Review = { criteria: Partial<Record<CriterionId, { status: Status; comment: string }>>; question: string; savedAt?: string };
+export type Review = { criteria: Partial<Record<CriterionId, { status: Status; comment: string }>>; question: string; savedAt?: string; minutes?: number };
 
 export type Step = 'dossier' | 'decision1' | 'outcome1' | 'decision2' | 'debrief' | 'transfer' | 'card';
 export const STEPS: { id: Step; label: string; screen: string }[] = [
@@ -58,6 +62,7 @@ export type State = {
   d2Done: boolean;
   transfer: Transfer;
   transferDone: boolean;
+  transfer2Done: boolean;
   shared: boolean;
   reviews: Record<string, Review>;
   trace: boolean;
@@ -77,6 +82,7 @@ export const initial: State = {
   d2Done: false,
   transfer: { problem: '', segment: '', initiatives: [], expectation: '', rationale: '', check: '' },
   transferDone: false,
+  transfer2Done: false,
   shared: false,
   reviews: {},
   trace: false,

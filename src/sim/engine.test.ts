@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { baseline, simulate1, simulate2 } from './engine';
+import { baseline, simulate1, simulate2, simulateE4 } from './engine';
 
 // Контрольные прохождения из сценария (раздел 8): одинаковые выборы дают одинаковый результат.
 describe('контрольные прохождения', () => {
@@ -57,5 +57,12 @@ describe('контрольные прохождения', () => {
 
   it('повторное прохождение даёт тот же результат', () => {
     expect(simulate2(['B', 'V'], ['EB', 'D'], null)).toEqual(simulate2(['B', 'V'], ['EB', 'D'], null));
+  });
+
+  it('самостоятельная задача: событие перекрывает эффект решения', () => {
+    expect(simulateE4(['N', 'M']).total).toBe(30.6);
+    expect(simulateE4(['N']).total).toBe(38);
+    expect(simulateE4(['K', 'L']).total).toBe(45);
+    expect(simulateE4(['N']).rows.find((r) => r.id === 'number')!.after).toBe(13.6);
   });
 });

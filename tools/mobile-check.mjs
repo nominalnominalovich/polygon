@@ -19,7 +19,7 @@ await page.evaluate(() => localStorage.setItem('polygon:v1', JSON.stringify({ ro
 await page.goto(base + '#/program'); await page.reload(); await check('программа');
 await page.click('text=Для защиты проекта'); await page.click('text=Сильный путь'); await check('последствия (пресет)');
 for (const st of steps) {
-  await page.evaluate((st) => { const s = JSON.parse(localStorage.getItem('polygon:v1')); s.step = st; s.reached = 'card'; s.d2Done = true; s.transferDone = st === 'card'; localStorage.setItem('polygon:v1', JSON.stringify(s)); }, st);
+  await page.evaluate((st) => { const s = JSON.parse(localStorage.getItem('polygon:v1')); s.step = st; s.reached = 'card'; s.d2Done = true; s.transferDone = st === 'card' || st === 'transfer'; s.transfer2Done = st === 'card'; localStorage.setItem('polygon:v1', JSON.stringify(s)); }, st);
   await page.reload(); await check(st);
 }
 await page.goto(base + '#/defense'); await check('материалы защиты');

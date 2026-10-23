@@ -1,6 +1,7 @@
 import { Button, Caption, Text, Title } from '@vkontakte/vkui';
 import { Icon20UserStarOutline } from '@vkontakte/icons';
-import { E4 } from '../../sim/scenario';
+import { E4, E4_BASE, E4_EXPLANATIONS } from '../../sim/scenario';
+import { simulateE4 } from '../../sim/engine';
 import { STATUS_LABEL } from '../../sim/debrief';
 import { setState, useStore } from '../../store';
 import { navigate } from '../../router';
@@ -19,6 +20,13 @@ export function WorkFields({ t }: { t: import('../../store').Transfer }) {
       <div><dt>Ожидание</dt><dd>{t.expectation}</dd></div>
       <div><dt>Обоснование</dt><dd className="pg-prewrap">{t.rationale}</dd></div>
       {t.check && <div><dt>Проверить после запуска</dt><dd>{t.check}</dd></div>}
+      {t.explanation && (
+        <>
+          <div><dt>Месяц спустя: результат</dt><dd>Доля отключений {E4_BASE}% → {simulateE4(t.initiatives).total.toLocaleString('ru-RU')}% · разбивка по причинам: {t.split ? 'запрошена' : 'не запрошена'}</dd></div>
+          <div><dt>Объяснение</dt><dd>{t.explanation === 'own' ? t.explanationText : E4_EXPLANATIONS.find((x) => x.id === t.explanation)?.label}</dd></div>
+          <div><dt>Что меняет и почему</dt><dd className="pg-prewrap">{t.changeText}</dd></div>
+        </>
+      )}
     </dl>
   );
 }
