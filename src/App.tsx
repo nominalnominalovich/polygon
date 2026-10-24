@@ -7,7 +7,6 @@ import { Program } from './screens/Program';
 import { Play } from './screens/Play';
 import { Expert } from './screens/Expert';
 import { Defense } from './screens/Defense';
-import { Deck } from './screens/Deck';
 import { Jury } from './screens/Jury';
 import { Author } from './screens/Author';
 import { Dev } from './screens/Dev';
@@ -17,7 +16,6 @@ export function App() {
   const route = useRoute();
   const { role } = useStore();
 
-  if (route.startsWith('/deck')) return <Deck />;
 
   let screen;
   if (route.startsWith('/jury')) screen = <Jury />;

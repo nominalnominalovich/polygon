@@ -3,7 +3,6 @@ import { marked } from 'marked';
 import { Button, Caption, Text } from '@vkontakte/vkui';
 import { Icon20DownloadOutline, Icon20FullscreenOutline } from '@vkontakte/icons';
 import source from '../content/defense.md?raw';
-import { navigate } from '../router';
 import { BackToProduct } from '../components/Shell';
 
 type Section = { id: string; title: string; html: string };
@@ -43,10 +42,9 @@ export function Defense({ section }: { section?: string }) {
       </aside>
       <article className="pg-doc__body">
         <div className="pg-doc__actions">
-          <Button size="m" before={<Icon20FullscreenOutline />} onClick={() => navigate('/deck')}>Презентация</Button>
+          <Button size="m" before={<Icon20FullscreenOutline />} href={`${BASE}files/Poligon.pdf`} target="_blank">Презентация</Button>
           <Button size="m" mode="secondary" before={<Icon20DownloadOutline />} href={`${BASE}files/report.pdf`} target="_blank">Отчёт PDF</Button>
           <Button size="m" mode="secondary" before={<Icon20DownloadOutline />} href={`${BASE}files/report.docx`}>Отчёт DOCX</Button>
-          <Button size="m" mode="secondary" before={<Icon20DownloadOutline />} href={`${BASE}files/Poligon.pdf`} target="_blank">Презентация PDF</Button>
           <Button size="m" mode="secondary" before={<Icon20DownloadOutline />} href={`${BASE}files/Poligon.pptx`}>Презентация PPTX</Button>
           <Button size="m" mode="secondary" before={<Icon20DownloadOutline />} href={`${BASE}files/canvas-report.pdf`} target="_blank">Канва 01–10 PDF</Button>
           <a className="pg-doc__badge" href="https://github.com/nominalnominalovich/polygon/actions/workflows/deploy.yml" target="_blank" rel="noreferrer" title="Сборка и автотесты на GitHub Actions">

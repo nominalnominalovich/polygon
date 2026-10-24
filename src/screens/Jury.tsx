@@ -32,10 +32,9 @@ export function Jury() {
         <Panel title="Материалы">
           <div className="pg-jury-links">
             <Button size="l" before={<Icon20DocumentOutline />} onClick={() => navigate('/defense')}>Отчёт на сайте</Button>
-            <Button size="l" mode="secondary" before={<Icon20FullscreenOutline />} onClick={() => navigate('/deck')}>Презентация</Button>
+            <Button size="l" mode="secondary" before={<Icon20FullscreenOutline />} href={`${BASE}files/Poligon.pdf`} target="_blank">Презентация</Button>
             <Button size="l" mode="secondary" before={<Icon20DownloadOutline />} href={`${BASE}files/report.pdf`} target="_blank">Отчёт PDF</Button>
             <Button size="l" mode="secondary" before={<Icon20DownloadOutline />} href={`${BASE}files/report.docx`}>Отчёт DOCX</Button>
-            <Button size="l" mode="secondary" before={<Icon20DownloadOutline />} href={`${BASE}files/Poligon.pdf`} target="_blank">Презентация PDF</Button>
             <Button size="l" mode="secondary" before={<Icon20DownloadOutline />} href={`${BASE}files/Poligon.pptx`}>Презентация PPTX</Button>
             <Button size="l" mode="secondary" before={<Icon20DownloadOutline />} href={`${BASE}files/canvas-report.pdf`} target="_blank">Канва 01–10 PDF</Button>
             <Button size="l" mode="tertiary" onClick={() => navigate('/author')}>Редактор кейса</Button>
