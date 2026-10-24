@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { Button, Caption, Headline, Text, Title } from '@vkontakte/vkui';
 import { Icon20Cancel } from '@vkontakte/icons';
-import { CHAINS, TRACE } from '../sim/trace';
+import { CHAINS, KIND_LABEL, TRACE, traceLabel } from '../sim/trace';
 import { useStore } from '../store';
 import { navigate } from '../router';
 
@@ -27,7 +27,7 @@ export function Trace({ ids, status = 'real', note, children }: { ids: string[];
     <div className={`pg-trace pg-trace--${status}`}>
       <div className="pg-trace__chips">
         {ids.map((id) => (
-          <button key={id} className="pg-trace__chip" onClick={() => setOpen({ ids, status, note })}>{id}</button>
+          <button key={id} className="pg-trace__chip" onClick={() => setOpen({ ids, status, note })}>{traceLabel(id)}</button>
         ))}
         <span className={`pg-trace__status pg-trace__status--${status}`}>{status === 'real' ? 'Реализовано' : 'Имитируется'}</span>
       </div>
@@ -47,14 +47,14 @@ function TraceModal({ open, onClose }: { open: NonNullable<Open>; onClose: () =>
           <Title level="3">Почему этот блок такой</Title>
           <button className="pg-iconbtn" aria-label="Закрыть" onClick={onClose}><Icon20Cancel /></button>
         </div>
-        <Caption level="1" className="pg-muted">Цепочка обоснования: гипотеза → потребность → история → фича → экран</Caption>
+        <Caption level="1" className="pg-muted">Гипотеза → Потребность → История → Фича → Экран</Caption>
         <ol className="pg-chain">
           {chain.map((id) => {
             const t = TRACE[id];
             if (!t) return null;
             return (
               <li key={id} className={`pg-chain__item pg-chain__item--${t.kind}`}>
-                <span className="pg-chain__id">{t.id}</span>
+                <span className="pg-chain__id">{KIND_LABEL[t.kind]}</span>
                 <div>
                   <Text weight="2">{t.title}</Text>
                   <Text className="pg-muted">{t.text}</Text>
@@ -65,7 +65,7 @@ function TraceModal({ open, onClose }: { open: NonNullable<Open>; onClose: () =>
         </ol>
         {s?.criteria && (
           <div className="pg-modal__criteria">
-            <Headline level="2" weight="2">Критерии приёмки {s.id}</Headline>
+            <Headline level="2" weight="2">Критерии приёмки истории «{s.title}»</Headline>
             <ul>{s.criteria.map((c) => <li key={c}><Text>{c}</Text></li>)}</ul>
           </div>
         )}

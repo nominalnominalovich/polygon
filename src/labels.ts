@@ -1,8 +1,6 @@
-import { useStore } from './store';
-
-/** Коды (Э1, Б, M1, К1) нужны для прослеживаемости — показываем их только в режиме обоснования. */
+/** Коды (Э1, Б, M1, К1) не показываем и в режиме обоснования: там тоже слова, жюри читает коды как шифр. */
 export function useCodes() {
-  return useStore().trace;
+  return false;
 }
 
 export const code = (c: string, text: string, show: boolean) => (show ? `${c} · ${text}` : text);

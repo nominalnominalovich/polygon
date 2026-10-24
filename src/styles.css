@@ -344,3 +344,10 @@ blockquote { margin: 0; padding: 10px 14px; border-radius: 10px; background: var
 .pg-mono textarea { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
 .pg-file { position: relative; display: inline-flex; align-items: center; padding: 0 16px; height: 44px; border-radius: 10px; background: var(--blue-50); color: var(--blue-700); font-weight: 500; cursor: pointer; }
 .pg-file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+/* Режим обоснования словами: подписи длинные, переносим их над блоком */
+.pg-trace { margin-top: 12px; }
+.pg-trace__chips { position: static; flex-wrap: wrap; margin-bottom: 8px; }
+.pg-chain__item { grid-template-columns: 116px 1fr; }
+@media (max-width: 560px) { .pg-chain__item { grid-template-columns: 1fr; gap: 2px; } }
+
