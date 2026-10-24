@@ -351,3 +351,6 @@ blockquote { margin: 0; padding: 10px 14px; border-radius: 10px; background: var
 .pg-chain__item { grid-template-columns: 116px 1fr; }
 @media (max-width: 560px) { .pg-chain__item { grid-template-columns: 1fr; gap: 2px; } }
 
+/* Главная: полное название и стартовое досье в превью */
+.pg-hero__name { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.pg-preview__split > div { color: var(--ink); }

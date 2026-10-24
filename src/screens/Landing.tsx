@@ -1,12 +1,14 @@
 import { Button, Caption, DisplayTitle, Headline, Text } from '@vkontakte/vkui';
 import { Icon20DocumentOutline, Icon20UserStarOutline, Icon24EducationOutline } from '@vkontakte/icons';
 import { navigate } from '../router';
-import { setState, useStore } from '../store';
+import { setRole, useStore } from '../store';
 import { Trace } from '../components/Trace';
-import { Pill } from '../components/ui';
+import { Msg, Pill, fmt } from '../components/ui';
+import { baseline } from '../sim/engine';
+import { BASE_SIDE, STAKEHOLDERS } from '../sim/scenario';
 
 const enter = (role: 'candidate' | 'expert') => {
-  setState({ role });
+  setRole(role);
   navigate(role === 'candidate' ? '/program' : '/expert');
 };
 
@@ -16,7 +18,10 @@ export function Landing() {
     <div className="pg-landing">
       <section className="pg-hero">
         <div className="pg-hero__text">
-          <Pill tone="solid">Продуктовая школа-симулятор</Pill>
+          <div className="pg-hero__name">
+            <Pill tone="solid">Полигон: симулятор продуктовых решений</Pill>
+            <Text weight="2">Модуль практики перед интервью в карьерной школе банка</Text>
+          </div>
           <DisplayTitle level="1" className="pg-hero__title">Учиться продуктовым решениям на&nbsp;последствиях, а&nbsp;не&nbsp;на&nbsp;тестах</DisplayTitle>
           <Text className="pg-hero__lead">
             Кандидат ведёт сервис банка через несколько эпизодов. Его решения сохраняются, меняют метрики и сталкиваются с внешними событиями. Потом — разбор по критериям и самостоятельная задача, которую видит продуктовый эксперт банка.
@@ -32,11 +37,14 @@ export function Landing() {
         <div className="pg-hero__preview" aria-hidden="true">
           <div className="pg-preview">
             <div className="pg-preview__bar"><span /><span /><span /></div>
-            <Caption level="1" className="pg-muted">Эпизод 1 · месяц спустя</Caption>
-            <Headline level="1" weight="2">Автопополнение: 18% → 15,1%</Headline>
-            <div className="pg-msg pg-msg--warn"><div className="pg-msg__avatar">И</div><div><Text weight="2">Ирина <span className="pg-muted">· руководитель</span></Text><Text>Автопополнение упало! Что сломалось? Давай срочно баллы.</Text></div></div>
-            <div className="pg-msg"><div className="pg-msg__avatar">Я</div><div><Text weight="2">Вы <span className="pg-muted">· младший продакт</span></Text><Text>…</Text></div></div>
-            <Caption level="1" className="pg-muted">Что вы ответите руководителю?</Caption>
+            <Caption level="1" className="pg-muted">Эпизод 1 · досье на старте</Caption>
+            <Headline level="1" weight="2">«Цели» в приложении банка «Кварц»</Headline>
+            <div className="pg-preview__split">
+              <div><Caption level="1" className="pg-muted">Активные цели</Caption><div className="pg-preview__num">{fmt(baseline.old.m1)}%</div></div>
+              <div><Caption level="1" className="pg-muted">С автопополнением</Caption><div className="pg-preview__num">{fmt(baseline.old.m2)}%</div></div>
+            </div>
+            <Caption level="1">{BASE_SIDE.support} обращений в поддержку за месяц</Caption>
+            <Msg name={STAKEHOLDERS[0].name} role={STAKEHOLDERS[0].role} text={STAKEHOLDERS[0].text} />
           </div>
         </div>
       </section>
