@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { judge, outcome } from './debrief';
-import { simulate2 } from './engine';
+import { judge, lessons, outcome, reading } from './debrief';
+import { available2, capacity2, cost1, cost2, simulate2 } from './engine';
+import { CAPACITY, type E1Id, type E2Id } from './scenario';
 import { PRESETS } from '../demo';
 import { initial } from '../store';
 
@@ -68,5 +69,56 @@ describe('разбор по критериям', () => {
     expect(run2('bonus').level).toBe('frozen');
     expect(run2('bonus').reasons.length).toBeGreaterThan(1);
     expect(run2('strong').level).toBe('strong');
+  });
+
+  it('текст без словарных слов — «недостаточно данных», а не «держится на мнениях»', () => {
+    const p = PRESETS.find((x) => x.id === 'strong')!;
+    const d1 = { ...initial.d1, ...p.d1, rationale: 'Мне кажется, так будет лучше всего для нашего продукта и команды в целом.' };
+    const k1 = judge(d1, { ...initial.d2, ...p.d2 }, true).find((x) => x.id === 'K1')!;
+    expect(k1.status).toBe('nodata');
+    expect(k1.comment).toMatch(/^Эвристика не нашла ссылок на данные/);
+  });
+
+  it('у каждого замороженного пути из 121 есть причина', () => {
+    const sets: E1Id[][] = [['A'], ['B'], ['V'], ['G'], ['A', 'G'], ['B', 'V'], ['B', 'G'], ['V', 'G']];
+    const subsets = <T,>(a: T[]): T[][] => a.reduce<T[][]>((acc, x) => acc.concat(acc.map((s) => [...s, x])), [[]]);
+    let paths = 0;
+    const frozen: string[] = [];
+    const empty: string[] = [];
+    for (const e1 of sets.filter((s) => cost1(s) <= CAPACITY)) {
+      const opts = [...new Set(available2(e1).map((i) => i.id))] as E2Id[];
+      for (const e2 of subsets(opts)) {
+        if (!e2.length || (e2.includes('I') && e2.length > 1) || cost2(e2) > capacity2(e1)) continue;
+        for (const push of e1.includes('B') && !e2.includes('EB') ? (['keep', 'cut'] as const) : [null]) {
+          paths++;
+          const res = outcome(simulate2(e1, e2, push).m, { ...initial.d1, initiatives: e1 }, { ...initial.d2, initiatives: e2, push });
+          const name = `${e1.join('+')} → ${e2.join('+')} ${push ?? ''}`;
+          if (res.level === 'frozen') frozen.push(name);
+          if (res.level === 'frozen' && res.reasons.length === 0) empty.push(name);
+        }
+      }
+    }
+    expect(paths).toBe(121);
+    expect(frozen.length).toBe(52);
+    expect(empty).toEqual([]);
+  });
+
+  it('итог для продукта и прочтение дашборда разведены', () => {
+    const p = PRESETS.find((x) => x.id === 'strong')!;
+    const d1 = { ...initial.d1, ...p.d1 };
+    const d2 = { ...initial.d2, ...p.d2, explanation: 'failed' };
+    const res = outcome(simulate2(d1.initiatives, d2.initiatives, d2.push).m, d1, d2);
+    const k4 = judge(d1, d2, true).find((x) => x.id === 'K4')!;
+    expect(res.title).toBe('Итог для продукта: сильный рост');
+    expect(res.text).toContain('+12,8 п.п.');
+    expect(reading(k4.status, d2.initiatives, res.level)).toContain('Рост дало гибкое пополнение, а не верное прочтение дашборда');
+  });
+
+  it('«не застало врасплох» — только если знание из исследования стало решением', () => {
+    const d1 = { ...initial.d1, initiatives: ['V', 'G'] as E1Id[] };
+    const ready = lessons(d1, { ...initial.d2, initiatives: ['D', 'EV'], explanation: 'insufficient' }).join(' ');
+    const caught = lessons(d1, { ...initial.d2, initiatives: ['Z'], explanation: 'insufficient' }).join(' ');
+    expect(ready).toContain('не застало вас врасплох');
+    expect(caught).not.toContain('не застало вас врасплох');
   });
 });
