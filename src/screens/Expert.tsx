@@ -195,6 +195,7 @@ function ReviewForm({ id, name, t, initial }: { id: string; name: string; t: Tra
             <div className="pg-row"><Caption level="1" className="pg-muted">{E4.product}</Caption><Pill tone="blue">Самостоятельная работа</Pill></div>
             <Title level="2">{name}</Title>
             <WorkFields t={t} />
+            {t.assumptions?.trim() && <Text className="pg-prewrap"><b>Что допускает и в чём не уверен:</b> {t.assumptions}</Text>}
             <Accordion>
               <Accordion.Summary>Ориентиры автора кейса</Accordion.Summary>
               <Accordion.Content><ul className="pg-list pg-pad">{E4.strongSigns.map((x) => <li key={x}><Text>{x}</Text></li>)}</ul></Accordion.Content>

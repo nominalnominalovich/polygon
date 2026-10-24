@@ -9,6 +9,7 @@ import { Trace } from '../../components/Trace';
 import { Panel, Pill } from '../../components/ui';
 import { E4_CRITERIA } from './Transfer';
 import { code, critCode, useCodes } from '../../labels';
+import { ModuleResults } from './Results';
 
 export const OWN_WORK_ID = 'me';
 
@@ -59,6 +60,7 @@ export function Card() {
             {review.question && <Text><b>Вопрос на интервью:</b> {review.question}</Text>}
           </Panel>
         )}
+        <ModuleResults review={review} />
       </div>
       <aside className="pg-stack">
         <Trace ids={['И5', 'И6']} note="Передача — отдельное действие участника; тренировочные черновики не передаются.">

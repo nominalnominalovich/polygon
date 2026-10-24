@@ -10,6 +10,7 @@ import { Bars, Capacity, Delta, Msg, Panel, Pill, fmt } from '../../components/u
 import { Radio } from './Decision2';
 import { code, critCode, useCodes } from '../../labels';
 import { Choice } from '../../components/fields';
+import { SelfCheck } from './Results';
 
 export const E4_CRITERIA = CRITERIA;
 
@@ -20,8 +21,16 @@ export function Transfer() {
   const set = (p: Partial<T>) => setState((st) => ({ transfer: { ...st.transfer, ...p } }));
   const used = t.initiatives.reduce((a, id) => a + E4.initiatives.find((i) => i.id === id)!.cost, 0);
   const toggle = (id: E4Id) => set({ initiatives: t.initiatives.includes(id) ? t.initiatives.filter((x) => x !== id) : [...t.initiatives, id] });
-  const valid = t.problem.trim() && t.segment.trim() && t.initiatives.length > 0 && t.expectation.trim() && t.rationale.trim() && used <= E4_CAPACITY;
+  const missing = [
+    !t.problem.trim() && 'проблема',
+    !t.segment.trim() && 'сегмент',
+    t.initiatives.length === 0 && 'инициатива',
+    !t.expectation.trim() && 'ожидание',
+    t.rationale.trim().length < 20 && 'обоснование своими словами',
+  ].filter(Boolean) as string[];
+  const valid = missing.length === 0 && used <= E4_CAPACITY;
 
+  if (s.transferDone && s.transfer2Done && !s.selfReview.done) return <SelfCheck />;
   if (s.transferDone && s.transfer2Done)
     return (
       <div className="pg-stack pg-narrow">
@@ -60,6 +69,7 @@ export function Transfer() {
         <Panel title="Ожидание и обоснование">
           <FormItem top="Ожидаемое изменение: метрика, величина, срок" noPadding><Input value={t.expectation} onChange={(e) => set({ expectation: e.target.value })} /></FormItem>
           <FormItem top="Обоснование" noPadding><Textarea value={t.rationale} onChange={(e) => set({ rationale: e.target.value })} rows={5} /></FormItem>
+          <FormItem top="Что я допускаю и в чём не уверен (необязательно)" noPadding><Textarea value={t.assumptions ?? ''} onChange={(e) => set({ assumptions: e.target.value })} rows={3} placeholder="В каких данных сомневаетесь, что принимаете без проверки" /></FormItem>
           <FormItem top="Что проверить после запуска" noPadding><Textarea value={t.check} onChange={(e) => set({ check: e.target.value })} rows={2} /></FormItem>
         </Panel>
       </div>
@@ -71,6 +81,7 @@ export function Transfer() {
         <Trace ids={['И5']} note="Критерий 2: работа отделена от тренировки; передача эксперту — отдельное действие на следующем шаге.">
           <Panel tone={valid ? 'tint' : 'pale'}>
             <Text className="pg-muted">Дальше — «месяц спустя»: увидите результат и коротко пересмотрите решение. Тренировочный маршрут эксперт не увидит, эту работу — только если вы её передадите.</Text>
+            {missing.length > 0 && <Caption level="1" className="pg-muted">Не хватает: {missing.join(', ')}.</Caption>}
             <Button size="l" stretched disabled={!valid} after={<Icon20ChevronRight />} onClick={() => { setState({ transferDone: true }); window.scrollTo({ top: 0 }); }}>Зафиксировать решение</Button>
           </Panel>
         </Trace>
@@ -84,10 +95,11 @@ function TransferMonth() {
   const t = s.transfer;
   const set = (p: Partial<T>) => setState((st) => ({ transfer: { ...st.transfer, ...p } }));
   const r = simulateE4(t.initiatives);
-  const valid = !!t.explanation && (t.changeText ?? '').trim().length > 0;
+  const missing = [!t.explanation && 'объяснение результата', (t.changeText ?? '').trim().length < 20 && 'что меняете, своими словами'].filter(Boolean) as string[];
+  const valid = missing.length === 0;
   return (
     <div className="pg-stack">
-      <Trace ids={['И5', 'Ф4', 'Э4']} note="Задача на перенос проверяет и ключевой навык модуля: отделить эффект своего решения от внешнего события (К4) и пересмотреть решение (К5).">
+      <Trace ids={['И5', 'Ф4', 'Э4']} note="Задача на перенос проверяет и ключевой навык модуля: отделить эффект своего решения от внешнего события (критерий «Разделение эффектов») и пересмотреть решение (критерий «Пересмотр по последствиям»).">
         <Panel tone="risk">
           <div className="pg-row"><Pill tone="solid">Самостоятельная работа · месяц спустя</Pill><Caption level="1">без подсказок</Caption></div>
           <Title level="2">Ваше решение вышло. Посмотрите, что случилось</Title>
@@ -125,7 +137,8 @@ function TransferMonth() {
         <FormItem top="Что меняете в решении и почему (2–3 предложения)" noPadding>
           <Textarea value={t.changeText ?? ''} onChange={(e) => set({ changeText: e.target.value })} rows={3} />
         </FormItem>
-        <Button size="l" disabled={!valid} after={<Icon20ChevronRight />} onClick={() => { setState({ transfer2Done: true }); goStep('card'); }}>Отправить работу</Button>
+        {missing.length > 0 && <Caption level="1" className="pg-muted">Не хватает: {missing.join(', ')}.</Caption>}
+        <Button size="l" disabled={!valid} after={<Icon20ChevronRight />} onClick={() => { setState({ transfer2Done: true }); window.scrollTo({ top: 0 }); }}>Отправить работу</Button>
       </Panel>
     </div>
   );

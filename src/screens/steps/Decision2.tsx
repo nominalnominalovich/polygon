@@ -7,6 +7,7 @@ import { Trace } from '../../components/Trace';
 import { Capacity, Panel, Pill, Tile } from '../../components/ui';
 import { Choice, DecisionSummary, ExpectationFields, expectText } from '../../components/fields';
 import { SplitTable } from './Outcome1';
+import { Ask } from '../../components/Ask';
 
 export function Radio({ options, value, onChange }: { options: readonly { id: string; label: string }[]; value: string; onChange: (id: string) => void }) {
   return (
@@ -73,6 +74,7 @@ export function Decision2() {
             <Button mode="secondary" size="m" stretched onClick={() => setState({ split: true })}>Запросить срез по аудиториям</Button>
           )}
         </Panel>
+        <Ask step="d2" />
       </aside>
 
       <div className="pg-stack">

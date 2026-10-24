@@ -344,3 +344,39 @@ blockquote { margin: 0; padding: 10px 14px; border-radius: 10px; background: var
 .pg-mono textarea { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
 .pg-file { position: relative; display: inline-flex; align-items: center; padding: 0 16px; height: 44px; border-radius: 10px; background: var(--blue-50); color: var(--blue-700); font-weight: 500; cursor: pointer; }
 .pg-file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+/* Обучение: витрина программы, понятия, подсказки, итоги модуля */
+.pg-showcase__learn { display: flex; flex-direction: column; gap: 6px; }
+.pg-modrow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.pg-modcard { all: unset; box-sizing: border-box; cursor: pointer; background: #fff; border: 1.5px solid #e6e9ef; border-radius: var(--r-card); padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.pg-modcard:hover { border-color: var(--blue-300); }
+.pg-modcard:focus-visible { outline: 2px solid var(--blue-500); outline-offset: 2px; }
+.pg-modcard.is-selected { border-color: var(--blue-700); background: var(--blue-50); }
+.pg-modcard .pg-pill { white-space: normal; }
+.pg-concept { margin-top: 4px; padding: 12px; border-radius: 10px; background: #fff; border: 1px solid #e6e9ef; display: flex; flex-direction: column; gap: 6px; }
+.pg-concept__label { color: var(--blue-700) !important; font-weight: 600; }
+.pg-glossary { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pg-glossary .pg-concept { margin: 0; padding: 16px; }
+.pg-outcome__reading { padding: 8px 12px; border-radius: 10px; background: rgba(255, 255, 255, 0.14); }
+.pg-outcome--weak .pg-outcome__reading, .pg-outcome--frozen .pg-outcome__reading { background: rgba(255, 255, 255, 0.7); }
+.pg-skill { display: flex; flex-direction: column; gap: 4px; padding: 10px 0; border-bottom: 1px solid var(--blue-200); }
+.pg-split__n { display: none; }
+.pg-grid--side-left aside .pg-split__n { display: inline; }
+@media (max-width: 720px) {
+  .pg-modrow { grid-template-columns: 1fr 1fr; }
+  .pg-glossary { grid-template-columns: 1fr; }
+  .pg-split th:nth-child(2), .pg-split td:nth-child(2) { display: none; }
+  .pg-split__n { display: inline; }
+  .pg-split { font-size: 13px; }
+  .pg-split th, .pg-split td { padding: 8px 5px; }
+  .pg-split td { hyphens: auto; }
+  .pg-tabs .vkuiTabs__in { flex-wrap: wrap; gap: 4px; }
+  .pg-tabs .vkuiTabsItem__host { flex: 0 0 auto; }
+}
+@media (max-width: 720px) {
+  .pg-table--stack thead { display: none; }
+  .pg-table--stack, .pg-table--stack tbody, .pg-table--stack tr, .pg-table--stack td { display: block; }
+  .pg-table--stack tr { padding: 8px 0; border-bottom: 1px solid var(--gray-200); }
+  .pg-table--stack td { border: 0; padding: 2px 10px; }
+  .pg-table--stack td[data-label]::before { content: attr(data-label) ': '; color: var(--muted); }
+}

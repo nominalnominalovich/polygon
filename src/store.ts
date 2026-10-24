@@ -13,6 +13,7 @@ export type Decision1 = Expectation & {
   initiatives: E1Id[];
   rationale: string;
   alternative: string;
+  assumptions?: string;
 };
 
 export type Decision2 = Expectation & {
@@ -35,6 +36,7 @@ export type Transfer = {
   explanationText?: string;
   split?: boolean;
   changeText?: string;
+  assumptions?: string;
 };
 
 export type Review = { criteria: Partial<Record<CriterionId, { status: Status; comment: string }>>; question: string; savedAt?: string; minutes?: number };
@@ -68,6 +70,10 @@ export type State = {
   trace: boolean;
   jury: boolean;
   tours: { candidate?: boolean; expert?: boolean };
+  /** Сколько подсказок-вопросов взято на решениях 1 и 2. Эксперт их не видит. */
+  hints: { d1: number; d2: number };
+  /** Самооценка кандидата по критериям после самостоятельной задачи. Эксперт её не видит. */
+  selfReview: { criteria: Partial<Record<CriterionId, Status>>; done: boolean };
 };
 
 const emptyExp: Expectation = { metric: '', dir: '', value: '', term: '' };
@@ -90,6 +96,8 @@ export const initial: State = {
   trace: false,
   jury: false,
   tours: {},
+  hints: { d1: 0, d2: 0 },
+  selfReview: { criteria: {}, done: false },
 };
 
 const KEY = 'polygon:v1';
