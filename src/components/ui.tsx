@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Caption, Headline, Text } from '@vkontakte/vkui';
+import { Hint } from './Hint';
 
 export function Panel({ title, icon, aside, children, tone }: { title?: ReactNode; icon?: ReactNode; aside?: ReactNode; children: ReactNode; tone?: 'pale' | 'tint' | 'risk' | 'solid' }) {
   return (
@@ -31,10 +32,10 @@ export function Delta({ value, unit = 'п.п.', invert = false }: { value: numbe
   return <span className={`pg-delta ${good ? 'pg-delta--up' : 'pg-delta--down'}`}>{v > 0 ? '+' : '−'}{fmt(Math.abs(v))} {unit}</span>;
 }
 
-export function Tile({ label, value, unit = '%', delta, deltaUnit, invert, hint, digits = 1 }: { label: string; value: number; unit?: string; delta?: number; deltaUnit?: string; invert?: boolean; hint?: string; digits?: number }) {
+export function Tile({ label, value, unit = '%', delta, deltaUnit, invert, hint, digits = 1, info }: { label: string; value: number; unit?: string; delta?: number; deltaUnit?: string; invert?: boolean; hint?: string; digits?: number; info?: string }) {
   return (
     <div className="pg-tile">
-      <Caption level="1" className="pg-muted">{label}</Caption>
+      <Caption level="1" className="pg-muted">{label}{info && <> <Hint text={info} /></>}</Caption>
       <div className="pg-tile__value">{fmt(value, digits)}<span className="pg-tile__unit">{unit}</span></div>
       {delta !== undefined && <Delta value={delta} unit={deltaUnit} invert={invert} />}
       {hint && <Caption level="2" className="pg-muted pg-tile__hint">{hint}</Caption>}
@@ -62,6 +63,7 @@ export function Capacity({ used, total }: { used: number; total: number }) {
   const over = used > total;
   return (
     <div className="pg-capacity" aria-label={`Ёмкость: ${used} из ${total} очков`}>
+      <Hint text="Сколько работы команда успевает за спринт. Каждая инициатива стоит очков, больше ёмкости взять нельзя." />
       <div className="pg-capacity__cells">
         {Array.from({ length: Math.max(total, used) }, (_, i) => (
           <span key={i} className={`pg-capacity__cell ${i < used ? (i >= total ? 'is-over' : 'is-used') : ''}`} />

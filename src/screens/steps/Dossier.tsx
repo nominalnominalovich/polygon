@@ -34,7 +34,7 @@ export function Dossier() {
                 <div><dt>Ваша роль</dt><dd>Младший продакт команды «Целей»</dd></div>
                 <div><dt>Режим</dt><dd><Pill tone="blue">Тренировка</Pill></dd></div>
                 <div><dt>Ёмкость</dt><dd>10 очков на спринт</dd></div>
-                <div><dt>Старт</dt><dd>M1 37% · M2 18% · 340 обращений</dd></div>
+                <div><dt>Сейчас</dt><dd>Активных целей 37,2% · с автопополнением 18% · 340 обращений в месяц</dd></div>
               </dl>
             </div>
           </Panel>

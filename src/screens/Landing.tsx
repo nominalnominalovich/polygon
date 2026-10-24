@@ -1,7 +1,7 @@
 import { Button, Caption, DisplayTitle, Headline, Text } from '@vkontakte/vkui';
 import { Icon20DocumentOutline, Icon20UserStarOutline, Icon24EducationOutline } from '@vkontakte/icons';
 import { navigate } from '../router';
-import { setState } from '../store';
+import { setState, useStore } from '../store';
 import { Trace } from '../components/Trace';
 import { Pill } from '../components/ui';
 
@@ -11,6 +11,7 @@ const enter = (role: 'candidate' | 'expert') => {
 };
 
 export function Landing() {
+  const { jury } = useStore();
   return (
     <div className="pg-landing">
       <section className="pg-hero">
@@ -55,13 +56,15 @@ export function Landing() {
         ))}
       </section>
 
+      {jury && (
       <section className="pg-defense-cta">
-        <div>
-          <Headline level="1" weight="2">Материалы защиты проекта</Headline>
-          <Text className="pg-muted">Концепция по блокам канвы, стратегия, roadmap, конкуренты, ISPMA BoK, презентация и отчёт — как пользовательская справка в админке.</Text>
-        </div>
-        <Button size="l" mode="outline" before={<Icon20DocumentOutline />} onClick={() => navigate('/defense')}>Открыть материалы защиты</Button>
-      </section>
+          <div>
+            <Headline level="1" weight="2">Материалы для жюри</Headline>
+            <Text className="pg-muted">Отчёт, презентация, команда и готовые прохождения — в одном месте.</Text>
+          </div>
+          <Button size="l" mode="outline" before={<Icon20DocumentOutline />} onClick={() => navigate('/jury')}>Открыть материалы для жюри</Button>
+        </section>
+      )}
     </div>
   );
 }

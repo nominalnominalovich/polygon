@@ -1,6 +1,6 @@
-import type { E1Id, E2Id } from './scenario';
+import { METRICS, type E1Id, type E2Id } from './scenario';
 import type { Decision1, Decision2 } from '../store';
-import { hasResearch } from './engine';
+import { hasResearch, type Month } from './engine';
 
 export type Status = 'seen' | 'partial' | 'unseen' | 'nodata';
 export const STATUS_LABEL: Record<Status, string> = {
@@ -73,7 +73,7 @@ export function judge(d1: Decision1, d2: Decision2, split: boolean): Verdict[] {
   // К2
   const need = MATCH[d1.problem];
   if (d1.problem === 'own' || !need) out.push({ id: 'K2', status: 'nodata', evidence: d1.problemText || '—', comment: 'Своя формулировка проблемы — соответствие оценит эксперт.' });
-  else if (need === 'D') out.push({ id: 'K2', status: e2.includes('D') ? 'seen' : 'partial', evidence: 'Проблема: нерегулярный доход', comment: e2.includes('D') ? 'Проблема нерегулярного дохода закрыта гибким пополнением в эпизоде 2.' : 'В эпизоде 1 нет инициативы под нерегулярный доход; она появляется только в эпизоде 2 (Д).' });
+  else if (need === 'D') out.push({ id: 'K2', status: e2.includes('D') ? 'seen' : 'partial', evidence: 'Проблема: нерегулярный доход', comment: e2.includes('D') ? 'Проблема нерегулярного дохода закрыта гибким пополнением в эпизоде 2.' : 'В эпизоде 1 нет инициативы под нерегулярный доход; она появляется только в эпизоде 2 — гибкое пополнение.' });
   else if (e1.includes(need) && d1.problem !== 'motivation' && d1.segment === 'all') out.push({ id: 'K2', status: 'partial', evidence: 'Сегмент: все, у кого нет автопополнения', comment: 'Действие подходит к проблеме, но сегмент «все» слишком широк: у разных групп разные причины не копить.' });
   else if (e1.includes(need) && d1.problem !== 'motivation') out.push({ id: 'K2', status: 'seen', evidence: `Проблема и действие согласованы`, comment: d1.problem === 'forget' ? 'Забывающим нужны напоминания, и вы выбрали именно их.' : 'Тем, кто боится автоперевода, нужна прозрачность условий, и вы выбрали именно её.' });
   else if (d1.problem === 'motivation') out.push({ id: 'K2', status: 'partial', evidence: 'Проблема: нет мотивации копить', comment: 'Данные не подтверждают нехватку мотивации: у 70% бросивших деньги были, а 56% уходили с экрана настройки. Баллы поднимают активность тех, кто и не собирался копить.' });
@@ -84,7 +84,7 @@ export function judge(d1: Decision1, d2: Decision2, split: boolean): Verdict[] {
   const x1 = expectation(d1);
   const x2 = expectation(d2);
   const k3: Status = x1 === 2 && x2 === 2 ? 'seen' : x1 + x2 >= 2 ? 'partial' : 'unseen';
-  out.push({ id: 'K3', status: k3, evidence: `Эпизод 1: ${d1.metric || '—'} ${d1.dir === 'up' ? '↑' : d1.dir === 'down' ? '↓' : ''} ${d1.value || ''} ${d1.term || ''}; эпизод 2: ${d2.metric || '—'} ${d2.dir === 'up' ? '↑' : d2.dir === 'down' ? '↓' : ''} ${d2.value || ''} ${d2.term || ''}`, comment: k3 === 'seen' ? 'Ожидания можно проверить: есть метрика, величина и срок.' : 'Ожидание без величины или срока нельзя проверить — непонятно, сработал ли релиз.' });
+  out.push({ id: 'K3', status: k3, evidence: `Эпизод 1: ${METRICS.find((x) => x.id === d1.metric)?.label ?? '—'} ${d1.dir === 'up' ? '↑' : d1.dir === 'down' ? '↓' : ''} ${d1.value || ''} ${d1.term || ''}; эпизод 2: ${METRICS.find((x) => x.id === d2.metric)?.label ?? '—'} ${d2.dir === 'up' ? '↑' : d2.dir === 'down' ? '↓' : ''} ${d2.value || ''} ${d2.term || ''}`, comment: k3 === 'seen' ? 'Ожидания можно проверить: есть метрика, величина и срок.' : 'Ожидание без величины или срока нельзя проверить — непонятно, сработал ли релиз.' });
 
   // К4
   const research = hasResearch(e1);
@@ -124,7 +124,7 @@ export function lessons(d1: Decision1, d2: Decision2, avgTopup = 2400): string[]
   if (e1.includes('A') || e2.includes('A'))
     out.push(e2.includes('EA')
       ? `Баллы подняли активность за счёт тех, кто раньше не копил, и средняя сумма пополнения падала. Ограничение «от 500 ₽ и серия 3 месяца» вернуло её к ${avgTopup.toLocaleString('ru-RU')} ₽: прокси-метрику удалось частично защитить от накрутки.`
-      : `Баллы подняли активность за счёт тех, кто раньше не копил: средняя сумма пополнения упала с 2 400 до ${avgTopup.toLocaleString('ru-RU')} ₽. M1 вырос, а регулярные накопления почти нет. Это прокси-метрика, которую легко накрутить.`);
+      : `Баллы подняли активность за счёт тех, кто раньше не копил: средняя сумма пополнения упала с 2 400 до ${avgTopup.toLocaleString('ru-RU')} ₽. Активность выросла, а регулярные накопления почти нет. Это прокси-метрика, которую легко накрутить.`);
   if (e1.includes('B'))
     out.push(`Напоминания помогли тем, кто забывает (+20 п.п. у этого сегмента)${e1.includes('V') ? '' : ', но не тем, кто не доверяет автопереводу: 56% по-прежнему уходят с экрана настройки'}. ${e2.includes('EB') ? 'Привязка пуша к дню поступления денег не дала эффекту затухнуть.' : 'Если не привязать пуш к моменту, когда у человека есть деньги, через месяц эффект затухает.'}`);
   if (e1.includes('V'))
@@ -138,4 +138,24 @@ export function lessons(d1: Decision1, d2: Decision2, avgTopup = 2400): string[]
   if (e2.includes('I'))
     out.push('Наблюдать — тоже решение, если эффект ещё не измерен. Но цена — месяц без изменений для новой аудитории.');
   return out;
+}
+
+export type Outcome = { level: 'frozen' | 'weak' | 'ok' | 'strong'; title: string; text: string; reasons: string[] };
+
+/** Итог для направления: при автопополнении ниже стартовых 18% руководитель замораживает проект. */
+export function outcome(m: Month, d1: Decision1, d2: Decision2): Outcome {
+  const e1 = d1.initiatives as E1Id[];
+  const e2 = d2.initiatives as E2Id[];
+  const used = [...e1, ...e2];
+  const reasons: string[] = [];
+  if (!used.includes('V') && !used.includes('D')) reasons.push('Вы не тронули главные причины, по которым люди не настраивают автопополнение: страх списаний и нерегулярный доход.');
+  if (used.includes('A') && !e2.includes('EA')) reasons.push(`Баллы накрутили активность, а не накопления: средняя сумма пополнения упала до ${m.side.avgTopup.toLocaleString('ru-RU')} ₽.`);
+  if (d2.explanation === 'failed') reasons.push('Вы поверили общему дашборду: у прежней аудитории релиз работал, показатель тянули вниз новые клиенты.');
+  if (e2.includes('I')) reasons.push('Месяц наблюдения без изменений для новой аудитории стоил направлению времени.');
+  const m2 = m.total.m2.toLocaleString('ru-RU');
+  if (m.total.m2 < 18)
+    return { level: 'frozen', title: 'Проект заморожен', text: `Ирина: «Замораживаем „Цели“: автопополнение ${m2}% — ниже, чем было до вас (18%). Команду переводим на другой проект».`, reasons };
+  if (m.total.m2 < 25) return { level: 'weak', title: 'Рост ниже плана', text: `Автопополнение ${m2}% против 18% на старте: направление живо, но руководитель ждал большего.`, reasons };
+  if (m.total.m2 < 30) return { level: 'ok', title: 'Уверенный рост', text: `Автопополнение ${m2}% против 18% на старте.`, reasons };
+  return { level: 'strong', title: 'Сильный результат', text: `Автопополнение ${m2}% против 18% на старте — почти вдвое.`, reasons };
 }

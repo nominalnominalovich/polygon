@@ -66,8 +66,8 @@ export function Decision2() {
         </Trace>
         <Panel title="Итог месяца 1" tone="pale">
           <div className="pg-tiles pg-tiles--2">
-            <Tile label="M1 общий" value={m1.total.m1} delta={m1.total.m1 - 37.2} />
-            <Tile label="M2 общий" value={m1.total.m2} delta={m1.total.m2 - 18} />
+            <Tile label="Активные цели, всего" value={m1.total.m1} delta={m1.total.m1 - 37.2} />
+            <Tile label="С автопополнением, всего" value={m1.total.m2} delta={m1.total.m2 - 18} />
           </div>
           {s.split || hasResearch(e1) ? <SplitTable m={m1} /> : (
             <Button mode="secondary" size="m" stretched onClick={() => setState({ split: true })}>Запросить срез по аудиториям</Button>
@@ -87,7 +87,7 @@ export function Decision2() {
         {needPush && (
           <Panel title="Маркетинг ждёт решения по частоте пушей" tone="risk">
             <Radio options={[{ id: 'keep', label: 'Оставить раз в неделю' }, { id: 'cut', label: 'Сократить до раза в две недели' }]} value={d.push ?? ''} onChange={(id) => set({ push: id as D2['push'] })} />
-            <Caption level="1" className="pg-muted">Или возьмите доработку «Е-Б · умные напоминания» ниже — она заменяет этот выбор.</Caption>
+            <Caption level="1" className="pg-muted">Или возьмите доработку «Умные напоминания» ниже — она заменяет этот выбор.</Caption>
           </Panel>
         )}
 

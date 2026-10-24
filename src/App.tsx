@@ -8,6 +8,8 @@ import { Play } from './screens/Play';
 import { Expert } from './screens/Expert';
 import { Defense } from './screens/Defense';
 import { Deck } from './screens/Deck';
+import { Jury } from './screens/Jury';
+import { Author } from './screens/Author';
 
 export function App() {
   const route = useRoute();
@@ -16,7 +18,9 @@ export function App() {
   if (route.startsWith('/deck')) return <Deck />;
 
   let screen;
-  if (route.startsWith('/defense')) screen = <Defense section={route.split('/')[2]} />;
+  if (route.startsWith('/jury')) screen = <Jury />;
+  else if (route.startsWith('/author')) screen = <Author />;
+  else if (route.startsWith('/defense')) screen = <Defense section={route.split('/')[2]} />;
   else if (route === '/program' && role === 'candidate') screen = <Program />;
   else if (route === '/play' && role === 'candidate') screen = <Play />;
   else if (route.startsWith('/expert') && role === 'expert') screen = <Expert workId={route.split('/')[2]} />;

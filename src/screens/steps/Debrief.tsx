@@ -2,11 +2,12 @@ import { Button, Caption, Headline, Text, Title } from '@vkontakte/vkui';
 import { Icon20ChevronRight, Icon20CommentOutline, Icon20SlidersOutline, Icon20StatisticsOutline } from '@vkontakte/icons';
 import { MIX_OLD, MIX_PARTNER, SEGMENTS, SEGMENT_INFO, type E1Id, type E2Id } from '../../sim/scenario';
 import { baseline, simulate1, simulate2, type PushChoice } from '../../sim/engine';
-import { CRITERIA, STATUS_LABEL, judge, lessons } from '../../sim/debrief';
-import { goStep, useStore } from '../../store';
+import { CRITERIA, STATUS_LABEL, judge, lessons, outcome } from '../../sim/debrief';
+import { goStep, resetRun, useStore } from '../../store';
 import { Trace } from '../../components/Trace';
 import { Delta, Panel, Pill, Tile, fmt } from '../../components/ui';
 import { SplitTable } from './Outcome1';
+import { code, critCode, stripCode, useCodes } from '../../labels';
 
 function Line({ title, series }: { title: string; series: { name: string; values: number[]; tone: string; dash?: boolean }[] }) {
   const W = 360, H = 170, P = 28;
@@ -48,17 +49,18 @@ function Line({ title, series }: { title: string; series: { name: string; values
   );
 }
 
-const PATHS: { name: string; e1: E1Id[]; e2: E2Id[]; push: PushChoice | null }[] = [
-  { name: 'Б+В → Д + Е-В, пуши реже', e1: ['B', 'V'], e2: ['D', 'EV'], push: 'cut' },
-  { name: 'В+Г → Д (по интервью) + Е-В', e1: ['V', 'G'], e2: ['D', 'EV'], push: null },
-  { name: 'Б → пуши реже + баллы', e1: ['B'], e2: ['A'], push: 'cut' },
-  { name: 'Б+В → умные пуши + Д', e1: ['B', 'V'], e2: ['EB', 'D'], push: null },
-  { name: 'А+Г → баллы без накрутки', e1: ['A', 'G'], e2: ['EA', 'I'], push: null },
-  { name: 'Б → пуши как были + Д', e1: ['B'], e2: ['D'], push: 'keep' },
+const PATHS: { name: string; full: string; e1: E1Id[]; e2: E2Id[]; push: PushChoice | null }[] = [
+  { name: 'Б+В → Д + Е-В, пуши реже', full: 'Напоминания и понятный автоперевод → гибкое пополнение и «пропустить платёж», пуши реже', e1: ['B', 'V'], e2: ['D', 'EV'], push: 'cut' },
+  { name: 'В+Г → Д (по интервью) + Е-В', full: 'Понятный автоперевод и интервью → гибкое пополнение по итогам интервью и «пропустить платёж»', e1: ['V', 'G'], e2: ['D', 'EV'], push: null },
+  { name: 'Б → пуши реже + баллы', full: 'Напоминания → баллы за пополнения, пуши реже', e1: ['B'], e2: ['A'], push: 'cut' },
+  { name: 'Б+В → умные пуши + Д', full: 'Напоминания и понятный автоперевод → пуш в день поступления денег и гибкое пополнение', e1: ['B', 'V'], e2: ['EB', 'D'], push: null },
+  { name: 'А+Г → баллы без накрутки', full: 'Баллы и интервью → баллы только от 500 ₽, наблюдать', e1: ['A', 'G'], e2: ['EA', 'I'], push: null },
+  { name: 'Б → пуши как были + Д', full: 'Напоминания → гибкое пополнение, пуши как были', e1: ['B'], e2: ['D'], push: 'keep' },
 ];
 
 export function Debrief() {
   const s = useStore();
+  const codes = useCodes();
   const e1 = s.d1.initiatives;
   const e2 = s.d2.initiatives;
   const r1 = simulate1(e1);
@@ -66,30 +68,44 @@ export function Debrief() {
   const m = r2.m;
   const verdicts = judge(s.d1, s.d2, s.split);
   const notes = lessons(s.d1, s.d2, m.side.avgTopup);
+  const res = outcome(m, s.d1, s.d2);
   const same = (p: (typeof PATHS)[number]) => JSON.stringify([...p.e1].sort()) === JSON.stringify([...e1].sort()) && JSON.stringify([...p.e2].sort()) === JSON.stringify([...e2].sort());
 
   return (
     <div className="pg-stack">
-      <Panel tone="solid">
+      <section className={`pg-outcome pg-outcome--${res.level}`}>
         <Caption level="1">Итоги двух месяцев</Caption>
-        <Title level="2">Что получилось, почему — и что из этого ваше</Title>
-      </Panel>
+        <Title level="2">{res.title}</Title>
+        <Text>{res.text}</Text>
+        {res.reasons.length > 0 && (
+          <>
+            <Text weight="2">Где потеряли</Text>
+            <ul className="pg-list">{res.reasons.map((r) => <li key={r}><Text>{r}</Text></li>)}</ul>
+          </>
+        )}
+        {res.level === 'frozen' && (
+          <div className="pg-row pg-row--start">
+            <Button size="m" mode="primary" appearance="negative" onClick={() => { if (confirm('Начать модуль заново? Ваши решения будут удалены.')) resetRun(); }}>Пройти модуль заново</Button>
+            <Text>Разбор ниже покажет, где была развилка. Самостоятельную задачу можно решить и после заморозки.</Text>
+          </div>
+        )}
+      </section>
 
       <Trace ids={['И4', 'Ф3', 'Э3']}>
         <Panel title="Метрики" icon={<Icon20StatisticsOutline />}>
           <div className="pg-grid pg-grid--2">
-            <Line title="M1 · Активные цели, %" series={[
+            <Line title="Активные цели, %" series={[
               { name: 'Прежняя аудитория', values: [baseline.old.m1, r1.m.old.m1, m.old.m1], tone: '#0059bf' },
               { name: 'Общий показатель', values: [baseline.old.m1, r1.m.total.m1, m.total.m1], tone: '#66adff', dash: true },
             ]} />
-            <Line title="M2 · Цели с автопополнением, %" series={[
+            <Line title="Цели с автопополнением, %" series={[
               { name: 'Прежняя аудитория', values: [baseline.old.m2, r1.m.old.m2, m.old.m2], tone: '#0059bf' },
               { name: 'Общий показатель', values: [baseline.old.m2, r1.m.total.m2, m.total.m2], tone: '#66adff', dash: true },
             ]} />
           </div>
           <SplitTable m={m} />
           <div className="pg-tiles">
-            <Tile label="M3 · Обращения" value={m.side.support} unit="" delta={m.side.support - 340} deltaUnit="" invert />
+            <Tile label="Обращения в поддержку" value={m.side.support} unit="" delta={m.side.support - 340} deltaUnit="" invert />
             <Tile label="Средняя сумма пополнения" value={m.side.avgTopup} unit=" ₽" delta={m.side.avgTopup - 2400} deltaUnit="₽" />
             <Tile label="Отписки от пушей" value={m.side.unsub} delta={m.side.unsub - 1.2} invert />
             {m.side.bonusCost > 0 && <Tile label="Расходы на баллы" value={m.side.bonusCost} digits={2} unit=" млн ₽/мес" />}
@@ -103,7 +119,7 @@ export function Debrief() {
           <ol className="pg-rules">
             {[...r1.trace.map((t) => ({ ...t, when: 'Месяц 1' })), ...r2.trace.map((t) => ({ ...t, when: 'Месяц 2' }))].map((t, i) => (
               <li key={i}>
-                <Pill tone="gray">{t.when}</Pill> <Text weight="2" className="pg-inline">{t.label}</Text>
+                <Pill tone="gray">{t.when}</Pill> <Text weight="2" className="pg-inline">{stripCode(t.label, codes)}</Text>
                 <Text className="pg-muted">{t.deltas.map(([seg, da, dp]) => `${SEGMENT_INFO[seg].name}: активность ${da > 0 ? '+' : ''}${da}${dp ? `, автопополнение +${dp}` : ''}`).join(' · ')}</Text>
               </li>
             ))}
@@ -132,7 +148,7 @@ export function Debrief() {
               return (
                 <article key={v.id} className={`pg-verdict pg-verdict--${v.status}`}>
                   <div className="pg-row">
-                    <Headline level="2" weight="2">{v.id.replace('K', 'К')} · {c.title}</Headline>
+                    <Headline level="2" weight="2">{code(critCode(v.id), c.title, codes)}</Headline>
                     <Pill tone={v.status === 'seen' ? 'green' : v.status === 'partial' ? 'amber' : v.status === 'unseen' ? 'pink' : 'gray'}>{STATUS_LABEL[v.status]}</Pill>
                   </div>
                   <Caption level="1" className="pg-muted">{c.what}</Caption>
@@ -160,14 +176,14 @@ export function Debrief() {
       )}
 
       <Panel title="Как прошли бы другие ветки">
-        <Text className="pg-muted">В эпизоде 1 единственно верного хода нет: разные наборы дают сопоставимый итог. В эпизоде 2 сильнейший ход — гибкое пополнение (Д): событие касается людей с нерегулярным доходом. Это «ответ автора» кейса, и мы его не прячем: на перенос навыка проверяет самостоятельная задача, а не угадывание этой ветки.</Text>
+        <Text className="pg-muted">В эпизоде 1 единственно верного хода нет: разные наборы дают сопоставимый итог. В эпизоде 2 сильнейший ход — гибкое пополнение: событие касается людей с нерегулярным доходом. Это «ответ автора» кейса, и мы его не прячем: на перенос навыка проверяет самостоятельная задача, а не угадывание этой ветки.</Text>
         <table className="pg-table">
-          <thead><tr><th>Ветка</th><th>M1 общий</th><th>M2 общий</th><th>Средняя сумма</th></tr></thead>
+          <thead><tr><th>Ветка</th><th>Активные цели</th><th>С автопополнением</th><th>Средняя сумма</th></tr></thead>
           <tbody>
             <tr className="is-total"><td>Ваш путь</td><td>{fmt(m.total.m1)}%</td><td>{fmt(m.total.m2)}%</td><td>{fmt(m.side.avgTopup, 0)} ₽</td></tr>
             {PATHS.filter((p) => !same(p)).map((p) => {
               const r = simulate2(p.e1, p.e2, p.push).m;
-              return <tr key={p.name}><td>{p.name}</td><td>{fmt(r.total.m1)}%</td><td>{fmt(r.total.m2)}%</td><td>{fmt(r.side.avgTopup, 0)} ₽</td></tr>;
+              return <tr key={p.name}><td>{codes ? p.name : p.full}</td><td>{fmt(r.total.m1)}%</td><td>{fmt(r.total.m2)}%</td><td>{fmt(r.side.avgTopup, 0)} ₽</td></tr>;
             })}
           </tbody>
         </table>

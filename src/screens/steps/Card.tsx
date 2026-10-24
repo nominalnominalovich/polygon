@@ -8,15 +8,17 @@ import { navigate } from '../../router';
 import { Trace } from '../../components/Trace';
 import { Panel, Pill } from '../../components/ui';
 import { E4_CRITERIA } from './Transfer';
+import { code, critCode, useCodes } from '../../labels';
 
 export const OWN_WORK_ID = 'me';
 
 export function WorkFields({ t }: { t: import('../../store').Transfer }) {
+  const codes = useCodes();
   return (
     <dl className="pg-facts pg-facts--col">
       <div><dt>Проблема</dt><dd>{t.problem}</dd></div>
       <div><dt>Сегмент</dt><dd>{t.segment}</dd></div>
-      <div><dt>Инициативы</dt><dd>{t.initiatives.map((id) => { const i = E4.initiatives.find((x) => x.id === id)!; return `${i.code} · ${i.title}`; }).join('; ')}</dd></div>
+      <div><dt>Инициативы</dt><dd>{t.initiatives.map((id) => { const i = E4.initiatives.find((x) => x.id === id)!; return code(i.code, i.title, codes); }).join('; ')}</dd></div>
       <div><dt>Ожидание</dt><dd>{t.expectation}</dd></div>
       <div><dt>Обоснование</dt><dd className="pg-prewrap">{t.rationale}</dd></div>
       {t.check && <div><dt>Проверить после запуска</dt><dd>{t.check}</dd></div>}
@@ -33,6 +35,7 @@ export function WorkFields({ t }: { t: import('../../store').Transfer }) {
 
 export function Card() {
   const s = useStore();
+  const codes = useCodes();
   const review = s.reviews[OWN_WORK_ID];
   return (
     <div className="pg-grid pg-grid--side">
@@ -51,7 +54,7 @@ export function Card() {
           <Panel title="Комментарий эксперта" tone="tint">
             {E4_CRITERIA.map((c) => {
               const r = review.criteria[c.id];
-              return r ? <div key={c.id} className="pg-review-row"><Text weight="2">{c.id.replace('K', 'К')} · {c.title}: {STATUS_LABEL[r.status]}</Text><Text>{r.comment}</Text></div> : null;
+              return r ? <div key={c.id} className="pg-review-row"><Text weight="2">{code(critCode(c.id), c.title, codes)}: {STATUS_LABEL[r.status]}</Text><Text>{r.comment}</Text></div> : null;
             })}
             {review.question && <Text><b>Вопрос на интервью:</b> {review.question}</Text>}
           </Panel>

@@ -66,6 +66,8 @@ export type State = {
   shared: boolean;
   reviews: Record<string, Review>;
   trace: boolean;
+  jury: boolean;
+  tours: { candidate?: boolean; expert?: boolean };
 };
 
 const emptyExp: Expectation = { metric: '', dir: '', value: '', term: '' };
@@ -86,6 +88,8 @@ export const initial: State = {
   shared: false,
   reviews: {},
   trace: false,
+  jury: false,
+  tours: {},
 };
 
 const KEY = 'polygon:v1';
@@ -131,5 +135,5 @@ export function goStep(step: Step) {
 }
 
 export function resetRun() {
-  setState((s) => ({ ...initial, role: s.role, trace: s.trace, reviews: s.reviews }));
+  setState((s) => ({ ...initial, role: s.role, trace: s.trace, jury: s.jury, tours: s.tours, reviews: s.reviews }));
 }

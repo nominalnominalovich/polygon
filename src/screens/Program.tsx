@@ -41,22 +41,24 @@ export function Program() {
             <Button size="l" before={<Icon24PlayOutline />} onClick={() => navigate('/play')}>{started ? 'Продолжить' : 'Начать'}</Button>
           </article>
         </Trace>
+        {s.jury && (
         <div className="pg-demo-acc"><Accordion>
-          <Accordion.Summary>Для защиты проекта: готовые прохождения (раскрывают ответы)</Accordion.Summary>
-          <Accordion.Content>
-            <div className="pg-demo-acc__body">
-              <Text className="pg-muted">Решения уже заполнены примером — сразу к последствиям месяца 1. Решение 2 подставлено, его можно изменить перед фиксацией. Если проходите модуль впервые, не открывайте.</Text>
-              <div className="pg-presets">
-                {PRESETS.map((p) => (
-                  <button key={p.id} type="button" className="pg-preset" onClick={() => { loadPreset(p.id); navigate('/play'); }}>
-                    <Text weight="2">{p.title}</Text>
-                    <Caption level="1" className="pg-muted">{p.text}</Caption>
-                  </button>
-                ))}
+            <Accordion.Summary>Для защиты проекта: готовые прохождения (раскрывают ответы)</Accordion.Summary>
+            <Accordion.Content>
+              <div className="pg-demo-acc__body">
+                <Text className="pg-muted">Решения уже заполнены примером — сразу к последствиям месяца 1. Решение 2 подставлено, его можно изменить перед фиксацией. Если проходите модуль впервые, не открывайте.</Text>
+                <div className="pg-presets">
+                  {PRESETS.map((p) => (
+                    <button key={p.id} type="button" className="pg-preset" onClick={() => { loadPreset(p.id); navigate('/play'); }}>
+                      <Text weight="2">{p.title}</Text>
+                      <Caption level="1" className="pg-muted">{p.text}</Caption>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          </Accordion.Content>
-        </Accordion></div>
+            </Accordion.Content>
+          </Accordion></div>
+        )}
         <Trace ids={['И1']} status="mock" note="Библиотека модулей — за границами MVP (карта историй, нижняя строка).">
           <div className="pg-modules__locked">
             {LOCKED.map(([t, d], i) => (
@@ -64,7 +66,7 @@ export function Program() {
                 <div className="pg-module__top"><Pill tone="gray">Модуль {i + 2}</Pill><Icon20LockOutline className="pg-muted" /></div>
                 <Headline level="1" weight="2">{t}</Headline>
                 <Text className="pg-muted">{d}</Text>
-                <Caption level="1" className="pg-muted">За границами MVP</Caption>
+                <Caption level="1" className="pg-muted">{s.trace ? 'За границами MVP' : 'Скоро'}</Caption>
               </article>
             ))}
           </div>

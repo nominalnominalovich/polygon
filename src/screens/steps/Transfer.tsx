@@ -8,12 +8,14 @@ import { goStep, setState, useStore, type Transfer as T } from '../../store';
 import { Trace } from '../../components/Trace';
 import { Bars, Capacity, Delta, Msg, Panel, Pill, fmt } from '../../components/ui';
 import { Radio } from './Decision2';
+import { code, critCode, useCodes } from '../../labels';
 import { Choice } from '../../components/fields';
 
 export const E4_CRITERIA = CRITERIA;
 
 export function Transfer() {
   const s = useStore();
+  const codes = useCodes();
   const t = s.transfer;
   const set = (p: Partial<T>) => setState((st) => ({ transfer: { ...st.transfer, ...p } }));
   const used = t.initiatives.reduce((a, id) => a + E4.initiatives.find((i) => i.id === id)!.cost, 0);
@@ -63,8 +65,8 @@ export function Transfer() {
       </div>
       <aside className="pg-stack pg-sticky">
         <Panel title="Критерии — видны до начала" tone="pale">
-          <Caption level="1" className="pg-muted">К4 и К5 оцениваются по шагу «месяц спустя».</Caption>
-          <ul className="pg-list">{E4_CRITERIA.map((c) => <li key={c.id}><Text weight="2">{c.id.replace('K', 'К')} · {c.title}</Text><Caption level="1" className="pg-muted">{c.what}</Caption></li>)}</ul>
+          <Caption level="1" className="pg-muted">«Разделение эффектов» и «пересмотр» оцениваются по шагу «месяц спустя».</Caption>
+          <ul className="pg-list">{E4_CRITERIA.map((c) => <li key={c.id}><Text weight="2">{code(critCode(c.id), c.title, codes)}</Text><Caption level="1" className="pg-muted">{c.what}</Caption></li>)}</ul>
         </Panel>
         <Trace ids={['И5']} note="Критерий 2: работа отделена от тренировки; передача эксперту — отдельное действие на следующем шаге.">
           <Panel tone={valid ? 'tint' : 'pale'}>

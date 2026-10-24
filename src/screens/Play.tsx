@@ -24,7 +24,7 @@ export function Play() {
           >
             <span className="pg-stepper__num">{i + 1}</span>
             <span className="pg-stepper__label">{x.label}</span>
-            <Caption level="2" className="pg-stepper__screen">{x.screen}</Caption>
+            {s.trace && <Caption level="2" className="pg-stepper__screen">{x.screen}</Caption>}
           </button>
         ))}
         <Button mode="tertiary" size="s" before={<Icon20RefreshOutline />} onClick={() => { if (confirm('Начать модуль заново? Ваши решения будут удалены.')) resetRun(); }}>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { judge } from './debrief';
+import { judge, outcome } from './debrief';
 import { simulate2 } from './engine';
 import { PRESETS } from '../demo';
 import { initial } from '../store';
@@ -56,5 +56,17 @@ describe('разбор по критериям', () => {
 
   it('пресет «Сильный путь» — лучшая ветка по активности', () => {
     expect(simulate2(['B', 'V'], ['D', 'EV'], 'cut').m.total).toEqual({ m1: 56.6, m2: 34.5 });
+  });
+
+  it('ловушка баллов заканчивается заморозкой проекта, сильный путь — нет', () => {
+    const run2 = (id: string) => {
+      const p = PRESETS.find((x) => x.id === id)!;
+      const d1 = { ...initial.d1, ...p.d1 };
+      const d2 = { ...initial.d2, ...p.d2 };
+      return outcome(simulate2(d1.initiatives, d2.initiatives, d2.push).m, d1, d2);
+    };
+    expect(run2('bonus').level).toBe('frozen');
+    expect(run2('bonus').reasons.length).toBeGreaterThan(1);
+    expect(run2('strong').level).toBe('strong');
   });
 });

@@ -29,21 +29,24 @@ const bonus2 = { metric: 'M1', dir: 'up', value: 'больше', term: '', expla
 const full = { role: 'candidate', notes: ['Опрос смещён к вовлечённым?'], d1, d1Done: true, split: true, d2, d2Done: true, transfer, transferDone: true, transfer2Done: true, shared: true, reviews: {}, trace: false };
 
 const shots = [
+  { name: '00-для-жюри', hash: '/jury', state: { role: null, jury: true }, fullPage: true },
+  { name: '02b-вводный-тур', hash: '/program', state: { role: 'candidate', step: 'dossier', reached: 'dossier', tours: {} } },
+  { name: '17-редактор-кейса', hash: '/author', state: { role: null, jury: true } },
   { name: '01-вход', hash: '/', state: { role: null } },
   { name: '02-программа', hash: '/program', state: { role: 'candidate', step: 'dossier', reached: 'dossier' } },
   { name: '03-досье', hash: '/play', state: { role: 'candidate', step: 'dossier', reached: 'dossier', notes: ['Опрос смещён к вовлечённым?'] } },
-  { name: '04-досье-обоснование', hash: '/play', state: { role: 'candidate', step: 'dossier', reached: 'dossier', trace: true }, click: '.pg-trace__chip' },
+  { name: '04-досье-обоснование', hash: '/play', state: { role: 'candidate', step: 'dossier', reached: 'dossier', trace: true, jury: true }, click: '.pg-trace__chip' },
   { name: '05-решение-1', hash: '/play', state: { ...full, d1Done: false, d2Done: false, step: 'decision1', reached: 'decision1' } },
   { name: '06-последствия', hash: '/play', state: { ...full, d2Done: false, step: 'outcome1', reached: 'outcome1' }, fullPage: true },
   { name: '07-пересмотр', hash: '/play', state: { ...full, d2Done: false, step: 'decision2', reached: 'decision2' } },
   { name: '08-разбор', hash: '/play', state: { ...full, step: 'debrief', reached: 'debrief' }, fullPage: true },
-  { name: '09-разбор-обоснование', hash: '/play', state: { ...full, step: 'debrief', reached: 'debrief', trace: true } },
+  { name: '09-разбор-обоснование', hash: '/play', state: { ...full, step: 'debrief', reached: 'debrief', trace: true, jury: true } },
   { name: '10-самостоятельная', hash: '/play', state: { ...full, transferDone: false, transfer2Done: false, shared: false, step: 'transfer', reached: 'transfer' } },
   { name: '10b-месяц-спустя', hash: '/play', state: { ...full, transfer2Done: false, shared: false, step: 'transfer', reached: 'transfer' }, fullPage: true },
   { name: '11-карточка', hash: '/play', state: { ...full, step: 'card', reached: 'card' } },
   { name: '12-эксперт-список', hash: '/expert', state: { ...full, role: 'expert' } },
   { name: '13-эксперт-разбор', hash: '/expert/me', state: { ...full, role: 'expert' } },
-  { name: '14-материалы-защиты', hash: '/defense', state: { role: 'candidate' } },
+  { name: '14-материалы-защиты', hash: '/defense', state: { role: 'candidate', jury: true } },
   { name: '15-ловушка-последствия', hash: '/play', state: { ...full, d1: bonus1, d2: bonus2, split: false, d2Done: false, step: 'outcome1', reached: 'decision2' } },
   { name: '16-ловушка-разбор', hash: '/play', state: { ...full, d1: bonus1, d2: bonus2, split: false, step: 'debrief', reached: 'debrief' }, fullPage: true },
 ];
@@ -56,7 +59,7 @@ for (const s of shots) {
   await page.evaluate((st) => localStorage.setItem('polygon:v1', JSON.stringify(st)), {
     role: null, step: 'dossier', reached: 'dossier', notes: [], d1: { ...d1, initiatives: [], rationale: '', problem: '', segment: '', metric: '', dir: '', value: '', term: '' },
     d1Done: false, split: false, d2: { ...d2, initiatives: [], explanation: '', changeText: '', metric: '', dir: '', value: '', term: '' }, d2Done: false,
-    transfer: { problem: '', segment: '', initiatives: [], expectation: '', rationale: '', check: '' }, transferDone: false, transfer2Done: false, shared: false, reviews: {}, trace: false,
+    transfer: { problem: '', segment: '', initiatives: [], expectation: '', rationale: '', check: '' }, transferDone: false, transfer2Done: false, shared: false, reviews: {}, trace: false, jury: false, tours: { candidate: true, expert: true },
     ...s.state,
   });
   await page.goto(`${base}#${s.hash}`);

@@ -4,6 +4,9 @@ import { AdaptivityProvider, AppRoot, ConfigProvider } from '@vkontakte/vkui';
 import '@vkontakte/vkui/dist/vkui.css';
 import './styles.css';
 import { App } from './App';
+import { applyOverride, loadOverride } from './author';
+
+applyOverride(loadOverride());
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

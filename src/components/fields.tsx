@@ -3,13 +3,16 @@ import { FormItem, Input, NativeSelect, Text } from '@vkontakte/vkui';
 import { E1_INITIATIVES, METRICS, PROBLEMS, SEGMENT_CHOICES, TERMS } from '../sim/scenario';
 import type { Expectation } from '../store';
 import { Pill } from './ui';
+import { Hint } from './Hint';
+import { code, useCodes } from '../labels';
 
 export function ExpectationFields({ value, onChange }: { value: Expectation; onChange: (p: Partial<Expectation>) => void }) {
+  const codes = useCodes();
   return (
     <div className="pg-expect">
-      <FormItem top="Метрика" noPadding>
+      <FormItem top={<>Метрика <Hint text="Активные цели — доля целей, которые пополнили за месяц. Цели с автопополнением — доля с настроенным автопереводом. Обращения — сколько вопросов про «Цели» пришло в поддержку." /></>} noPadding>
         <NativeSelect value={value.metric} onChange={(e) => onChange({ metric: e.target.value })} placeholder="Выберите">
-          {METRICS.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
+          {METRICS.map((m) => <option key={m.id} value={m.id}>{codes ? `${m.id} · ${m.label}` : m.label}</option>)}
         </NativeSelect>
       </FormItem>
       <FormItem top="Направление" noPadding>
@@ -31,10 +34,11 @@ export function ExpectationFields({ value, onChange }: { value: Expectation; onC
   );
 }
 
-export function Choice({ selected, disabled, onClick, code, title, text, cost, note, badge }: { selected: boolean; disabled?: boolean; onClick: () => void; code: string; title: string; text: string; cost: number; note?: string; badge?: ReactNode }) {
+export function Choice({ selected, disabled, onClick, code: c, title, text, cost, note, badge }: { selected: boolean; disabled?: boolean; onClick: () => void; code: string; title: string; text: string; cost: number; note?: string; badge?: ReactNode }) {
+  const codes = useCodes();
   return (
-    <button type="button" className={`pg-choice ${selected ? 'is-selected' : ''}`} disabled={disabled && !selected} onClick={onClick} aria-pressed={selected}>
-      <span className="pg-choice__code">{code}</span>
+    <button type="button" className={`pg-choice ${selected ? 'is-selected' : ''} ${codes ? '' : 'pg-choice--nocode'}`} disabled={disabled && !selected} onClick={onClick} aria-pressed={selected}>
+      {codes && <span className="pg-choice__code">{c}</span>}
       <span className="pg-choice__body">
         <Text weight="2">{title} {badge}</Text>
         <Text className="pg-muted">{text}</Text>
@@ -53,13 +57,14 @@ export function expectText(e: Expectation) {
 }
 
 export function DecisionSummary({ title, d }: { title: string; d: import('../store').Decision1 }) {
+  const codes = useCodes();
   return (
     <section className="pg-panel pg-panel--pale">
       <header className="pg-panel__head"><Text weight="2" className="pg-panel__title">{title}</Text><Pill tone="gray">Версия 1</Pill></header>
       <dl className="pg-facts pg-facts--col">
         <div><dt>Проблема</dt><dd>{d.problem === 'own' ? d.problemText : label(PROBLEMS, d.problem)}</dd></div>
         <div><dt>Сегмент</dt><dd>{d.segment === 'own' ? d.segmentText : label(SEGMENT_CHOICES, d.segment)}</dd></div>
-        <div><dt>Инициативы</dt><dd>{d.initiatives.map((id) => E1_INITIATIVES.find((i) => i.id === id)!).map((i) => `${i.code} · ${i.title}`).join('; ')}</dd></div>
+        <div><dt>Инициативы</dt><dd>{d.initiatives.map((id) => E1_INITIATIVES.find((i) => i.id === id)!).map((i) => code(i.code, i.title, codes)).join('; ')}</dd></div>
         <div><dt>Ожидание</dt><dd>{expectText(d)}</dd></div>
         <div><dt>Обоснование</dt><dd className="pg-prewrap">{d.rationale}</dd></div>
       </dl>

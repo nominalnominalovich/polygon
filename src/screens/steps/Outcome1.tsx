@@ -1,27 +1,29 @@
 import { Button, Caption, Headline, Text, Title } from '@vkontakte/vkui';
 import { Icon20ChevronRight, Icon20NewsfeedOutline, Icon20StatisticsOutline, Icon24DoneOutline } from '@vkontakte/icons';
 import { E1_INITIATIVES, EVENT, RESEARCH_REVEAL, SEGMENT_INFO } from '../../sim/scenario';
-import { baseline, hasResearch, simulate1, type Month } from '../../sim/engine';
+import { baseline, hasResearch, partnerBaseline, simulate1, type Month } from '../../sim/engine';
 import { goStep, setState, useStore } from '../../store';
 import { Trace } from '../../components/Trace';
 import { Delta, Msg, Panel, Pill, Tile, fmt } from '../../components/ui';
+import { HINTS, code, useCodes } from '../../labels';
+import { Hint } from '../../components/Hint';
 
 export function SplitTable({ m, base = baseline }: { m: Month; base?: Month }) {
   const rows = [
-    ['Прежняя аудитория', '10 000 целей', m.old],
-    ['Пришли по партнёрству', '4 000 целей', m.partner!],
-    ['Общий показатель', '14 000 целей', m.total],
+    ['Прежняя аудитория', '10 000 целей', m.old, base.old, 'к старту'],
+    ['Пришли по партнёрству', '4 000 целей', m.partner!, partnerBaseline, 'к тому, как эта группа копила бы без ваших релизов'],
+    ['Общий показатель', '14 000 целей', m.total, base.old, 'к старту — так видит руководитель'],
   ] as const;
   return (
     <div className="pg-table-wrap"><table className="pg-table">
-      <thead><tr><th>Аудитория</th><th>Объём</th><th>M1 · активные</th><th>M2 · автопополнение</th></tr></thead>
+      <thead><tr><th>Аудитория</th><th>Объём</th><th>Активные цели</th><th>С автопополнением</th></tr></thead>
       <tbody>
-        {rows.map(([name, n, c]) => (
+        {rows.map(([name, n, c, b, note]) => (
           <tr key={name} className={name === 'Общий показатель' ? 'is-total' : ''}>
-            <td>{name}</td>
+            <td>{name}<br /><Caption level="2" className="pg-muted">{note}</Caption></td>
             <td className="pg-muted">{n}</td>
-            <td><b>{fmt(c.m1)}%</b> <Delta value={c.m1 - base.old.m1} /></td>
-            <td><b>{fmt(c.m2)}%</b> <Delta value={c.m2 - base.old.m2} /></td>
+            <td><b>{fmt(c.m1)}%</b> <Delta value={c.m1 - b.m1} /></td>
+            <td><b>{fmt(c.m2)}%</b> <Delta value={c.m2 - b.m2} /></td>
           </tr>
         ))}
       </tbody>
@@ -31,6 +33,7 @@ export function SplitTable({ m, base = baseline }: { m: Month; base?: Month }) {
 
 export function Outcome1() {
   const s = useStore();
+  const codes = useCodes();
   const e1 = s.d1.initiatives;
   const { m } = simulate1(e1);
   const research = hasResearch(e1);
@@ -50,7 +53,7 @@ export function Outcome1() {
             <ul className="pg-list">
               {releases.map((i) => (
                 <li key={i.id}>
-                  <Text weight="2">{i.code} · {i.title}</Text>
+                  <Text weight="2">{code(i.code, i.title, codes)}</Text>
                   <Text className="pg-muted">
                     {i.id === 'A' && 'Комплаенс согласовал баллы только к середине месяца — эффект неполный.'}
                     {i.id === 'B' && 'Напоминания уходят раз в неделю всем, у кого нет автопополнения.'}
@@ -70,9 +73,9 @@ export function Outcome1() {
 
       <Panel title="Дашборд направления — как его видит руководитель" icon={<Icon20StatisticsOutline />}>
         <div className="pg-tiles">
-          <Tile label="M1 · Активные цели" value={m.total.m1} delta={m.total.m1 - baseline.old.m1} hint="было 37,2%" />
-          <Tile label="M2 · С автопополнением" value={m.total.m2} delta={m.total.m2 - baseline.old.m2} hint="было 18%" />
-          <Tile label="M3 · Обращения" value={m.side.support} unit="" delta={m.side.support - 340} deltaUnit="" invert hint="было 340" />
+          <Tile label="Активные цели" info={HINTS.M1} value={m.total.m1} delta={m.total.m1 - baseline.old.m1} hint="было 37,2%" />
+          <Tile label="Цели с автопополнением" info={HINTS.M2} value={m.total.m2} delta={m.total.m2 - baseline.old.m2} hint="было 18%" />
+          <Tile label="Обращения в поддержку" info={HINTS.M3} value={m.side.support} unit="" delta={m.side.support - 340} deltaUnit="" invert hint="было 340" />
           {e1.includes('A') && <Tile label="Средняя сумма пополнения" value={m.side.avgTopup} unit=" ₽" delta={m.side.avgTopup - 2400} deltaUnit="₽" hint={`баллы: ${fmt(m.side.bonusCost, 2)} млн ₽/мес`} />}
           {e1.includes('B') && <Tile label="Отписки от пушей" value={m.side.unsub} delta={m.side.unsub - 1.2} invert hint="было 1,2%" />}
         </div>
@@ -90,7 +93,7 @@ export function Outcome1() {
       </Panel>
 
       <Trace ids={['И3', 'Ф2']} note="Срез открывается одним действием; если было исследование — включён сразу.">
-        <Panel title="Срез по аудиториям" aside={!showSplit && <Button mode="secondary" size="m" onClick={() => setState({ split: true })}>Запросить срез</Button>}>
+        <Panel title={<>Срез по аудиториям <Hint text={HINTS.split} /></>} aside={!showSplit && <Button mode="secondary" size="m" onClick={() => setState({ split: true })}>Запросить срез у аналитика</Button>}>
           {showSplit ? (
             <>
               <SplitTable m={m} />

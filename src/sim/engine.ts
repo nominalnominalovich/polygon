@@ -50,6 +50,8 @@ function month(rates: Rates, side: Side, withPartner: boolean): Month {
 
 export const baseRates: Rates = { active: { ...BASE_ACTIVE }, auto: { ...BASE_AUTO } };
 export const baseline: Month = month(baseRates, { ...BASE_SIDE }, false);
+/** С чего бы начинала новая аудитория без ваших релизов — база для её строки в срезе. */
+export const partnerBaseline: Cut = cut(baseRates, MIX_PARTNER);
 
 export function cost1(ids: E1Id[]) {
   return ids.reduce((acc, id) => acc + E1_INITIATIVES.find((i) => i.id === id)!.cost, 0);
