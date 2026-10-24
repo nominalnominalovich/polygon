@@ -1,10 +1,10 @@
 import { Button, Caption, Headline, Text, Title } from '@vkontakte/vkui';
 import { Icon20ChevronRight, Icon20CommentOutline, Icon20SlidersOutline, Icon20StatisticsOutline } from '@vkontakte/icons';
-import { MIX_OLD, MIX_PARTNER, SEGMENTS, SEGMENT_INFO, type E1Id, type E2Id } from '../../sim/scenario';
+import { E2_INITIATIVES, EXPLANATIONS, MIX_OLD, MIX_PARTNER, SEGMENTS, SEGMENT_INFO, type E1Id, type E2Id } from '../../sim/scenario';
 import { baseline, simulate1, simulate2, type PushChoice } from '../../sim/engine';
 import { CRITERIA, STATUS_LABEL, judge, lessons, outcome, reading } from '../../sim/debrief';
 import { inRun } from '../../sim/learning';
-import { goStep, resetRun, useStore } from '../../store';
+import { goStep, resetRun, setState, useStore, type Decision1, type Decision2 } from '../../store';
 import { Trace } from '../../components/Trace';
 import { Delta, Panel, Pill, Tile, fmt } from '../../components/ui';
 import { SplitTable } from './Outcome1';
@@ -61,9 +61,44 @@ const PATHS: { name: string; full: string; e1: E1Id[]; e2: E2Id[]; push: PushCho
   { name: 'Б → пуши как были + Д', full: 'Напоминания → гибкое пополнение, пуши как были', e1: ['B'], e2: ['D'], push: 'keep' },
 ];
 
+/** «Переиграть месяц 2»: первая и вторая попытка рядом. */
+function Attempts({ d1, tries, split }: { d1: Decision1; tries: Decision2[]; split: boolean }) {
+  const rows = tries.map((d) => {
+    const m = simulate2(d1.initiatives, d.initiatives, d.push).m;
+    return { d, m, title: outcome(m, d1, d).title.replace('Итог для продукта: ', ''), k4: judge(d1, d, split).find((v) => v.id === 'K4')!.status };
+  });
+  const diff = rows[1].m.total.m2 - rows[0].m.total.m2;
+  const acts = (d: Decision2) => d.initiatives.map((id) => E2_INITIATIVES.find((i) => i.id === id)!.title).join(', ') + (d1.initiatives.includes('B') && !d.initiatives.includes('EB') && d.push ? (d.push === 'cut' ? '; пуши реже' : '; пуши как были') : '');
+  const lines: [string, (r: (typeof rows)[number]) => string][] = [
+    ['Что сделали', (r) => acts(r.d)],
+    ['Объяснение дашборда', (r) => (r.d.explanation === 'own' ? r.d.explanationText : EXPLANATIONS.find((x) => x.id === r.d.explanation)?.label ?? '—')],
+    ['Разделение эффектов', (r) => STATUS_LABEL[r.k4]],
+    ['Активные цели', (r) => `${fmt(r.m.total.m1)}%`],
+    ['С автопополнением', (r) => `${fmt(r.m.total.m2)}%`],
+    ['Средняя сумма', (r) => `${fmt(r.m.side.avgTopup, 0)} ₽`],
+    ['Итог для продукта', (r) => r.title],
+  ];
+  return (
+    <Panel title="Две попытки месяца 2" tone="pale">
+      <Text>Автопополнение по всем целям: {fmt(rows[0].m.total.m2)}% в первой попытке, {fmt(rows[1].m.total.m2)}% во второй (<Delta value={diff} />). Разбор ниже показывает вторую попытку.</Text>
+      <div className="pg-table-wrap"><table className="pg-table pg-table--stack">
+        <thead><tr><th /><th>Попытка 1</th><th>Попытка 2</th></tr></thead>
+        <tbody>{lines.map(([name, get]) => <tr key={name}><td className="pg-muted">{name}</td>{rows.map((r, i) => <td key={i} data-label={`Попытка ${i + 1}`}>{get(r)}</td>)}</tr>)}</tbody>
+      </table></div>
+    </Panel>
+  );
+}
+
 export function Debrief() {
   const s = useStore();
   const codes = useCodes();
+  if (!s.d2Done)
+    return (
+      <Panel tone="pale">
+        <Text>Разбор появится, когда вы зафиксируете решение месяца 2.</Text>
+        <div><Button size="m" onClick={() => goStep('decision2')}>К решению 2</Button></div>
+      </Panel>
+    );
   const e1 = s.d1.initiatives;
   const e2 = s.d2.initiatives;
   const r1 = simulate1(e1);
@@ -94,6 +129,8 @@ export function Debrief() {
           </div>
         )}
       </section>
+
+      {s.attempts.length > 0 && <Attempts d1={s.d1} tries={[s.attempts[0], s.d2]} split={s.split} />}
 
       <Trace ids={['И4', 'Ф3', 'Э3']}>
         <Panel title="Метрики" icon={<Icon20StatisticsOutline />}>
@@ -203,6 +240,12 @@ export function Debrief() {
       </Panel>
 
       <div className="pg-row pg-row--end">
+        {s.attempts.length === 0 && (
+          <>
+            <Caption level="1" className="pg-muted">Вернётесь к решению 2 с теми же данными месяца 1. Первая попытка сохранится, в разборе обе будут рядом.</Caption>
+            <Button size="l" mode="secondary" onClick={() => { setState((st) => ({ attempts: [st.d2], d2Done: false })); goStep('decision2'); }}>Переиграть месяц 2</Button>
+          </>
+        )}
         <Button size="l" after={<Icon20ChevronRight />} onClick={() => goStep('transfer')}>К самостоятельной задаче</Button>
       </div>
     </div>

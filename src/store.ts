@@ -74,6 +74,8 @@ export type State = {
   hints: { d1: number; d2: number };
   /** Самооценка кандидата по критериям после самостоятельной задачи. Эксперт её не видит. */
   selfReview: { criteria: Partial<Record<CriterionId, Status>>; done: boolean };
+  /** Прежние попытки решения 2: «Переиграть месяц 2» сохраняет первую, чтобы показать обе в разборе. */
+  attempts: Decision2[];
 };
 
 const emptyExp: Expectation = { metric: '', dir: '', value: '', term: '' };
@@ -98,6 +100,7 @@ export const initial: State = {
   tours: {},
   hints: { d1: 0, d2: 0 },
   selfReview: { criteria: {}, done: false },
+  attempts: [],
 };
 
 const KEY = 'polygon:v1';

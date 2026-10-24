@@ -79,7 +79,7 @@ export function Decision2() {
 
       <div className="pg-stack">
         <Panel>
-          <Caption level="1" className="pg-muted">Эпизод 2 · Пересмотр решения</Caption>
+          <Caption level="1" className="pg-muted">Эпизод 2 · Пересмотр решения{s.attempts.length > 0 && ' · попытка 2, первая сохранена в разборе'}</Caption>
           <Title level="2">Как вы объясняете изменение общего дашборда?</Title>
           <Radio options={EXPLANATIONS} value={d.explanation} onChange={(id) => { set({ explanation: id }); if (id === 'insufficient') setState({ split: true }); }} />
           {d.explanation === 'insufficient' && <Text className="pg-positive">Срез по аудиториям открыт слева.</Text>}

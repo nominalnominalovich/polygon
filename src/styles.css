@@ -380,3 +380,4 @@ blockquote { margin: 0; padding: 10px 14px; border-radius: 10px; background: var
   .pg-table--stack td { border: 0; padding: 2px 10px; }
   .pg-table--stack td[data-label]::before { content: attr(data-label) ': '; color: var(--muted); }
 }
+.pg-modal__card { box-sizing: border-box; }
