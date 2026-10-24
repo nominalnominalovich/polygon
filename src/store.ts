@@ -37,7 +37,7 @@ export type Transfer = {
   changeText?: string;
 };
 
-export type Review = { criteria: Partial<Record<CriterionId, { status: Status; comment: string }>>; question: string; savedAt?: string; minutes?: number };
+export type Review = { criteria: Partial<Record<CriterionId, { status: Status; comment: string }>>; question: string; savedAt?: string; minutes?: number; summary?: 'strong' | 'gaps' | 'weak' };
 
 export type Step = 'dossier' | 'decision1' | 'outcome1' | 'decision2' | 'debrief' | 'transfer' | 'card';
 export const STEPS: { id: Step; label: string; screen: string }[] = [
@@ -68,6 +68,7 @@ export type State = {
   trace: boolean;
   jury: boolean;
   tours: { candidate?: boolean; expert?: boolean };
+  candidateId: number | null;
 };
 
 const emptyExp: Expectation = { metric: '', dir: '', value: '', term: '' };
@@ -90,6 +91,7 @@ export const initial: State = {
   trace: false,
   jury: false,
   tours: {},
+  candidateId: null,
 };
 
 const KEY = 'polygon:v1';
@@ -135,5 +137,16 @@ export function goStep(step: Step) {
 }
 
 export function resetRun() {
-  setState((s) => ({ ...initial, role: s.role, trace: s.trace, jury: s.jury, tours: s.tours, reviews: s.reviews }));
+  setState((s) => ({ ...initial, role: s.role, trace: s.trace, jury: s.jury, tours: s.tours, reviews: s.reviews, candidateId: s.candidateId }));
+}
+
+/** Номер кандидата присваивается при первом входе и потом не меняется. Демо-работы заняты номерами до 1100. */
+export const newCandidateId = () => 1100 + Math.floor(Math.random() * 900);
+
+export function setRole(role: State['role']) {
+  setState((s) => ({ role, candidateId: role === 'candidate' ? s.candidateId ?? newCandidateId() : s.candidateId }));
+}
+
+export function exitJury() {
+  setState({ jury: false, trace: false });
 }

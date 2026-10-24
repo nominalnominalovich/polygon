@@ -26,7 +26,7 @@ const transfer = {
 };
 const bonus1 = { metric: 'M1', dir: 'up', value: '', term: '', problem: 'forget', problemText: '', segment: 'all', segmentText: '', initiatives: ['B'], alternative: '', rationale: 'Ирина и отзывы говорят, что людям нужна мотивация. Напоминания дешёвые и быстрые.' };
 const bonus2 = { metric: 'M1', dir: 'up', value: 'больше', term: '', explanation: 'failed', explanationText: '', initiatives: ['A'], push: 'cut', rationale: '', changeText: 'Автопополнение упало, напоминания не помогли — запускаем баллы, как просит руководитель.' };
-const full = { role: 'candidate', notes: ['Опрос смещён к вовлечённым?'], d1, d1Done: true, split: true, d2, d2Done: true, transfer, transferDone: true, transfer2Done: true, shared: true, reviews: {}, trace: false };
+const full = { role: 'candidate', candidateId: 1187, notes: ['Опрос смещён к вовлечённым?'], d1, d1Done: true, split: true, d2, d2Done: true, transfer, transferDone: true, transfer2Done: true, shared: true, reviews: {}, trace: false };
 
 const shots = [
   { name: '00-для-жюри', hash: '/jury', state: { role: null, jury: true }, fullPage: true },
@@ -45,7 +45,7 @@ const shots = [
   { name: '10b-месяц-спустя', hash: '/play', state: { ...full, transfer2Done: false, shared: false, step: 'transfer', reached: 'transfer' }, fullPage: true },
   { name: '11-карточка', hash: '/play', state: { ...full, step: 'card', reached: 'card' } },
   { name: '12-эксперт-список', hash: '/expert', state: { ...full, role: 'expert' } },
-  { name: '13-эксперт-разбор', hash: '/expert/me', state: { ...full, role: 'expert' } },
+  { name: '13-эксперт-разбор', hash: '/expert/1187', state: { ...full, role: 'expert' } },
   { name: '14-материалы-защиты', hash: '/defense', state: { role: 'candidate', jury: true } },
   { name: '15-ловушка-последствия', hash: '/play', state: { ...full, d1: bonus1, d2: bonus2, split: false, d2Done: false, step: 'outcome1', reached: 'decision2' } },
   { name: '16-ловушка-разбор', hash: '/play', state: { ...full, d1: bonus1, d2: bonus2, split: false, step: 'debrief', reached: 'debrief' }, fullPage: true },

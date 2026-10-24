@@ -9,8 +9,7 @@ import { Trace } from '../../components/Trace';
 import { Panel, Pill } from '../../components/ui';
 import { E4_CRITERIA } from './Transfer';
 import { code, critCode, useCodes } from '../../labels';
-
-export const OWN_WORK_ID = 'me';
+import { summaryText } from '../../review';
 
 export function WorkFields({ t }: { t: import('../../store').Transfer }) {
   const codes = useCodes();
@@ -36,14 +35,14 @@ export function WorkFields({ t }: { t: import('../../store').Transfer }) {
 export function Card() {
   const s = useStore();
   const codes = useCodes();
-  const review = s.reviews[OWN_WORK_ID];
+  const review = s.candidateId ? s.reviews[s.candidateId] : undefined;
   return (
     <div className="pg-grid pg-grid--side">
       <div className="pg-stack">
         <Trace ids={['И5', 'И6', 'Ф4', 'Э5']}>
           <Panel>
             <div className="pg-row">
-              <Caption level="1" className="pg-muted">Итоговая карточка · {E4.product}</Caption>
+              <Caption level="1" className="pg-muted">Итоговая карточка · {E4.product}{s.candidateId && ` · №${s.candidateId}`}</Caption>
               <Pill tone={review?.savedAt ? 'green' : s.shared ? 'blue' : 'gray'}>{review?.savedAt ? 'Разбор эксперта получен' : s.shared ? 'Ожидает разбора' : 'Не передана'}</Pill>
             </div>
             <Title level="2">Ваша самостоятельная работа</Title>
@@ -57,13 +56,19 @@ export function Card() {
               return r ? <div key={c.id} className="pg-review-row"><Text weight="2">{code(critCode(c.id), c.title, codes)}: {STATUS_LABEL[r.status]}</Text><Text>{r.comment}</Text></div> : null;
             })}
             {review.question && <Text><b>Вопрос на интервью:</b> {review.question}</Text>}
+            {review.summary && (
+              <>
+                <Text><b>Итог по заданию:</b> {summaryText(review)}</Text>
+                <Caption level="1" className="pg-muted">Итог описывает задание, а не решение о найме.</Caption>
+              </>
+            )}
           </Panel>
         )}
       </div>
       <aside className="pg-stack">
         <Trace ids={['И5', 'И6']} note="Передача — отдельное действие участника; тренировочные черновики не передаются.">
           <Panel title="Передача эксперту банка" tone={s.shared ? 'tint' : 'pale'}>
-            <Text><b>Уйдёт:</b> условия задачи, ваше решение, обоснование, ожидание.</Text>
+            <Text><b>Уйдёт:</b> номер кандидата, проблема, сегмент, инициативы, ожидание, обоснование и что проверить после запуска. Из шага «месяц спустя»: результат, запрошена ли разбивка, ваше объяснение и что вы меняете.</Text>
             <Text><b>Не уйдёт:</b> тренировочные эпизоды, черновики, разбор.</Text>
             {s.shared ? (
               <>
@@ -75,10 +80,12 @@ export function Card() {
             )}
           </Panel>
         </Trace>
-        <Panel tone="pale">
-          <Text className="pg-muted">Для демонстрации: посмотрите, как эту карточку увидит эксперт банка.</Text>
-          <Button mode="outline" size="m" before={<Icon20UserStarOutline />} onClick={() => { setState({ role: 'expert' }); navigate(`/expert/${OWN_WORK_ID}`); }}>Открыть как эксперт</Button>
-        </Panel>
+        {s.jury && (
+          <Panel tone="pale">
+            <Text className="pg-muted">Для демонстрации: посмотрите, как эту карточку увидит эксперт банка.</Text>
+            <Button mode="outline" size="m" before={<Icon20UserStarOutline />} onClick={() => { setState({ role: 'expert' }); navigate(`/expert/${s.candidateId}`); }}>Открыть как эксперт</Button>
+          </Panel>
+        )}
       </aside>
     </div>
   );

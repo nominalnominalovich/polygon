@@ -1,5 +1,5 @@
 // Готовые прохождения для показа на защите: решения заполнены, участник сразу видит последствия.
-import { initial, setState, type Decision1, type Decision2, type State } from './store';
+import { initial, newCandidateId, setState, type Decision1, type Decision2, type State } from './store';
 
 type Preset = { id: string; title: string; text: string; d1: Partial<Decision1>; d2: Partial<Decision2> };
 
@@ -54,6 +54,7 @@ export function loadPreset(id: string) {
     jury: s.jury,
     tours: { ...s.tours, candidate: true },
     reviews: s.reviews,
+    candidateId: s.candidateId ?? newCandidateId(),
     d1: { ...initial.d1, ...p.d1 },
     d1Done: true,
     d2: { ...initial.d2, ...p.d2 },

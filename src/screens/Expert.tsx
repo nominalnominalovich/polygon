@@ -6,17 +6,21 @@ import { STATUS_LABEL, type CriterionId, type Status } from '../sim/debrief';
 import { setState, useStore, type Review, type Transfer } from '../store';
 import { navigate } from '../router';
 import { Trace } from '../components/Trace';
-import { Panel, Pill } from '../components/ui';
+import { Panel, Pill, fmt } from '../components/ui';
 import { E4_CRITERIA } from './steps/Transfer';
-import { OWN_WORK_ID, WorkFields } from './steps/Card';
+import { WorkFields } from './steps/Card';
 import { HINTS, code, critCode, useCodes } from '../labels';
 import { Hint } from '../components/Hint';
+import { SUMMARY_LABEL, canSave, median, summaryText, tally } from '../review';
 
-type Work = { id: string; name: string; t: Transfer; review?: Review };
+type Work = { id: number; name: string; t: Transfer; review?: Review };
+
+/** «Анна С. · №1042»; у своей работы кандидата имени нет, только номер. */
+const title = (w: Work) => (w.name ? `${w.name} · №${w.id}` : `№${w.id}`);
 
 const DEMO: Work[] = [
   {
-    id: 'anna',
+    id: 1042,
     name: 'Анна С.',
     t: {
       problem: 'Клиенты отключают автоплатёж после первого неожиданного списания',
@@ -31,7 +35,7 @@ const DEMO: Work[] = [
     },
   },
   {
-    id: 'boris',
+    id: 1017,
     name: 'Борис Л.',
     t: {
       problem: 'Платить автоплатежом невыгодно',
@@ -46,7 +50,7 @@ const DEMO: Work[] = [
     },
   },
   {
-    id: 'vera',
+    id: 1056,
     name: 'Вера Н.',
     t: {
       problem: 'Люди не понимают, сколько и когда спишут',
@@ -61,7 +65,7 @@ const DEMO: Work[] = [
     },
   },
   {
-    id: 'gleb',
+    id: 1023,
     name: 'Глеб Т.',
     t: {
       problem: 'Списания приходятся на момент, когда денег мало',
@@ -76,7 +80,7 @@ const DEMO: Work[] = [
     },
   },
   {
-    id: 'daria',
+    id: 1031,
     name: 'Дарья К.',
     t: {
       problem: 'Неожиданная сумма первого списания',
@@ -101,14 +105,15 @@ const DEMO: Work[] = [
       question: 'Как вы поймёте через месяц, что снижение отключений — от режима списания, а не от того, что тарифы перестали расти?',
       savedAt: '2026-10-22T18:40:00.000Z',
       minutes: 9,
+      summary: 'strong',
     },
   },
 ];
 
-function exportCsv(rows: { name: string; review?: Review }[]) {
-  const head = ['Кандидат', ...E4_CRITERIA.map((c) => c.title), 'Вопрос для интервью', 'Минут на разбор'];
+function exportCsv(rows: { id: number; review?: Review }[]) {
+  const head = ['Номер кандидата', ...E4_CRITERIA.map((c) => c.title), 'Итог по заданию', 'Вопрос для интервью'];
   const q = (v: string) => `"${v.replace(/"/g, '""')}"`;
-  const lines = rows.map(({ name, review }) => [name, ...E4_CRITERIA.map((c) => (review?.criteria[c.id] ? STATUS_LABEL[review.criteria[c.id]!.status] : '')), review?.question ?? '', String(review?.minutes ?? '')].map(q).join(';'));
+  const lines = rows.map(({ id, review }) => [String(id), ...E4_CRITERIA.map((c) => (review?.criteria[c.id] ? STATUS_LABEL[review.criteria[c.id]!.status] : '')), review ? summaryText(review) : '', review?.question ?? ''].map(q).join(';'));
   const blob = new Blob(['\ufeff' + [head.map(q).join(';'), ...lines].join('\n')], { type: 'text/csv;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -121,12 +126,13 @@ const FRAGMENTS = ['Проблема', 'Сегмент', 'Инициативы',
 export function Expert({ workId }: { workId?: string }) {
   const s = useStore();
   const [tab, setTab] = useState<'wait' | 'done' | 'all'>('wait');
-  const works: Work[] = [...(s.shared && s.transfer2Done ? [{ id: OWN_WORK_ID, name: 'Ваша работа', t: s.transfer }] : []), ...DEMO];
+  const own = s.shared && s.transfer2Done && s.candidateId ? [{ id: s.candidateId, name: '', t: s.transfer }] : [];
+  const works: Work[] = [...own, ...DEMO];
   const reviewOf = (w: Work) => s.reviews[w.id] ?? w.review;
   const done = works.filter((w) => reviewOf(w)?.savedAt);
   const waiting = works.filter((w) => !reviewOf(w)?.savedAt);
   const shown = tab === 'wait' ? waiting : tab === 'done' ? done : works;
-  const work = works.find((w) => w.id === workId);
+  const work = works.find((w) => String(w.id) === workId);
 
   if (!work)
     return (
@@ -137,14 +143,14 @@ export function Expert({ workId }: { workId?: string }) {
         <Trace ids={['И6', 'Ф4']} status="mock" note="Сводка для руководителя школы: что показать после пилота. В MVP считается по разборам в этом браузере.">
           <Panel title="Сводка по потоку" tone="pale">
             {(() => {
-              const mins = done.map((w) => reviewOf(w)!.minutes ?? 0).filter(Boolean).sort((a, b) => a - b);
-              const med = mins.length ? mins[Math.floor((mins.length - 1) / 2)] : null;
+              const med = median(done.map((w) => reviewOf(w)!.minutes ?? 0).filter(Boolean));
+              const sample = done.some((w) => !s.reviews[w.id]);
               const q = done.filter((w) => reviewOf(w)!.question.trim()).length;
               return (
                 <div className="pg-tiles">
                   <div className="pg-tile"><Caption level="1" className="pg-muted">Передано работ</Caption><div className="pg-tile__value">{works.length}</div></div>
                   <div className="pg-tile"><Caption level="1" className="pg-muted">Ожидают разбора</Caption><div className="pg-tile__value">{waiting.length}</div></div>
-                  <div className="pg-tile"><Caption level="1" className="pg-muted">Минут на разбор, медиана</Caption><div className="pg-tile__value">{med ?? '—'}</div></div>
+                  {s.jury && <div className="pg-tile"><Caption level="1" className="pg-muted">Минут на разбор, медиана</Caption><div className="pg-tile__value">{med === null ? '—' : fmt(med)}</div>{sample && <Caption level="2" className="pg-muted pg-tile__hint">пример</Caption>}</div>}
                   <div className="pg-tile"><Caption level="1" className="pg-muted">С вопросом для интервью</Caption><div className="pg-tile__value">{q}</div></div>
                 </div>
               );
@@ -160,29 +166,30 @@ export function Expert({ workId }: { workId?: string }) {
             </Tabs>
             {shown.map((w) => (
               <SimpleCell key={w.id} onClick={() => navigate(`/expert/${w.id}`)} subtitle={w.t.problem} after={<Pill tone={reviewOf(w)?.savedAt ? 'green' : 'blue'}>{reviewOf(w)?.savedAt ? 'Разобрано' : 'Ожидает разбора'}</Pill>} chevron="always">
-                {w.name}
+                {title(w)}
               </SimpleCell>
             ))}
             {shown.length === 0 && <Text className="pg-muted pg-pad">{tab === 'done' ? 'Пока ничего не разобрано.' : 'Все работы разобраны.'}</Text>}
             {!(s.shared && s.transfer2Done) && s.jury && <Caption level="1" className="pg-muted pg-pad">Пройдите модуль за кандидата и передайте работу — она появится в этом списке.</Caption>}
             <div className="pg-pad">
-              <Button mode="secondary" size="m" onClick={() => exportCsv(works.map((w) => ({ name: w.name, review: reviewOf(w) })))}>Выгрузить разборы (CSV)</Button>
-              <Caption level="1" className="pg-muted">Для калибровки с другими экспертами и вашей системы найма: файл остаётся у вас.</Caption>
+              <Button mode="secondary" size="m" onClick={() => exportCsv(works.map((w) => ({ id: w.id, review: reviewOf(w) })))}>Выгрузить разборы (CSV)</Button>
+              <Caption level="1" className="pg-muted">Для таблицы программы внутри контура банка. В выгрузке номер кандидата, имя остаётся в кабинете.</Caption>
             </div>
           </Panel>
         </Trace>
       </div>
     );
 
-  return <ReviewForm key={work.id} id={work.id} name={work.name} t={work.t} initial={reviewOf(work)} />;
+  return <ReviewForm key={work.id} id={work.id} name={title(work)} own={work.id === s.candidateId} t={work.t} initial={reviewOf(work)} />;
 }
 
-function ReviewForm({ id, name, t, initial }: { id: string; name: string; t: Transfer; initial?: Review }) {
+function ReviewForm({ id, name, own, t, initial }: { id: number; name: string; own: boolean; t: Transfer; initial?: Review }) {
   const codes = useCodes();
   const [review, setReview] = useState<Review>(initial ?? { criteria: {}, question: '' });
   const [frag, setFrag] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState(false);
   const [openedAt] = useState(() => Date.now());
+  const tl = tally(review);
   const setC = (c: CriterionId, p: Partial<{ status: Status; comment: string }>) =>
     setReview((r) => ({ ...r, criteria: { ...r.criteria, [c]: { status: 'nodata', comment: '', ...r.criteria[c], ...p } } }));
 
@@ -226,13 +233,23 @@ function ReviewForm({ id, name, t, initial }: { id: string; name: string; t: Tra
                 </div>
               );
             })}
-            <Caption level="1" className="pg-muted">Достаточно статусов и одного вопроса для интервью — комментарии по желанию.</Caption>
+            <FormItem top="Итог по заданию" noPadding>
+              <div className="pg-stack pg-stack--s">
+                <Text>Видно в работе: {tl.seen} из {tl.total} · недостаточно данных: {tl.nodata}</Text>
+                <div className="pg-seg" role="radiogroup" aria-label="Итог по заданию">
+                  {(Object.keys(SUMMARY_LABEL) as (keyof typeof SUMMARY_LABEL)[]).map((k) => (
+                    <button key={k} type="button" role="radio" aria-checked={review.summary === k} className={review.summary === k ? 'is-selected' : ''} onClick={() => setReview((r) => ({ ...r, summary: k }))}>{SUMMARY_LABEL[k]}</button>
+                  ))}
+                </div>
+                <Caption level="1" className="pg-muted">Итог описывает задание, а не решение о найме.</Caption>
+              </div>
+            </FormItem>
             <FormItem top="Вопрос для интервью" noPadding>
               <Textarea rows={2} value={review.question} onChange={(e) => setReview((r) => ({ ...r, question: e.target.value }))} />
             </FormItem>
-            <Text className="pg-muted">Итоговой оценки и решения о найме здесь нет: карточка — материал для разговора с кандидатом.</Text>
-            <Button size="l" after={<Icon20ChevronRight />} onClick={() => { setState((st) => ({ reviews: { ...st.reviews, [id]: { ...review, savedAt: new Date().toISOString(), minutes: Math.max(1, Math.round((Date.now() - openedAt) / 60000)) } } })); setSaved(true); }}>Сохранить разбор</Button>
-            {saved && <Text className="pg-positive">Сохранено. {id === OWN_WORK_ID ? 'Кандидат увидит комментарий в своей карточке.' : ''}</Text>}
+            <Caption level="1" className="pg-muted">Нужны статусы по всем шести критериям, итог и один вопрос для интервью. Комментарии по желанию.</Caption>
+            <Button size="l" disabled={!canSave(review)} after={<Icon20ChevronRight />} onClick={() => { setState((st) => ({ reviews: { ...st.reviews, [id]: { ...review, savedAt: new Date().toISOString(), minutes: Math.max(1, Math.round((Date.now() - openedAt) / 60000)) } } })); setSaved(true); }}>Сохранить разбор</Button>
+            {saved && <Text className="pg-positive">Сохранено. {own ? 'Кандидат увидит разбор и итог в своей карточке.' : ''}</Text>}
           </Panel>
         </Trace>
       </div>
