@@ -1,21 +1,48 @@
-import { Accordion, Button, Caption, Headline, Text, Title } from '@vkontakte/vkui';
+import { useState } from 'react';
+import { Accordion, Button, Caption, Text, Title } from '@vkontakte/vkui';
 import { Icon20LockOutline, Icon24PlayOutline } from '@vkontakte/icons';
 import { navigate } from '../router';
-import { STEPS, useStore } from '../store';
+import { STEPS, goStep, useStore } from '../store';
 import { Trace } from '../components/Trace';
 import { Pill } from '../components/ui';
 import { PRESETS, loadPreset } from '../demo';
+import { SKILLS } from '../sim/learning';
 
-const LOCKED = [
-  ['Удержание', '«Упало удержание на 8%»: найти причину по когортам'],
-  ['Монетизация', 'Тарифы и A/B-тест: разобрать результат эксперимента'],
-  ['Стейкхолдеры', 'Разработка, продажи и руководство хотят разного'],
+const MODULES = [
+  {
+    title: 'Накопления на цель',
+    text: 'Клиенты банка «Кварц» охотно создают цели накоплений, но копят нерегулярно. Вы младший продакт: два спринта решений, последствия каждого и разбор по шести критериям. В конце самостоятельная задача на перенос навыка.',
+    learn: SKILLS.map((k) => k.learn),
+  },
+  {
+    title: 'Удержание',
+    text: 'Удержание подписки «Кварц Плюс» за квартал упало на 8%, и на планёрке уже винят новый тариф. У вас есть когорты по месяцам подключения, причины отказов и календарь акций. Нужно понять, что произошло, прежде чем что-то менять.',
+    learn: ['Найти причину падения удержания по когортам и отличить сезонность от проблемы продукта'],
+  },
+  {
+    title: 'Монетизация',
+    text: 'Команда провела A/B-тест новой цены подписки: выручка на пользователя выросла, а подключений стало меньше. Маркетинг хочет раскатить цену на всех, финансы просят подождать. Вам решать, что на самом деле показал эксперимент.',
+    learn: ['Прочитать результат A/B-теста целиком, вместе с сопутствующими метриками, и решить, раскатывать ли изменение'],
+  },
+  {
+    title: 'Стейкхолдеры',
+    text: 'Продажи пообещали крупному клиенту функцию к концу месяца, разработка просит спринт на технический долг, а руководство ждёт роста выручки. Спринт один, всем сразу не успеть. Нужно выбрать, что делать, и объяснить отказ тем, кому откажете.',
+    learn: ['Выбрать между запросами разных сторон по данным и цели продукта и объяснить отказ так, чтобы его приняли'],
+  },
 ];
 
 export function Program() {
   const s = useStore();
   const progress = STEPS.findIndex((x) => x.id === s.reached);
-  const started = s.d1.rationale || s.d1.initiatives.length || progress > 0;
+  const started = !!(s.d1.rationale || s.d1.initiatives.length || progress > 0);
+  const done = s.reached === 'card';
+  const status = (i: number) => (i > 0 ? 'Скоро' : done ? 'Пройден' : started ? `В процессе: шаг ${progress + 1} из ${STEPS.length}` : 'Не начат');
+  // В витрине начатый модуль, а если такого нет, первый.
+  const [sel, setSel] = useState(() => Math.max(0, MODULES.findIndex((_, i) => status(i).startsWith('В процессе'))));
+  const m = MODULES[sel];
+  const open = sel === 0;
+  const action = done ? 'Открыть итоги' : started ? `Продолжить с шага ${progress + 1}` : 'Начать';
+  const go = () => { if (started) goStep(done ? 'card' : s.reached); navigate('/play'); };
   return (
     <div className="pg-page">
       <Caption level="1" className="pg-muted">Карьерная школа продакт-менеджеров · банк «Кварц»</Caption>
@@ -23,22 +50,32 @@ export function Program() {
       <Text className="pg-muted pg-page__lead">Сначала тренировка — ошибаться можно и нужно. Потом самостоятельная задача; её видит эксперт банка, только если вы сами её передадите.</Text>
 
       <div className="pg-modules">
-        <Trace ids={['И1', 'Ф1', 'Э1']}>
+        <Trace ids={['И1', 'Ф1', 'Э1']} status={open ? 'real' : 'mock'} note={open ? undefined : 'Модули 2–4 за границами MVP: есть только описание.'}>
           <article className="pg-module pg-module--active">
             <div className="pg-module__top">
-              <Pill tone="solid">Модуль 1</Pill>
+              <Pill tone={open ? 'solid' : 'gray'}>Модуль {sel + 1}</Pill>
               <Pill tone="blue">Тренировка + самостоятельная работа</Pill>
-              <Caption level="1" className="pg-muted">≈ 45 минут</Caption>
+              <Caption level="1" className="pg-muted">около 45 минут</Caption>
             </div>
-            <Title level="2">Накопления на цель</Title>
-            <Text className="pg-muted">Цели создают охотно, но копят нерегулярно. Два связанных эпизода, разбор по шести критериям и задача на перенос навыка.</Text>
-            <div className="pg-module__progress">
-              {STEPS.map((x, i) => (
-                <span key={x.id} className={`pg-module__dot ${i <= progress && started ? 'is-done' : ''}`} title={x.label} />
-              ))}
-              <Caption level="1" className="pg-muted">{started ? `Пройдено: ${STEPS[progress].label}` : 'Не начат'}</Caption>
+            <Title level="2">{m.title}</Title>
+            <Text className="pg-muted">{m.text}</Text>
+            <div className="pg-showcase__learn">
+              <Text weight="2">Чему научит</Text>
+              {m.learn.length > 1 ? <ul className="pg-list">{m.learn.map((x) => <li key={x}><Text>{x}</Text></li>)}</ul> : <Text>{m.learn[0]}</Text>}
             </div>
-            <Button size="l" before={<Icon24PlayOutline />} onClick={() => navigate('/play')}>{started ? 'Продолжить' : 'Начать'}</Button>
+            {open && (
+              <div className="pg-module__progress">
+                {STEPS.map((x, i) => (
+                  <span key={x.id} className={`pg-module__dot ${i <= progress && started ? 'is-done' : ''}`} title={x.label} />
+                ))}
+                <Caption level="1" className="pg-muted">{status(0)}</Caption>
+              </div>
+            )}
+            <div className="pg-row pg-row--start">
+              <Button size="l" disabled={!open} before={open ? <Icon24PlayOutline /> : <Icon20LockOutline />} onClick={go}>{open ? action : 'Начать'}</Button>
+              {!open && <Caption level="1" className="pg-muted">Откроется после модуля 1</Caption>}
+              {open && s.d2Done && <Button mode="tertiary" size="l" onClick={() => navigate('/glossary')}>Словарь модуля</Button>}
+            </div>
           </article>
         </Trace>
         {s.jury && (
@@ -60,14 +97,13 @@ export function Program() {
           </Accordion></div>
         )}
         <Trace ids={['И1']} status="mock" note="Библиотека модулей — за границами MVP (карта историй, нижняя строка).">
-          <div className="pg-modules__locked">
-            {LOCKED.map(([t, d], i) => (
-              <article key={t} className="pg-module pg-module--locked">
-                <div className="pg-module__top"><Pill tone="gray">Модуль {i + 2}</Pill><Icon20LockOutline className="pg-muted" /></div>
-                <Headline level="1" weight="2">{t}</Headline>
-                <Text className="pg-muted">{d}</Text>
-                <Caption level="1" className="pg-muted">{s.trace ? 'За границами MVP' : 'Скоро'}</Caption>
-              </article>
+          <div className="pg-modrow">
+            {MODULES.map((x, i) => (
+              <button key={x.title} type="button" className={`pg-modcard ${i === sel ? 'is-selected' : ''}`} aria-pressed={i === sel} onClick={() => setSel(i)}>
+                <Caption level="1" className="pg-muted">Модуль {i + 1}</Caption>
+                <Text weight="2">{x.title}</Text>
+                <Pill tone={i > 0 ? 'gray' : done ? 'green' : started ? 'blue' : 'gray'}>{status(i)}</Pill>
+              </button>
             ))}
           </div>
         </Trace>

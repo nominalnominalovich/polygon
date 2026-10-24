@@ -13,6 +13,7 @@ export type Decision1 = Expectation & {
   initiatives: E1Id[];
   rationale: string;
   alternative: string;
+  assumptions?: string;
 };
 
 export type Decision2 = Expectation & {
@@ -35,6 +36,7 @@ export type Transfer = {
   explanationText?: string;
   split?: boolean;
   changeText?: string;
+  assumptions?: string;
 };
 
 export type Review = { criteria: Partial<Record<CriterionId, { status: Status; comment: string }>>; question: string; savedAt?: string; minutes?: number; summary?: 'strong' | 'gaps' | 'weak' };
@@ -69,6 +71,12 @@ export type State = {
   jury: boolean;
   tours: { candidate?: boolean; expert?: boolean };
   candidateId: number | null;
+  /** Сколько подсказок-вопросов взято на решениях 1 и 2. Эксперт их не видит. */
+  hints: { d1: number; d2: number };
+  /** Самооценка кандидата по критериям после самостоятельной задачи. Эксперт её не видит. */
+  selfReview: { criteria: Partial<Record<CriterionId, Status>>; done: boolean };
+  /** Прежние попытки решения 2: «Переиграть месяц 2» сохраняет первую, чтобы показать обе в разборе. */
+  attempts: Decision2[];
 };
 
 const emptyExp: Expectation = { metric: '', dir: '', value: '', term: '' };
@@ -92,6 +100,9 @@ export const initial: State = {
   jury: false,
   tours: {},
   candidateId: null,
+  hints: { d1: 0, d2: 0 },
+  selfReview: { criteria: {}, done: false },
+  attempts: [],
 };
 
 const KEY = 'polygon:v1';

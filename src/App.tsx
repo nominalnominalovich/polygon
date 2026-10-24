@@ -11,6 +11,7 @@ import { Deck } from './screens/Deck';
 import { Jury } from './screens/Jury';
 import { Author } from './screens/Author';
 import { Dev } from './screens/Dev';
+import { Glossary } from './screens/Glossary';
 
 export function App() {
   const route = useRoute();
@@ -23,6 +24,7 @@ export function App() {
   else if (route.startsWith('/author')) screen = <Author />;
   else if (route === '/dev') screen = <Dev />;
   else if (route.startsWith('/defense')) screen = <Defense section={route.split('/')[2]} />;
+  else if (route === '/glossary') screen = <Glossary />;
   else if (route === '/program' && role === 'candidate') screen = <Program />;
   else if (route === '/play' && role === 'candidate') screen = <Play />;
   else if (route.startsWith('/expert') && role === 'expert') screen = <Expert workId={route.split('/')[2]} />;

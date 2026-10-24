@@ -6,6 +6,7 @@ import { goStep, setState, useStore, type Decision1 as D1 } from '../../store';
 import { Trace } from '../../components/Trace';
 import { Capacity, Panel, Pill } from '../../components/ui';
 import { Choice, DecisionSummary, ExpectationFields } from '../../components/fields';
+import { Ask } from '../../components/Ask';
 
 const SOURCES = [
   ['Воронка', '56% открывших настройку автоперевода уходят без сохранения'],
@@ -93,7 +94,12 @@ export function Decision1() {
           {s.notes.length > 0 && <Text className="pg-muted">Ваши вопросы из досье: {s.notes.join(' · ')}</Text>}
         </Panel>
 
-        <Trace ids={['И4']} status="mock" note="Симуляция не считает свои идеи участника — они сохраняются в разборе как альтернатива (Т2).">
+        <Panel title="Что я допускаю и в чём не уверен (необязательно)">
+          <Textarea value={d.assumptions ?? ''} onChange={(e) => set({ assumptions: e.target.value })} rows={3} placeholder="В каких данных сомневаетесь, что принимаете без проверки" />
+          <Caption level="1" className="pg-muted">Названные сомнения не снижают оценку. В разборе к ним будет отдельный комментарий.</Caption>
+        </Panel>
+
+        <Trace ids={['И4']} status="mock" note="Симуляция не считает свои идеи участника — они сохраняются в разборе как альтернатива.">
           <Panel title="Своя идея (необязательно)" tone="pale">
             <Text className="pg-muted">Если хотите предложить то, чего нет в списке, — опишите. Симуляция не считает для неё цифры, но идея сохранится в вашем разборе. Её никто не оценивает.</Text>
             <Textarea value={d.alternative} onChange={(e) => set({ alternative: e.target.value })} rows={3} />
@@ -102,6 +108,7 @@ export function Decision1() {
       </div>
 
       <aside className="pg-stack pg-sticky">
+        <Ask step="d1" />
         <Trace ids={['И2']} note="Критерий 2: без действия или обоснования запись остаётся черновиком, текст не теряется.">
           <Panel tone={valid ? 'tint' : 'pale'}>
             <div className="pg-row"><Text weight="2">Статус</Text><Pill tone={valid ? 'green' : 'amber'}>{valid ? 'Готово к запуску' : 'Черновик'}</Pill></div>

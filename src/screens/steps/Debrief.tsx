@@ -1,13 +1,16 @@
 import { Button, Caption, Headline, Text, Title } from '@vkontakte/vkui';
 import { Icon20ChevronRight, Icon20CommentOutline, Icon20SlidersOutline, Icon20StatisticsOutline } from '@vkontakte/icons';
-import { MIX_OLD, MIX_PARTNER, SEGMENTS, SEGMENT_INFO, type E1Id, type E2Id } from '../../sim/scenario';
+import { E2_INITIATIVES, EXPLANATIONS, MIX_OLD, MIX_PARTNER, SEGMENTS, SEGMENT_INFO, type E1Id, type E2Id } from '../../sim/scenario';
 import { baseline, simulate1, simulate2, type PushChoice } from '../../sim/engine';
-import { CRITERIA, STATUS_LABEL, judge, lessons, outcome } from '../../sim/debrief';
-import { goStep, resetRun, useStore } from '../../store';
+import { CRITERIA, STATUS_LABEL, judge, lessons, outcome, reading } from '../../sim/debrief';
+import { inRun } from '../../sim/learning';
+import { goStep, resetRun, setState, useStore, type Decision1, type Decision2 } from '../../store';
 import { Trace } from '../../components/Trace';
 import { Delta, Panel, Pill, Tile, fmt } from '../../components/ui';
 import { SplitTable } from './Outcome1';
 import { code, critCode, stripCode, useCodes } from '../../labels';
+import { Concept } from '../../components/Concept';
+import { navigate } from '../../router';
 
 function Line({ title, series }: { title: string; series: { name: string; values: number[]; tone: string; dash?: boolean }[] }) {
   const W = 360, H = 170, P = 28;
@@ -58,9 +61,44 @@ const PATHS: { name: string; full: string; e1: E1Id[]; e2: E2Id[]; push: PushCho
   { name: 'Б → пуши как были + Д', full: 'Напоминания → гибкое пополнение, пуши как были', e1: ['B'], e2: ['D'], push: 'keep' },
 ];
 
+/** «Переиграть месяц 2»: первая и вторая попытка рядом. */
+function Attempts({ d1, tries, split }: { d1: Decision1; tries: Decision2[]; split: boolean }) {
+  const rows = tries.map((d) => {
+    const m = simulate2(d1.initiatives, d.initiatives, d.push).m;
+    return { d, m, title: outcome(m, d1, d).title.replace('Итог для продукта: ', ''), k4: judge(d1, d, split).find((v) => v.id === 'K4')!.status };
+  });
+  const diff = rows[1].m.total.m2 - rows[0].m.total.m2;
+  const acts = (d: Decision2) => d.initiatives.map((id) => E2_INITIATIVES.find((i) => i.id === id)!.title).join(', ') + (d1.initiatives.includes('B') && !d.initiatives.includes('EB') && d.push ? (d.push === 'cut' ? '; пуши реже' : '; пуши как были') : '');
+  const lines: [string, (r: (typeof rows)[number]) => string][] = [
+    ['Что сделали', (r) => acts(r.d)],
+    ['Объяснение дашборда', (r) => (r.d.explanation === 'own' ? r.d.explanationText : EXPLANATIONS.find((x) => x.id === r.d.explanation)?.label ?? '—')],
+    ['Разделение эффектов', (r) => STATUS_LABEL[r.k4]],
+    ['Активные цели', (r) => `${fmt(r.m.total.m1)}%`],
+    ['С автопополнением', (r) => `${fmt(r.m.total.m2)}%`],
+    ['Средняя сумма', (r) => `${fmt(r.m.side.avgTopup, 0)} ₽`],
+    ['Итог для продукта', (r) => r.title],
+  ];
+  return (
+    <Panel title="Две попытки месяца 2" tone="pale">
+      <Text>Автопополнение по всем целям: {fmt(rows[0].m.total.m2)}% в первой попытке, {fmt(rows[1].m.total.m2)}% во второй (<Delta value={diff} />). Разбор ниже показывает вторую попытку.</Text>
+      <div className="pg-table-wrap"><table className="pg-table pg-table--stack">
+        <thead><tr><th /><th>Попытка 1</th><th>Попытка 2</th></tr></thead>
+        <tbody>{lines.map(([name, get]) => <tr key={name}><td className="pg-muted">{name}</td>{rows.map((r, i) => <td key={i} data-label={`Попытка ${i + 1}`}>{get(r)}</td>)}</tr>)}</tbody>
+      </table></div>
+    </Panel>
+  );
+}
+
 export function Debrief() {
   const s = useStore();
   const codes = useCodes();
+  if (!s.d2Done)
+    return (
+      <Panel tone="pale">
+        <Text>Разбор появится, когда вы зафиксируете решение месяца 2.</Text>
+        <div><Button size="m" onClick={() => goStep('decision2')}>К решению 2</Button></div>
+      </Panel>
+    );
   const e1 = s.d1.initiatives;
   const e2 = s.d2.initiatives;
   const r1 = simulate1(e1);
@@ -77,6 +115,7 @@ export function Debrief() {
         <Caption level="1">Итоги двух месяцев</Caption>
         <Title level="2">{res.title}</Title>
         <Text>{res.text}</Text>
+        <Text className="pg-outcome__reading">{reading(verdicts.find((v) => v.id === 'K4')!.status, e2, res.level)}</Text>
         {res.reasons.length > 0 && (
           <>
             <Text weight="2">Где потеряли</Text>
@@ -90,6 +129,8 @@ export function Debrief() {
           </div>
         )}
       </section>
+
+      {s.attempts.length > 0 && <Attempts d1={s.d1} tries={[s.attempts[0], s.d2]} split={s.split} />}
 
       <Trace ids={['И4', 'Ф3', 'Э3']}>
         <Panel title="Метрики" icon={<Icon20StatisticsOutline />}>
@@ -124,15 +165,15 @@ export function Debrief() {
               </li>
             ))}
           </ol>
-          <table className="pg-table">
+          <table className="pg-table pg-table--stack">
             <thead><tr><th>Сегмент</th><th>Доля: прежние / новые</th><th>Активность: старт → итог</th><th>Автопополнение: старт → итог</th></tr></thead>
             <tbody>
               {SEGMENTS.map((g) => (
                 <tr key={g}>
                   <td><b>{SEGMENT_INFO[g].name}</b><br /><span className="pg-muted">{SEGMENT_INFO[g].why}</span></td>
-                  <td>{MIX_OLD[g]}% / {MIX_PARTNER[g]}%</td>
-                  <td>{baseline.rates.active[g]}% → <b>{m.rates.active[g]}%</b> <Delta value={m.rates.active[g] - baseline.rates.active[g]} /></td>
-                  <td>{baseline.rates.auto[g]}% → <b>{m.rates.auto[g]}%</b></td>
+                  <td data-label="Доля, прежние / новые">{MIX_OLD[g]}% / {MIX_PARTNER[g]}%</td>
+                  <td data-label="Активность">{baseline.rates.active[g]}% → <b>{m.rates.active[g]}%</b> <Delta value={m.rates.active[g] - baseline.rates.active[g]} /></td>
+                  <td data-label="Автопополнение">{baseline.rates.auto[g]}% → <b>{m.rates.auto[g]}%</b></td>
                 </tr>
               ))}
             </tbody>
@@ -140,8 +181,8 @@ export function Debrief() {
         </Panel>
       </Trace>
 
-      <Trace ids={['И4', 'Ф3']} status="mock" note="Критерии К2–К4 оцениваются правилами; К1, К5, К6 в MVP — эвристика по тексту вместо ИИ-разбора, помечена явно.">
-        <Panel title="Разбор по критериям" icon={<Icon20CommentOutline />}>
+      <Trace ids={['И4', 'Ф3']} status="mock" note="Критерии «Действие ↔ сегмент», «Проверяемое ожидание» и «Разделение эффектов» оцениваются правилами. «Данные, а не мнения», «Пересмотр по последствиям» и «Ограничения и побочные эффекты» в MVP оценивает эвристика по тексту вместо ИИ-разбора, это помечено явно.">
+        <Panel title="Разбор по критериям" icon={<Icon20CommentOutline />} aside={<Button mode="tertiary" size="s" onClick={() => navigate('/glossary')}>Словарь модуля</Button>}>
           <div className="pg-verdicts">
             {verdicts.map((v) => {
               const c = CRITERIA.find((x) => x.id === v.id)!;
@@ -155,12 +196,21 @@ export function Debrief() {
                   <Text className="pg-verdict__evidence">{v.evidence}</Text>
                   <Text>{v.comment}</Text>
                   <Caption level="2" className="pg-muted">{c.by === 'rule' ? 'Оценено правилом по вашему выбору' : 'Предварительно: в MVP — эвристика по тексту, в целевой версии — ИИ-разбор по рубрике'}</Caption>
+                  <Concept id={v.id} run={inRun(v.id, s.d1, s.d2, verdicts)} />
                 </article>
               );
             })}
           </div>
         </Panel>
       </Trace>
+
+      <Panel title="Допущения и подсказки" tone="pale">
+        <Text><b>Что вы допускали и в чём не были уверены:</b> {s.d1.assumptions?.trim() || 'не записано'}</Text>
+        <Text>{s.d1.assumptions?.trim()
+          ? 'Хорошо, что сомнения названы: эксперты ищут именно их. Сверьте их с итогом двух месяцев: какое подтвердилось, а какое нет. Это готовый ответ на вопрос интервью.'
+          : 'Допущений вы не записали. Эксперты ищут именно их: в следующий раз назовите, в каких данных сомневаетесь и что приняли без проверки.'}</Text>
+        <Caption level="1" className="pg-muted">Подсказок взято: на решении 1 {s.hints.d1} из 3, на решении 2 {s.hints.d2} из 3.</Caption>
+      </Panel>
 
       {notes.length > 0 && (
         <Panel title="Что стоит унести с собой" tone="tint">
@@ -176,20 +226,26 @@ export function Debrief() {
       )}
 
       <Panel title="Как прошли бы другие ветки">
-        <Text className="pg-muted">В эпизоде 1 единственно верного хода нет: разные наборы дают сопоставимый итог. В эпизоде 2 сильнейший ход — гибкое пополнение: событие касается людей с нерегулярным доходом. Это «ответ автора» кейса, и мы его не прячем: на перенос навыка проверяет самостоятельная задача, а не угадывание этой ветки.</Text>
-        <table className="pg-table">
+        <Text className="pg-muted">Сильный итог, от 30% автопополнения, есть только у путей с понятным автопереводом; без него потолок 24,9–27,0%. В эпизоде 2 сильнейший ход — гибкое пополнение: событие касается людей с нерегулярным доходом. Это «ответ автора» кейса, и мы его не прячем: на перенос навыка проверяет самостоятельная задача, а не угадывание этой ветки.</Text>
+        <table className="pg-table pg-table--stack">
           <thead><tr><th>Ветка</th><th>Активные цели</th><th>С автопополнением</th><th>Средняя сумма</th></tr></thead>
           <tbody>
-            <tr className="is-total"><td>Ваш путь</td><td>{fmt(m.total.m1)}%</td><td>{fmt(m.total.m2)}%</td><td>{fmt(m.side.avgTopup, 0)} ₽</td></tr>
+            <tr className="is-total"><td>Ваш путь</td><td data-label="Активные цели">{fmt(m.total.m1)}%</td><td data-label="С автопополнением">{fmt(m.total.m2)}%</td><td data-label="Средняя сумма">{fmt(m.side.avgTopup, 0)} ₽</td></tr>
             {PATHS.filter((p) => !same(p)).map((p) => {
               const r = simulate2(p.e1, p.e2, p.push).m;
-              return <tr key={p.name}><td>{codes ? p.name : p.full}</td><td>{fmt(r.total.m1)}%</td><td>{fmt(r.total.m2)}%</td><td>{fmt(r.side.avgTopup, 0)} ₽</td></tr>;
+              return <tr key={p.name}><td>{codes ? p.name : p.full}</td><td data-label="Активные цели">{fmt(r.total.m1)}%</td><td data-label="С автопополнением">{fmt(r.total.m2)}%</td><td data-label="Средняя сумма">{fmt(r.side.avgTopup, 0)} ₽</td></tr>;
             })}
           </tbody>
         </table>
       </Panel>
 
       <div className="pg-row pg-row--end">
+        {s.attempts.length === 0 && (
+          <>
+            <Caption level="1" className="pg-muted">Вернётесь к решению 2 с теми же данными месяца 1. Первая попытка сохранится, в разборе обе будут рядом.</Caption>
+            <Button size="l" mode="secondary" onClick={() => { setState((st) => ({ attempts: [st.d2], d2Done: false })); goStep('decision2'); }}>Переиграть месяц 2</Button>
+          </>
+        )}
         <Button size="l" after={<Icon20ChevronRight />} onClick={() => goStep('transfer')}>К самостоятельной задаче</Button>
       </div>
     </div>

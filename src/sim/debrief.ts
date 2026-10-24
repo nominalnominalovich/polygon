@@ -1,4 +1,4 @@
-import { METRICS, type E1Id, type E2Id } from './scenario';
+import { METRICS, PARTNER_N, type E1Id, type E2Id } from './scenario';
 import type { Decision1, Decision2 } from '../store';
 import { hasResearch, type Month } from './engine';
 
@@ -67,8 +67,10 @@ export function judge(d1: Decision1, d2: Decision2, split: boolean): Verdict[] {
     out.push({ id: 'K1', status: 'seen', evidence: quote(r1, dataWord), comment: 'Решение опирается на поведенческие данные, а надёжность опроса проверена или поставлена под вопрос.' });
   else if (dataWord)
     out.push({ id: 'K1', status: 'partial', evidence: quote(r1 || d1.rationale, dataWord), comment: 'Поведенческие данные упомянуты, но не видно, как вы оценили надёжность опроса с откликом 9% и что из данных следует для решения.' });
-  else
+  else if (opinionWord)
     out.push({ id: 'K1', status: 'unseen', evidence: quote(r1, opinionWord), comment: 'Аргументы держатся на мнениях (опрос, отзывы, стейкхолдеры). Воронка показывала, что 56% уходят с экрана настройки, а у 70% бросивших деньги были.' });
+  else
+    out.push({ id: 'K1', status: 'nodata', evidence: quote(r1), comment: 'Эвристика не нашла ссылок на данные: ни на поведение клиентов, ни на опрос или мнения коллег. Перечитайте обоснование сами: на что оно опирается?' });
 
   // К2
   const need = MATCH[d1.problem];
@@ -131,8 +133,11 @@ export function lessons(d1: Decision1, d2: Decision2, avgTopup = 2400): string[]
     out.push('Прозрачный автоперевод сработал на тех, кто боялся списаний: у сегмента «не доверяют» автопополнение выросло на 15 п.п., а обращений про автоперевод стало вдвое меньше.');
   if (d2.explanation === 'failed')
     out.push('Общее автопополнение упало, но у прежней аудитории оно выросло. Падение дали 4 000 новых клиентов: у них автопополнение около 5%. Перед выводом о провале проверьте состав аудитории.');
-  if (e1.includes('G'))
-    out.push('Исследование не дало релиза, зато показало, что опрос занижает долю забывающих больше чем вдвое и что почти пятая часть копит при нерегулярном доходе. Поэтому событие эпизода 2 не застало вас врасплох.');
+  if (e1.includes('G')) {
+    const ready = e2.includes('D') && d2.explanation !== 'failed';
+    const miss = d2.explanation === 'failed' ? 'общий дашборд вы прочитали как провал релиза.' : 'для людей с нерегулярным доходом во втором месяце ничего не вышло.';
+    out.push(`Исследование не дало релиза, зато показало, что опрос занижает долю забывающих больше чем вдвое и что почти пятая часть копит при нерегулярном доходе. ${ready ? 'Поэтому событие эпизода 2 не застало вас врасплох.' : `Но событие эпизода 2 всё равно застало вас врасплох: ${miss}`}`);
+  }
   if (e2.includes('D'))
     out.push(hasResearch(e1, e2) ? 'Гибкое пополнение, настроенное по интервью, дало самый сильный эффект на сегменте с нерегулярным доходом.' : 'Гибкое пополнение сработало на нерегулярном доходе; с интервью эффект был бы выше — люди хотят минимальный порог и паузу в месяц без дохода.');
   if (e2.includes('I'))
@@ -142,7 +147,7 @@ export function lessons(d1: Decision1, d2: Decision2, avgTopup = 2400): string[]
 
 export type Outcome = { level: 'frozen' | 'weak' | 'ok' | 'strong'; title: string; text: string; reasons: string[] };
 
-/** Итог для направления: при автопополнении ниже стартовых 18% руководитель замораживает проект. */
+/** Итог для направления: при автопополнении по всем целям ниже 18% руководитель замораживает проект. */
 export function outcome(m: Month, d1: Decision1, d2: Decision2): Outcome {
   const e1 = d1.initiatives as E1Id[];
   const e2 = d2.initiatives as E2Id[];
@@ -152,10 +157,26 @@ export function outcome(m: Month, d1: Decision1, d2: Decision2): Outcome {
   if (used.includes('A') && !e2.includes('EA')) reasons.push(`Баллы накрутили активность, а не накопления: средняя сумма пополнения упала до ${m.side.avgTopup.toLocaleString('ru-RU')} ₽.`);
   if (d2.explanation === 'failed') reasons.push('Вы поверили общему дашборду: у прежней аудитории релиз работал, показатель тянули вниз новые клиенты.');
   if (e2.includes('I')) reasons.push('Месяц наблюдения без изменений для новой аудитории стоил направлению времени.');
+  else if (!e2.includes('D')) {
+    const p = m.partner!.m2.toLocaleString('ru-RU');
+    reasons.push(e2.includes('Z')
+      ? `Вы изучили новых клиентов, но ничего для них не выпустили: их автопополнение осталось на ${p}%.`
+      : `Новые ${PARTNER_N.toLocaleString('ru-RU')} клиентов остались на ${p}% автопополнения: во втором месяце для них ничего не выпущено.`);
+  }
   const m2 = m.total.m2.toLocaleString('ru-RU');
+  const gain = `Автопополнение по всем целям ${m2}% против 18% на старте: +${(Math.round((m.total.m2 - 18) * 10) / 10).toLocaleString('ru-RU')} п.п.`;
   if (m.total.m2 < 18)
-    return { level: 'frozen', title: 'Проект заморожен', text: `Ирина: «Замораживаем „Цели“: автопополнение ${m2}% — ниже, чем было до вас (18%). Команду переводим на другой проект».`, reasons };
-  if (m.total.m2 < 25) return { level: 'weak', title: 'Рост ниже плана', text: `Автопополнение ${m2}% против 18% на старте: направление живо, но руководитель ждал большего.`, reasons };
-  if (m.total.m2 < 30) return { level: 'ok', title: 'Уверенный рост', text: `Автопополнение ${m2}% против 18% на старте.`, reasons };
-  return { level: 'strong', title: 'Сильный результат', text: `Автопополнение ${m2}% против 18% на старте — почти вдвое.`, reasons };
+    return { level: 'frozen', title: 'Итог для продукта: проект заморожен', text: `Ирина: «Замораживаем „Цели“: автопополнение по всем целям ${m2}% — ниже цели 18%. Команду переводим на другой проект».`, reasons };
+  if (m.total.m2 < 25) return { level: 'weak', title: 'Итог для продукта: рост ниже плана', text: `${gain} Направление живо, но руководитель ждал большего.`, reasons };
+  if (m.total.m2 < 30) return { level: 'ok', title: 'Итог для продукта: уверенный рост', text: gain, reasons };
+  return { level: 'strong', title: 'Итог для продукта: сильный рост', text: gain, reasons };
+}
+
+/** Прочтение дашборда — отдельно от итога для продукта: рост мог дать сильный ход, а не верный вывод. */
+export function reading(k4: Status, e2: E2Id[], level: Outcome['level']): string {
+  const head = `Прочтение дашборда, критерий «Разделение эффектов»: ${STATUS_LABEL[k4].toLowerCase()}.`;
+  if (k4 === 'seen') return `${head} Вы отделили эффект релиза от смены аудитории.`;
+  if (k4 === 'partial') return `${head} Вывод о смене аудитории не проверен срезом.`;
+  if (k4 === 'nodata') return `${head} Своё объяснение оценит эксперт.`;
+  return `${head} ${e2.includes('D') && level !== 'frozen' ? 'Рост дало гибкое пополнение, а не верное прочтение дашборда.' : 'Общий показатель смешал прежнюю аудиторию и новых клиентов.'}`;
 }

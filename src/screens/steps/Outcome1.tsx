@@ -15,12 +15,12 @@ export function SplitTable({ m, base = baseline }: { m: Month; base?: Month }) {
     ['Общий показатель', '14 000 целей', m.total, base.old, 'к старту — так видит руководитель'],
   ] as const;
   return (
-    <div className="pg-table-wrap"><table className="pg-table">
-      <thead><tr><th>Аудитория</th><th>Объём</th><th>Активные цели</th><th>С автопополнением</th></tr></thead>
+    <div className="pg-table-wrap"><table className="pg-table pg-split">
+      <thead><tr><th>Аудитория</th><th>Объём</th><th>Активные цели</th><th>С авто­пополнением</th></tr></thead>
       <tbody>
         {rows.map(([name, n, c, b, note]) => (
           <tr key={name} className={name === 'Общий показатель' ? 'is-total' : ''}>
-            <td>{name}<br /><Caption level="2" className="pg-muted">{note}</Caption></td>
+            <td>{name}<br /><Caption level="2" className="pg-muted"><span className="pg-split__n">{n}, </span>{note}</Caption></td>
             <td className="pg-muted">{n}</td>
             <td><b>{fmt(c.m1)}%</b> <Delta value={c.m1 - b.m1} /></td>
             <td><b>{fmt(c.m2)}%</b> <Delta value={c.m2 - b.m2} /></td>

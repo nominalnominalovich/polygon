@@ -10,6 +10,7 @@ import { Panel, Pill } from '../../components/ui';
 import { E4_CRITERIA } from './Transfer';
 import { code, critCode, useCodes } from '../../labels';
 import { summaryText } from '../../review';
+import { ModuleResults } from './Results';
 
 export function WorkFields({ t }: { t: import('../../store').Transfer }) {
   const codes = useCodes();
@@ -64,11 +65,12 @@ export function Card() {
             )}
           </Panel>
         )}
+        <ModuleResults review={review} />
       </div>
       <aside className="pg-stack">
         <Trace ids={['И5', 'И6']} note="Передача — отдельное действие участника; тренировочные черновики не передаются.">
           <Panel title="Передача эксперту банка" tone={s.shared ? 'tint' : 'pale'}>
-            <Text><b>Уйдёт:</b> номер кандидата, проблема, сегмент, инициативы, ожидание, обоснование и что проверить после запуска. Из шага «месяц спустя»: результат, запрошена ли разбивка, ваше объяснение и что вы меняете.</Text>
+            <Text><b>Уйдёт:</b> номер кандидата, проблема, сегмент, инициативы, ожидание, обоснование, что вы допускаете и что проверить после запуска. Из шага «месяц спустя»: результат, запрошена ли разбивка, ваше объяснение и что вы меняете.</Text>
             <Text><b>Не уйдёт:</b> тренировочные эпизоды, черновики, разбор.</Text>
             {s.shared ? (
               <>
