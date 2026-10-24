@@ -90,7 +90,7 @@ export function Dossier() {
             <ul className="pg-list">{UNKNOWNS.map((u) => <li key={u}><Text>{u}</Text></li>)}</ul>
             <Caption level="1" className="pg-muted">Пробел — не факт. Запишите вопрос или допущение, оно попадёт в ваше решение.</Caption>
             <form className="pg-note-form" onSubmit={(e) => { e.preventDefault(); if (note.trim()) { setState({ notes: [...s.notes, note.trim()] }); setNote(''); } }}>
-              <Input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Например: опрос смещён к вовлечённым?" />
+              <Input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Например: что ещё нужно узнать о клиентах?" />
               <Button type="submit" mode="secondary" size="m">Записать</Button>
             </form>
             {s.notes.length > 0 && (

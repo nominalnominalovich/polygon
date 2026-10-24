@@ -36,7 +36,7 @@ export function Landing() {
             <Headline level="1" weight="2">Автопополнение: 18% → 15,1%</Headline>
             <div className="pg-msg pg-msg--warn"><div className="pg-msg__avatar">И</div><div><Text weight="2">Ирина <span className="pg-muted">· руководитель</span></Text><Text>Автопополнение упало! Что сломалось? Давай срочно баллы.</Text></div></div>
             <div className="pg-msg"><div className="pg-msg__avatar">Я</div><div><Text weight="2">Вы <span className="pg-muted">· младший продакт</span></Text><Text>…</Text></div></div>
-            <Caption level="1" className="pg-muted">Что вы ответите? Релиз провалился — или дело в чём-то другом?</Caption>
+            <Caption level="1" className="pg-muted">Что вы ответите руководителю?</Caption>
           </div>
         </div>
       </section>

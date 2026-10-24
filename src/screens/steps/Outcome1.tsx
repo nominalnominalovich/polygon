@@ -44,7 +44,7 @@ export function Outcome1() {
     <div className="pg-stack">
       <Panel tone="solid">
         <Caption level="1">Прошёл месяц</Caption>
-        <Title level="2">Ваш релиз вышел. Одновременно случилось то, о чём вы не знали</Title>
+        <Title level="2">Ваш релиз вышел. Посмотрите, что изменилось</Title>
       </Panel>
 
       <Trace ids={['И3', 'Ф2', 'Э3']} note="Критерий 1: последствия выбора и внешнее событие показаны раздельно.">
@@ -75,7 +75,7 @@ export function Outcome1() {
         <div className="pg-tiles">
           <Tile label="Активные цели" info={HINTS.M1} value={m.total.m1} delta={m.total.m1 - baseline.old.m1} hint="было 37,2%" />
           <Tile label="Цели с автопополнением" info={HINTS.M2} value={m.total.m2} delta={m.total.m2 - baseline.old.m2} hint="было 18%" />
-          <Tile label="Обращения в поддержку" info={HINTS.M3} value={m.side.support} unit="" delta={m.side.support - 340} deltaUnit="" invert hint="было 340" />
+          <Tile label="Обращения в поддержку" info={`${HINTS.M3} Это абсолютное число: новых целей в этом месяце стало на 40% больше.`} value={m.side.support} unit="" delta={m.side.support - 340} deltaUnit="" invert hint="было 340" />
           {e1.includes('A') && <Tile label="Средняя сумма пополнения" value={m.side.avgTopup} unit=" ₽" delta={m.side.avgTopup - 2400} deltaUnit="₽" hint={`баллы: ${fmt(m.side.bonusCost, 2)} млн ₽/мес`} />}
           {e1.includes('B') && <Tile label="Отписки от пушей" value={m.side.unsub} delta={m.side.unsub - 1.2} invert hint="было 1,2%" />}
         </div>
