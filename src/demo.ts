@@ -51,6 +51,8 @@ export function loadPreset(id: string) {
     ...initial,
     role: 'candidate',
     trace: s.trace,
+    jury: s.jury,
+    tours: { ...s.tours, candidate: true },
     reviews: s.reviews,
     d1: { ...initial.d1, ...p.d1 },
     d1Done: true,
