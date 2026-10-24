@@ -4,6 +4,7 @@ import { Button, Caption, Text } from '@vkontakte/vkui';
 import { Icon20DownloadOutline, Icon20FullscreenOutline } from '@vkontakte/icons';
 import source from '../content/defense.md?raw';
 import { navigate } from '../router';
+import { BackToProduct } from '../components/Shell';
 
 type Section = { id: string; title: string; html: string };
 
@@ -33,6 +34,7 @@ export function Defense({ section }: { section?: string }) {
     <div className="pg-doc">
       <aside className="pg-doc__nav">
         <Caption level="1" className="pg-muted">Материалы защиты</Caption>
+        <div><BackToProduct /></div>
         <nav>
           {sections.map((s) => (
             <a key={s.id} href={`#/defense/${s.id}`} className={section === s.id ? 'is-current' : ''}>{s.title}</a>

@@ -15,9 +15,9 @@ const check = async (label) => {
   console.log(`${r.sw > r.W ? '✗' : '✓'} ${label}: ${r.sw}/${r.W} ${r.wide.join(' | ')}`);
 };
 await page.goto(base + '#/'); await check('главная');
-await page.evaluate(() => localStorage.setItem('polygon:v1', JSON.stringify({ role: 'candidate' })));
+await page.evaluate(() => localStorage.setItem('polygon:v1', JSON.stringify({ role: 'candidate', jury: true })));
 await page.goto(base + '#/program'); await page.reload(); await check('программа');
-await page.click('text=Для защиты проекта'); await page.click('text=Сильный путь'); await check('последствия (пресет)');
+await page.click('.pg-tour >> text=Пропустить'); await page.click('text=Для защиты проекта'); await page.click('text=Сильный путь'); await check('последствия (пресет)');
 for (const st of steps) {
   await page.evaluate((st) => { const s = JSON.parse(localStorage.getItem('polygon:v1')); s.step = st; s.reached = 'card'; s.d2Done = true; s.transferDone = st === 'card' || st === 'transfer'; s.transfer2Done = st === 'card'; localStorage.setItem('polygon:v1', JSON.stringify(s)); }, st);
   await page.reload(); await check(st);

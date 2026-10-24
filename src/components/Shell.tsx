@@ -1,12 +1,22 @@
 import { useRef, useState, type ReactNode } from 'react';
 import { Button, Switch, Text } from '@vkontakte/vkui';
-import { Icon20DoorArrowRightOutline, Icon20QuestionOutline, Icon20ViewOutline } from '@vkontakte/icons';
+import { Icon20ArrowLeftOutline, Icon20DoorArrowRightOutline, Icon20QuestionOutline, Icon20ViewOutline } from '@vkontakte/icons';
 import { navigate, useRoute } from '../router';
 import { setState, useStore } from '../store';
 import { Tour } from './Tour';
 
 export function homeOf(role: 'candidate' | 'expert' | null) {
   return role === 'candidate' ? '/program' : role === 'expert' ? '/expert' : '/';
+}
+
+/** Назад с отчёта, редактора и презентации: в режиме жюри на страницу жюри, иначе домой по роли. */
+export function BackToProduct({ className, size = 'm' }: { className?: string; size?: 's' | 'm' }) {
+  const { role, jury } = useStore();
+  return (
+    <Button className={className} mode="secondary" size={size} before={<Icon20ArrowLeftOutline />} onClick={() => navigate(jury ? '/jury' : homeOf(role))}>
+      Вернуться в продукт
+    </Button>
+  );
 }
 
 export function Logo() {

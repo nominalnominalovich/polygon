@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button, Caption, Input, Text, Textarea, Title } from '@vkontakte/vkui';
 import { applyOverride, currentOverride, reset, save, validate, type Override } from '../author';
 import { Panel, Pill } from '../components/ui';
+import { BackToProduct } from '../components/Shell';
 
 export function Author() {
   const [draft, setDraft] = useState<Override>(() => currentOverride());
@@ -47,6 +48,7 @@ export function Author() {
     <div className="pg-page pg-page--wide">
       <Caption level="1" className="pg-muted">Для автора кейса или организатора программы</Caption>
       <Title level="1" className="pg-page__title">Редактор кейса «Накопления на цель»</Title>
+      <div><BackToProduct /></div>
       <Text className="pg-muted pg-page__lead">Прототип: правки хранятся в этом браузере, сервера и прав доступа нет. Перед сохранением кейс проходит те же проверки, что автотесты: доли сегментов, ёмкость команды, есть сильная и провальная ветка.</Text>
 
       <Panel title="Инициативы и стоимость в очках">

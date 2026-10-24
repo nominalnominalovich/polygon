@@ -354,3 +354,6 @@ blockquote { margin: 0; padding: 10px 14px; border-radius: 10px; background: var
 /* Главная: полное название и стартовое досье в превью */
 .pg-hero__name { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
 .pg-preview__split > div { color: var(--ink); }
+
+/* Окна на телефоне не шире экрана: ширина с учётом отступов, на десктопе как раньше */
+.pg-modal__card { box-sizing: border-box; max-width: 668px; }
