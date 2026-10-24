@@ -1,6 +1,6 @@
-import { useState, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { Button, Switch, Text } from '@vkontakte/vkui';
-import { Icon20DocumentOutline, Icon20DoorArrowRightOutline, Icon20QuestionOutline, Icon20ViewOutline } from '@vkontakte/icons';
+import { Icon20DoorArrowRightOutline, Icon20QuestionOutline, Icon20ViewOutline } from '@vkontakte/icons';
 import { navigate, useRoute } from '../router';
 import { setState, useStore } from '../store';
 import { Tour } from './Tour';
@@ -11,8 +11,17 @@ export function homeOf(role: 'candidate' | 'expert' | null) {
 
 export function Logo() {
   const { role } = useStore();
+  const clicks = useRef<number[]>([]);
+  // Пять кликов за 3 секунды открывают скрытую панель разработчика.
+  const onClick = () => {
+    const now = Date.now();
+    clicks.current = [...clicks.current.filter((t) => now - t < 3000), now];
+    if (clicks.current.length < 5) return navigate(homeOf(role));
+    clicks.current = [];
+    navigate('/dev');
+  };
   return (
-    <button className="pg-logo" onClick={() => navigate(homeOf(role))} aria-label="Полигон — на главную">
+    <button className="pg-logo" onClick={onClick} aria-label="Полигон — на главную">
       <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
         <rect width="28" height="28" rx="8" fill="#0077ff" />
         <path d="M7 19.5 11.5 10l4 6 2.5-3.5 3 7" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
@@ -48,11 +57,6 @@ export function Shell({ children }: { children: ReactNode }) {
                 <span>Режим обоснования</span>
                 <Switch checked={trace} onChange={(e) => setState({ trace: e.currentTarget.checked })} aria-label="Режим обоснования" />
               </label>
-            )}
-            {jury && (
-              <Button mode={onDefense ? 'secondary' : 'primary'} size="m" before={<Icon20DocumentOutline />} onClick={() => navigate(onDefense ? homeOf(role) : '/jury')}>
-                {onDefense ? 'Вернуться в продукт' : 'Для жюри'}
-              </Button>
             )}
             {role && !onDefense && (
               <Button mode="tertiary" size="m" before={<Icon20QuestionOutline />} onClick={() => setTour(true)} aria-label="Как это устроено">

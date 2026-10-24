@@ -1,19 +1,15 @@
 import { useEffect } from 'react';
 import { Button, Caption, Headline, Switch, Text, Title } from '@vkontakte/vkui';
-import { Icon20DocumentOutline, Icon20DownloadOutline, Icon20FullscreenOutline, Icon20UserStarOutline, Icon20ViewOutline, Icon24EducationOutline } from '@vkontakte/icons';
+import { Icon20ArrowLeftOutline, Icon20DocumentOutline, Icon20DownloadOutline, Icon20FullscreenOutline, Icon20UserStarOutline, Icon20ViewOutline, Icon24EducationOutline } from '@vkontakte/icons';
 import { navigate } from '../router';
-import { setState, useStore } from '../store';
+import { setRole, setState, useStore } from '../store';
 import { PRESETS, loadPreset } from '../demo';
 import { Panel } from '../components/ui';
+import { homeOf } from '../components/Shell';
 
 const BASE = import.meta.env.BASE_URL;
 
-const TEAM = [
-  ['Мария П.', 'Организация работы, рамка задания и инструменты курса, исследование, защита'],
-  ['Ольга Ф.', 'Идея и механика симуляции, сценарий эпизодов, проверка прототипа'],
-  ['Софа И.', 'Концепция: персоны, карты эмпатии, истории и критерии приёмки'],
-  ['Роман С.', 'Платформа и движок симуляции, отчёт и презентация'],
-];
+const TEAM = ['Мария П.', 'Ольга Ф.', 'Софа И.', 'Роман С.'];
 
 const STEPS = [
   ['Глазами кандидата', 'Войдите как кандидат и пройдите досье и первое решение. Так продукт видит участник программы.'],
@@ -23,12 +19,13 @@ const STEPS = [
 ];
 
 export function Jury() {
-  const { trace } = useStore();
+  const { trace, role } = useStore();
   useEffect(() => { setState({ jury: true }); }, []);
   return (
     <div className="pg-page pg-page--wide">
       <Caption level="1" className="pg-muted">Учебный проект ВШЭ · «Принципы и подходы к разработке цифровых продуктов» · 2026</Caption>
       <Title level="1" className="pg-page__title">Полигон — материалы для жюри</Title>
+      <div><Button mode="secondary" size="m" before={<Icon20ArrowLeftOutline />} onClick={() => navigate(homeOf(role))}>Вернуться в продукт</Button></div>
       <Text className="pg-muted pg-page__lead">Всё в одном месте: продукт, отчёт, презентация и как их смотреть. Служебные элементы — метки обоснования и готовые прохождения — видны только в этом режиме, участник программы их не видит.</Text>
 
       <div className="pg-grid pg-grid--2">
@@ -48,7 +45,7 @@ export function Jury() {
         </Panel>
         <Panel title="Команда">
           <ul className="pg-team">
-            {TEAM.map(([n, r]) => <li key={n}><Text weight="2">{n}</Text><Text className="pg-muted">{r}</Text></li>)}
+            {TEAM.map((n) => <li key={n}><Text weight="2">{n}</Text></li>)}
           </ul>
         </Panel>
       </div>
@@ -64,8 +61,8 @@ export function Jury() {
             <Switch checked={trace} onChange={(e) => setState({ trace: e.currentTarget.checked })} aria-label="Режим обоснования" />
           </label>
           <div className="pg-hero__actions">
-            <Button size="l" before={<Icon24EducationOutline />} onClick={() => { setState({ role: 'candidate' }); navigate('/program'); }}>Войти как кандидат</Button>
-            <Button size="l" mode="secondary" before={<Icon20UserStarOutline />} onClick={() => { setState({ role: 'expert' }); navigate('/expert'); }}>Войти как эксперт</Button>
+            <Button size="l" before={<Icon24EducationOutline />} onClick={() => { setRole('candidate'); navigate('/program'); }}>Войти как кандидат</Button>
+            <Button size="l" mode="secondary" before={<Icon20UserStarOutline />} onClick={() => { setRole('expert'); navigate('/expert'); }}>Войти как эксперт</Button>
           </div>
         </div>
       </Panel>

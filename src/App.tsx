@@ -10,6 +10,7 @@ import { Defense } from './screens/Defense';
 import { Deck } from './screens/Deck';
 import { Jury } from './screens/Jury';
 import { Author } from './screens/Author';
+import { Dev } from './screens/Dev';
 
 export function App() {
   const route = useRoute();
@@ -20,6 +21,7 @@ export function App() {
   let screen;
   if (route.startsWith('/jury')) screen = <Jury />;
   else if (route.startsWith('/author')) screen = <Author />;
+  else if (route === '/dev') screen = <Dev />;
   else if (route.startsWith('/defense')) screen = <Defense section={route.split('/')[2]} />;
   else if (route === '/program' && role === 'candidate') screen = <Program />;
   else if (route === '/play' && role === 'candidate') screen = <Play />;
