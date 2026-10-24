@@ -25,7 +25,7 @@ export function Decision1() {
     !d.problem && 'проблема',
     !d.segment && 'сегмент',
     d.initiatives.length === 0 && 'инициатива',
-    !d.rationale.trim() && 'обоснование',
+    d.rationale.replace(/\[[^\]]*\]/g, '').trim().length < 20 && 'обоснование своими словами',
   ].filter(Boolean) as string[];
   const valid = missing.length === 0 && used <= CAPACITY;
 
@@ -95,7 +95,7 @@ export function Decision1() {
 
         <Trace ids={['И4']} status="mock" note="Симуляция не считает свои идеи участника — они сохраняются в разборе как альтернатива (Т2).">
           <Panel title="Своя идея (необязательно)" tone="pale">
-            <Text className="pg-muted">Если хотите предложить то, чего нет в списке, — опишите. Симуляция не будет выдумывать для неё цифры: идея сохранится в вашем разборе как альтернатива, её можно обсудить на интервью.</Text>
+            <Text className="pg-muted">Если хотите предложить то, чего нет в списке, — опишите. Симуляция не считает для неё цифры, но идея сохранится в вашем разборе. Её никто не оценивает.</Text>
             <Textarea value={d.alternative} onChange={(e) => set({ alternative: e.target.value })} rows={3} />
           </Panel>
         </Trace>

@@ -23,7 +23,7 @@ export function ExpectationFields({ value, onChange }: { value: Expectation; onC
         </div>
       </FormItem>
       <FormItem top="Величина" noPadding>
-        <Input value={value.value} onChange={(e) => onChange({ value: e.target.value })} placeholder="например, +5 п.п." />
+        <Input value={value.value} onChange={(e) => onChange({ value: e.target.value })} placeholder="число и единица" />
       </FormItem>
       <FormItem top="Срок" noPadding>
         <NativeSelect value={value.term} onChange={(e) => onChange({ term: e.target.value })} placeholder="Выберите">
