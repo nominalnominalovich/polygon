@@ -292,12 +292,16 @@ svg.links{position:absolute;left:0;top:0;width:960px;height:540px;pointer-events
 .list-c.sm.tight li{padding:6px 14px}
 
 @page{size:960px 540px;margin:0}
+.dnav{position:fixed;right:16px;bottom:14px;display:flex;gap:6px;z-index:5}
+.dnav button{width:36px;height:36px;border:0;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;font:20px/1 sans-serif;cursor:pointer}
+.dnav button:hover{background:rgba(0,0,0,.7)}
 @media print{
   html,body{background:#fff;height:auto}
   .deck{position:static;display:block;overflow:visible}
   .stage{transform:none!important;width:960px;height:auto}
   .slide{display:block!important;position:relative;break-after:page;page-break-after:always}
   .slide:last-child{break-after:auto;page-break-after:auto}
+  .dnav{display:none}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
@@ -1103,6 +1107,7 @@ svg.links{position:absolute;left:0;top:0;width:960px;height:540px;pointer-events
 </section>
 
 </div></div>
+<div class="dnav"><button type="button" id="prev" aria-label="Предыдущий кадр">‹</button><button type="button" id="next" aria-label="Следующий кадр">›</button></div>
 <script>
 (function(){
   var stage=document.getElementById('stage');
@@ -1131,6 +1136,12 @@ svg.links{position:absolute;left:0;top:0;width:960px;height:540px;pointer-events
     }
   });
   addEventListener('hashchange',fromHash);
+  document.getElementById('prev').onclick=function(e){e.stopPropagation();show(cur-1);};
+  document.getElementById('next').onclick=function(e){e.stopPropagation();show(cur+1);};
+  addEventListener('click',function(e){if(e.target.closest('a,button'))return;show(e.clientX<innerWidth*0.3?cur-1:cur+1);});
+  var tx=null;
+  addEventListener('touchstart',function(e){tx=e.touches[0].clientX;},{passive:true});
+  addEventListener('touchend',function(e){if(tx===null)return;var dx=e.changedTouches[0].clientX-tx;tx=null;if(Math.abs(dx)>40)show(dx<0?cur+1:cur-1);},{passive:true});
   addEventListener('resize',fit);
   fit();fromHash();
 })();
