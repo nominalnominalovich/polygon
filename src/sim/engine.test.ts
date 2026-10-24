@@ -9,11 +9,11 @@ describe('контрольные прохождения', () => {
 
   it('1. В+Г → Д (с исследованием) + Е-В', () => {
     const m1 = simulate1(['V', 'G']).m;
-    expect(m1.old).toEqual({ m1: 44.2, m2: 27.6 });
-    expect(m1.total).toEqual({ m1: 40.1, m2: 21.6 });
+    expect(m1.old).toEqual({ m1: 42, m2: 22.8 });
+    expect(m1.total).toEqual({ m1: 38.5, m2: 17.9 });
     const m2 = simulate2(['V', 'G'], ['D', 'EV'], null).m;
-    expect(m2.old).toEqual({ m1: 52.8, m2: 36.6 });
-    expect(m2.total).toEqual({ m1: 52.7, m2: 35 });
+    expect(m2.old).toEqual({ m1: 50.6, m2: 31.8 });
+    expect(m2.total).toEqual({ m1: 51.1, m2: 31.4 });
     expect(m1.side.support).toBe(330);
     expect(m2.side.support).toBe(275);
   });
@@ -30,11 +30,11 @@ describe('контрольные прохождения', () => {
 
   it('3. Б+В → Е-Б + Д', () => {
     const m1 = simulate1(['B', 'V']).m;
-    expect(m1.old).toEqual({ m1: 51.1, m2: 28.5 });
-    expect(m1.total).toEqual({ m1: 46.5, m2: 22.3 });
+    expect(m1.old).toEqual({ m1: 48.9, m2: 23.7 });
+    expect(m1.total).toEqual({ m1: 45, m2: 18.7 });
     const m2 = simulate2(['B', 'V'], ['EB', 'D'], null).m;
-    expect(m2.old).toEqual({ m1: 57.9, m2: 34.5 });
-    expect(m2.total).toEqual({ m1: 55.7, m2: 32.9 });
+    expect(m2.old).toEqual({ m1: 55.7, m2: 29.7 });
+    expect(m2.total).toEqual({ m1: 54.2, m2: 29.3 });
     expect(m2.side.unsub).toBe(1.3);
   });
 

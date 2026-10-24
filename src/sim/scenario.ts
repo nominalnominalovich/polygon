@@ -30,7 +30,7 @@ export const EFFECTS = {
   A_half: [['S1', 7, 0], ['S4', 12, 0]] as Delta[],
   A_rest: [['S1', 8, 0], ['S4', 13, 0]] as Delta[],
   B: [['S1', 20, 3], ['S3', 3, 0], ['S4', 3, 0]] as Delta[],
-  V: [['S1', 5, 10], ['S2', 25, 30]] as Delta[],
+  V: [['S1', 5, 5], ['S2', 15, 15]] as Delta[],
   D: [['S1', 5, 0], ['S3', 25, 40]] as Delta[],
   D_research: [['S1', 5, 0], ['S3', 30, 45]] as Delta[],
   EB: [['S1', 5, 0]] as Delta[],
