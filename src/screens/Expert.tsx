@@ -105,6 +105,17 @@ const DEMO: Work[] = [
   },
 ];
 
+function exportCsv(rows: { name: string; review?: Review }[]) {
+  const head = ['Кандидат', ...E4_CRITERIA.map((c) => c.title), 'Вопрос для интервью', 'Минут на разбор'];
+  const q = (v: string) => `"${v.replace(/"/g, '""')}"`;
+  const lines = rows.map(({ name, review }) => [name, ...E4_CRITERIA.map((c) => (review?.criteria[c.id] ? STATUS_LABEL[review.criteria[c.id]!.status] : '')), review?.question ?? '', String(review?.minutes ?? '')].map(q).join(';'));
+  const blob = new Blob(['\ufeff' + [head.map(q).join(';'), ...lines].join('\n')], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'разборы-потока.csv';
+  a.click();
+}
+
 const FRAGMENTS = ['Проблема', 'Сегмент', 'Инициативы', 'Ожидание', 'Обоснование'];
 
 export function Expert({ workId }: { workId?: string }) {
@@ -154,6 +165,10 @@ export function Expert({ workId }: { workId?: string }) {
             ))}
             {shown.length === 0 && <Text className="pg-muted pg-pad">{tab === 'done' ? 'Пока ничего не разобрано.' : 'Все работы разобраны.'}</Text>}
             {!(s.shared && s.transfer2Done) && s.jury && <Caption level="1" className="pg-muted pg-pad">Пройдите модуль за кандидата и передайте работу — она появится в этом списке.</Caption>}
+            <div className="pg-pad">
+              <Button mode="secondary" size="m" onClick={() => exportCsv(works.map((w) => ({ name: w.name, review: reviewOf(w) })))}>Выгрузить разборы (CSV)</Button>
+              <Caption level="1" className="pg-muted">Для калибровки с другими экспертами и вашей системы найма: файл остаётся у вас.</Caption>
+            </div>
           </Panel>
         </Trace>
       </div>
@@ -211,6 +226,7 @@ function ReviewForm({ id, name, t, initial }: { id: string; name: string; t: Tra
                 </div>
               );
             })}
+            <Caption level="1" className="pg-muted">Достаточно статусов и одного вопроса для интервью — комментарии по желанию.</Caption>
             <FormItem top="Вопрос для интервью" noPadding>
               <Textarea rows={2} value={review.question} onChange={(e) => setReview((r) => ({ ...r, question: e.target.value }))} />
             </FormItem>
