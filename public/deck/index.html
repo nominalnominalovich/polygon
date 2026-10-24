@@ -6,295 +6,90 @@
 <title>Полигон: защита</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --blue-50:#edf5ff; --blue-100:#e5f1ff; --blue-200:#cce4ff; --blue-300:#99c9ff; --blue-400:#66adff;
-  --blue-500:#0077ff; --blue-700:#0059bf; --blue-900:#003c7f;
-  --magenta-600:#e9005a; --pink-200:#ffd7e7;
-  --ink:#000; --gray-500:#7f7f7f; --gray-400:#a6a6a6; --gray-300:#bfbfbf; --gray-200:#d9d9d9; --white:#fff;
-  --phase-discovery:#f8c246; --phase-delivery:#66adff; --phase-analysis:#02afbf; --phase-undefined:#beb6ae;
-  --f-display:"VK Sans Display","VK Sans","Onest",system-ui,sans-serif;
-  --f-text:"SF Pro Text",-apple-system,"Onest",system-ui,sans-serif;
+  --white:#FFFFFF; --paper:#F4F3EF; --navy:#102B63; --cobalt:#1646E8; --ink:#171A21; --mist:#E8EDF4; --slate:#64748B;
+  --cobalt-soft:#E9EEFD; --on-navy:#AFC2FF;
+  --f:"Manrope",system-ui,-apple-system,sans-serif;
 }
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:#111}
+html,body{margin:0;height:100%;background:#0d1426}
 .deck{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .stage{position:relative;width:960px;height:540px;flex:none;transform-origin:center center}
 .slide{position:absolute;inset:0;width:960px;height:540px;overflow:hidden;display:none;background:var(--white);
-  color:var(--ink);font-family:var(--f-display);font-size:16px;line-height:19px;letter-spacing:0;font-kerning:normal}
+  color:var(--ink);font-family:var(--f);font-size:18px;line-height:1.4;font-kerning:normal;text-rendering:optimizeLegibility}
 .slide.on{display:block}
-.slide :where(p,h1,h2,ol,ul){margin:0;padding:0}
-.slide ol,.slide ul{list-style:none}
-svg.ic{width:24px;height:24px;flex:none}
+.slide p,.slide h1,.slide h2,.slide ul,.slide ol{margin:0;padding:0}
+.slide ul,.slide ol{list-style:none}
+.paper{background:var(--paper)}
+.navy{background:var(--navy);color:#fff}
 
-/* Заголовок-вывод */
-.t{position:absolute;left:53px;top:50px;width:854px;font-size:28px;line-height:30px;font-weight:500;text-wrap:pretty}
-.t.narrow{width:561px}
-.t em{font-style:normal;color:var(--blue-700)}
+.a{position:absolute}
+.rib{position:absolute;left:0;top:0;width:960px;height:540px;overflow:visible;pointer-events:none}
+.rib path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.r{stroke:var(--cobalt)}
+.r-soft{stroke:#BFCBE6}
+.r-navy{stroke:var(--navy)}
 
-/* Колонки под SectionRule */
-.cols{position:absolute;left:53px;right:53px;top:120px;bottom:56px;display:grid;column-gap:25.6px}
-.cols.narrow{right:348px}
-.col{display:flex;flex-direction:column;min-width:0;min-height:0;position:relative}
-.sr{display:flex;align-items:center;gap:8px;height:30px;flex:none;padding-bottom:4px;border-bottom:.75px solid var(--ink);
-  font-size:18px;line-height:22px;font-weight:400;white-space:nowrap}
-.body{margin-top:31px;flex:1;display:flex;flex-direction:column;gap:12px;min-height:0}
-.body.tight{margin-top:14px}
+.kick{position:absolute;left:56px;top:38px;font-size:14px;line-height:18px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--cobalt)}
+.navy .kick{color:var(--on-navy)}
+.h{position:absolute;left:56px;top:62px;width:848px;font-size:38px;line-height:43px;font-weight:800;letter-spacing:-.02em;color:var(--navy);text-wrap:balance}
+.h.m{font-size:32px;line-height:37px}
+.navy .h{color:#fff}
+.h em{font-style:normal;color:var(--cobalt)}
+.lab{font-size:13px;line-height:16px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--cobalt)}
+.navy .lab{color:var(--on-navy)}
+.cap{font-size:14px;line-height:19px;color:var(--slate)}
+.navy .cap{color:#C7D2EA}
+.foot{position:absolute;left:56px;bottom:22px;right:120px;font-size:13px;line-height:17px;color:var(--slate)}
+.navy .foot{color:#C7D2EA}
+.pn{position:absolute;right:30px;bottom:20px;font-size:14px;line-height:18px;font-weight:800;color:var(--slate)}
+.navy .pn{color:var(--on-navy)}
 
-/* Карточки */
-.card{border-radius:12px;padding:12px 14px}
-.card.sm{border-radius:8.6px}
-.c-blue{background:var(--blue-200)}
-.c-pale{background:var(--blue-100)}
-.c-gray{background:var(--gray-200)}
-.c-solid{background:var(--blue-700);color:var(--white)}
-.c-prob{background:var(--white);border:1.5px solid var(--magenta-600);display:flex;flex-direction:column;justify-content:center}
-.c-out{background:var(--white);border:1.5px solid var(--blue-700)}
-.c-risk{background:var(--pink-200)}
-.c-hyp{background:var(--white);border:1.5px dashed var(--blue-500)}
-.ct{font-size:16px;line-height:19px;font-weight:500}
-.ct18{font-size:18px;line-height:22px;font-weight:500}
-.cb{font-size:14px;line-height:17px}
-.lbl{font-size:12px;line-height:15px;font-weight:500}
-.mt4{margin-top:4px}.mt6{margin-top:6px}.mt8{margin-top:8px}.mt12{margin-top:12px}
-.grow{flex:1}
-.row{display:flex;align-items:center;gap:8px}
-ul.b li{position:relative;padding-left:13px}
-ul.b li::before{content:"•";position:absolute;left:0}
-.cite{font-family:var(--f-text);font-size:12px;line-height:15px;color:var(--gray-500);text-align:right;margin-top:-8px}
-.acc{color:var(--blue-700)}
-.ava{width:44px;height:44px;border-radius:50%;background:var(--blue-400);color:var(--white);display:flex;align-items:center;justify-content:center;flex:none}
-.ava.w{background:var(--white);color:var(--blue-700)}
+.cut{filter:grayscale(1) contrast(1.08) brightness(1.02) drop-shadow(0 10px 12px rgba(16,43,99,.16))}
+.navy .cut{filter:grayscale(1) contrast(1.05) brightness(1.08) drop-shadow(0 10px 14px rgba(0,0,0,.35))}
+.shot{border-radius:10px;border:1px solid #D7DFEC;box-shadow:0 18px 40px rgba(16,43,99,.20);background:#fff;overflow:hidden}
+.shot img{display:block;width:100%}
 
-/* Метки Н / Г и коды цепочки */
-.code{display:inline-flex;align-items:center;justify-content:center;height:20px;padding:0 6px;border-radius:4.3px;
-  font-size:12px;line-height:1;font-weight:600;white-space:nowrap;flex:none}
-.code.n{background:var(--magenta-600);color:var(--white)}
-.code.g{background:var(--white);color:var(--blue-700);border:1.2px dashed var(--blue-700)}
-.code.s{background:var(--blue-700);color:var(--white)}
-.code.w{background:var(--white);color:var(--blue-700)}
-.code.xs{height:16px;font-size:11px;padding:0 4px}
+.st{position:absolute;width:36px;height:36px;margin:-18px 0 0 -18px;border-radius:50%;background:var(--navy);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1;font-weight:800;box-shadow:0 0 0 4px #fff}
+.st.big{width:52px;height:52px;margin:-26px 0 0 -26px;font-size:20px}
+.st.hl{background:var(--cobalt)}
+.st.ghost{background:#fff;color:var(--navy);box-shadow:0 0 0 3px var(--navy)}
+.paper .st{box-shadow:0 0 0 4px var(--paper)}
+.paper .st.ghost{box-shadow:0 0 0 3px var(--navy)}
 
-/* Подвал */
-.foot{position:absolute;left:53px;right:90px;bottom:20px;font-family:var(--f-text);font-size:12px;line-height:15px;color:var(--gray-500)}
-.foot.narrow{right:348px}
-.lg{display:inline-flex;align-items:center;gap:5px;margin-right:14px;white-space:nowrap}
-.sw{display:inline-block;width:16px;height:11px;border-radius:3px}
-.sw.n{border:1.5px solid var(--magenta-600)}
-.sw.g{border:1.2px dashed var(--blue-700)}
-.pn{position:absolute;right:20px;bottom:20px;font-family:var(--f-text);font-size:16px;line-height:16px;font-weight:300;color:var(--blue-500)}
+.pill{display:inline-block;font-size:13px;line-height:16px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.p-strong{background:var(--cobalt);color:#fff}
+.p-soft{background:var(--cobalt-soft);color:var(--navy)}
+.p-mist{background:var(--mist);color:var(--navy)}
 
-/* Панель доказательств */
-.ev{position:absolute;top:0;right:0;bottom:0;width:322px;background:var(--blue-100)}
-.ev-cap{position:absolute;left:24px;font-size:12px;line-height:15px;font-weight:500;color:var(--blue-700)}
-.shot{position:absolute;left:24px;width:330px;background:var(--white);border-radius:8.6px 0 0 8.6px;overflow:hidden}
-.shot .bar{height:20px;display:flex;align-items:center;gap:5px;padding-left:10px;border-bottom:.75px solid var(--gray-200)}
-.shot .bar i{width:6px;height:6px;border-radius:50%;background:var(--gray-300)}
-.shot .win{position:relative;overflow:hidden}
-.shot img{position:absolute;display:block}
+.big{font-weight:800;letter-spacing:-.04em;line-height:1}
+.qr{width:150px;height:150px;background:#fff;border-radius:12px;padding:12px;border:1px solid var(--mist)}
+.qr svg{display:block;width:100%;height:100%}
 
-/* Обложка */
-.cover{background:var(--blue-500);color:var(--white)}
-.cover .x{position:absolute;left:52px;right:52px}
-.c-date{top:96px;font-size:32px;line-height:36px;font-weight:500}
-.c-title{top:150px;font-size:36px;line-height:39px;font-weight:500}
-.c-sub{top:200px;font-size:24px;line-height:29px;font-weight:400}
-.c-auth{top:292px;font-size:20px;line-height:24px;font-weight:500}
-.c-course{top:320px;font-size:20px;line-height:24px;font-weight:400}
-.c-lock{bottom:52px;display:flex;align-items:center;gap:20px}
-.qr-tile{width:104px;height:104px;background:var(--white);border-radius:12px;padding:9px;flex:none}
-.qr-tile svg,.qr-big svg{display:block;width:100%;height:100%}
-.c-link{font-size:20px;line-height:24px;font-weight:500}
-.c-link span{display:block;font-weight:400}
+/* таблицы */
+.tb{border-collapse:collapse;width:100%}
+.tb th{font-size:12px;line-height:15px;font-weight:700;color:var(--slate);text-align:left;padding:0 8px 8px 0;vertical-align:bottom}
+.tb td{font-size:13px;line-height:17px;padding:7px 8px 7px 0;border-top:1px solid #DCE3EE;vertical-align:top}
+.tb td.nm{font-size:14px;font-weight:800;color:var(--navy)}
+.tb td.nm small{display:block;font-size:12px;font-weight:500;color:var(--slate)}
+.tb tr.us td{background:var(--cobalt-soft);border-top:2px solid var(--cobalt)}
+.tb tr.us td:first-child{padding-left:10px}
+.mk{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:0}
+.mk.y{background:var(--cobalt)} .mk.p{background:linear-gradient(90deg,var(--cobalt) 50%,#C9D4EE 50%)} .mk.no{background:#fff;box-shadow:inset 0 0 0 2px #9AA8C2}
+.na{color:#94A0B6}
+.tb-s th{font-size:11px;line-height:13px;padding-bottom:6px}
+.tb-s td{font-size:12px;line-height:15px;padding:6px 8px 6px 0}
+.tb-s td.nm{font-size:13px;line-height:16px}
+.tb-s td.nm small{font-size:11px;line-height:13px}
 
-/* Разделитель-оглавление */
-.divider{background:var(--blue-400);color:var(--blue-900)}
-.d-title{position:absolute;left:52px;top:96px;font-size:36px;line-height:39px;font-weight:500}
-.agenda{position:absolute;left:52px;top:176px;width:720px}
-.agenda li{display:flex;gap:20px;font-size:24px;line-height:41px;font-weight:400;padding:0 16px;margin-left:-16px;border-radius:8.6px}
-.agenda li .n{width:34px;flex:none}
-.agenda li.on{background:var(--white);font-weight:700;padding-top:8px;padding-bottom:10px;margin:6px 0 6px -16px}
-.agenda li small{display:block;font-size:16px;line-height:20px;font-weight:400}
-.divider .pn{color:var(--blue-900)}
+.dash{border:1.5px dashed #8EA0C4;border-radius:12px}
+.li{position:relative;padding-left:16px}
+.li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:7px;border-radius:50%;background:var(--cobalt)}
+.navy .li::before{background:var(--on-navy)}
 
-/* Сравнительная таблица (рынок) */
-table.cmp{position:absolute;left:53px;top:128px;width:854px;border-collapse:collapse;table-layout:fixed}
-.cmp th{font-size:12px;line-height:15px;font-weight:500;text-align:left;vertical-align:bottom;padding:0 8px 7px 0;border-bottom:.75px solid var(--ink)}
-.cmp td{vertical-align:middle;padding:4px 8px 4px 0;border-bottom:.75px solid var(--gray-300);height:40px}
-.cmp td.nm{font-size:13px;line-height:16px;font-weight:500}
-.cmp td.nm small{display:block;font-family:var(--f-text);font-size:12px;line-height:14px;font-weight:400;color:var(--gray-500)}
-.cmp td .cell{display:flex;align-items:flex-start;gap:6px;font-size:12px;line-height:14px}
-.cmp tr.us td{background:var(--blue-200);border-bottom:none}
-.cmp tr.us td:first-child{border-radius:8.6px 0 0 8.6px;padding-left:10px}
-.cmp tr.us td:last-child{border-radius:0 8.6px 8.6px 0}
-.cmp tr.us td.nm{color:var(--blue-700)}
-.cmp tr.us td.nm small{color:var(--ink)}
-.m{width:12px;height:12px;border-radius:50%;flex:none;margin-top:1px}
-.m.y{background:var(--blue-700)}
-.m.p{border:1.5px solid var(--blue-700);background:linear-gradient(90deg,var(--blue-700) 50%,var(--white) 50%)}
-.m.no{border:1.5px solid var(--gray-400);background:var(--white)}
-.na{font-family:var(--f-text);color:var(--gray-500)}
-.legend-m{display:flex;flex-direction:column;gap:3px;font-size:12px;line-height:14px;font-weight:400}
-.legend-m span{display:flex;align-items:center;gap:6px}
-.strip{position:absolute;left:53px;right:53px;top:436px;height:44px;border-radius:8.6px;background:var(--blue-700);color:var(--white);
-  display:flex;align-items:center;gap:10px;padding:0 16px;font-size:16px;line-height:19px;font-weight:500}
-
-/* Шаги пути */
-.steps{display:flex;flex-direction:column;gap:7px}
-.steps li{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:8.6px;background:var(--blue-200);font-size:14px;line-height:17px;font-weight:500}
-.steps .num{width:22px;height:22px;border-radius:50%;background:var(--blue-700);color:var(--white);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
-.steps .nm{flex:1}
-.steps.auto li{height:auto;min-height:34px;padding:7px 10px;font-weight:500}
-.bars li.gate{background:var(--white);border:1.5px solid var(--blue-700);color:var(--blue-700);padding:5.5px 8.5px}
-.rm-legend i.gate{background:var(--white);border:1.5px solid var(--blue-700)}
-.hero-n{font-size:30px;line-height:32px;font-weight:700;color:var(--blue-700)}
-
-/* Демо */
-.qr-big{width:200px;height:200px}
-.qr-link{font-size:14px;line-height:18px;font-weight:500;color:var(--blue-700);margin-top:12px}
-.look{display:flex;flex-direction:column;gap:20px}
-.look li{display:flex;gap:12px;font-size:16px;line-height:20px}
-.badge{width:23px;height:23px;border-radius:3.8px;background:var(--blue-500);color:var(--white);font-size:14px;font-weight:700;
-  display:flex;align-items:center;justify-content:center;flex:none;margin-top:-1px}
-
-/* Цепочка */
-.chain{display:flex;flex-direction:column;align-items:stretch}
-.chain .lnk{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:8.6px;font-size:13px;line-height:16px}
-.chain .lnk .code{margin-top:-2px}
-.chain .arr{display:flex;justify-content:center;height:14px}
-table.ft{width:100%;border-collapse:collapse}
-.ft td{vertical-align:top;padding:7px 6px 7px 0;border-bottom:.75px solid var(--gray-300);font-size:13px;line-height:16px}
-.ft tr:first-child td{padding-top:0}
-.ft td:first-child{width:30px;padding-left:4px}
-.ft tr.hl td{background:var(--blue-100)}
-.ft tr.hl td:first-child{padding-left:4px}
-.ft tr:first-child.hl td{padding-top:7px}
-.ft .basis{display:flex;flex-wrap:wrap;align-items:center;gap:3px 4px;margin-top:4px;font-size:12px;line-height:16px}
-
-/* Сегменты и ветки */
-.seg li{display:flex;align-items:center;gap:10px;padding:6px 12px;border-radius:8.6px;background:var(--blue-200);height:44px}
-.seg{display:flex;flex-direction:column;gap:8px}
-.seg .sc{font-size:14px;font-weight:700;color:var(--blue-700);width:20px;flex:none}
-.seg .sn{flex:1;font-size:14px;line-height:17px;font-weight:500}
-.seg .sn small{display:block;font-size:12px;line-height:15px;font-weight:400}
-.seg .sp{font-size:14px;font-weight:500;flex:none}
-table.br{width:100%;border-collapse:collapse}
-.br th{font-size:12px;line-height:15px;font-weight:500;text-align:left;padding:0 8px 6px 0;border-bottom:.75px solid var(--ink)}
-.br td{font-size:13px;line-height:16px;padding:0 8px 0 0;height:30px;border-bottom:.75px solid var(--gray-300)}
-.br td.v,.br th.v{text-align:right;padding-right:16px;font-variant-numeric:tabular-nums}
-.br tr.start td{color:var(--gray-500);font-family:var(--f-text)}
-.best{font-weight:700;color:var(--blue-700)}
-.metric{display:flex;align-items:center;gap:14px;border-radius:8.6px;background:var(--blue-100);padding:10px 14px}
-.metric .big{font-size:32px;line-height:34px;font-weight:700;color:var(--blue-700);flex:none}
-
-/* Схема */
-.c-future{background:var(--white);border:1.5px dashed var(--gray-500);color:var(--ink)}
-
-/* Реализовано / имитируется */
-.list-c{display:flex;flex-direction:column;gap:8px}
-.crit{padding:6px 12px!important}
-.list-c li{border-radius:8.6px;padding:9px 14px;font-size:14px;line-height:17px;font-weight:500}
-.list-c li small{display:block;font-size:12px;line-height:15px;font-weight:400;margin-top:2px}
-.vdash::before{content:"";position:absolute;left:-15.5px;top:8px;bottom:0;border-left:1px dashed var(--blue-500)}
-
-/* Roadmap */
-.bars{display:flex;flex-direction:column;gap:8px}
-.bars li{border-radius:4.3px;padding:7px 10px;font-size:13px;line-height:16px;font-weight:500}
-.bars li small{display:block;font-weight:400;font-size:12px;line-height:15px}
-.ph-dis{background:var(--phase-discovery)}
-.ph-del{background:var(--phase-delivery)}
-.ph-ana{background:var(--phase-analysis)}
-.ph-und{background:var(--phase-undefined)}
-.rm-legend{position:absolute;left:53px;right:53px;top:318px;display:flex;gap:22px;font-size:12px;line-height:15px}
-.rm-legend span{display:inline-flex;align-items:center;gap:6px}
-.rm-legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
-.cells{display:grid;grid-template-columns:repeat(40,1fr);gap:2px;height:22px}
-.cells i{border-radius:2px;background:var(--gray-200)}
-.cells i.tr{background:var(--blue-700)}
-.cells i.cx{background:var(--blue-300)}
-.keys{display:flex;gap:16px;margin-top:10px;font-size:13px;line-height:16px;flex-wrap:wrap}
-.keys span{display:inline-flex;align-items:center;gap:6px}
-.keys i{width:12px;height:12px;border-radius:2px;display:inline-block}
-
-/* Задача и аудитория */
-.kazino{font-size:44px;line-height:48px;font-weight:600;color:var(--magenta-600);margin:14px 0 6px}
-.who{display:flex;flex-direction:column;gap:8px}
-.who li{display:flex;align-items:center;gap:12px;height:48px;padding:0 12px;border-radius:8.6px;background:var(--blue-200)}
-.who svg.ic{color:var(--blue-700)}
-.who .nm{font-size:14px;line-height:17px;font-weight:500}
-.who .nm small{display:block;font-size:12px;line-height:15px;font-weight:400}
-
-/* Исследование */
-.grp .lbl{color:var(--blue-700)}
-.grp .cb{margin-top:3px}
-.q{font-size:15px;line-height:19px;font-weight:500}
-.q-by{font-family:var(--f-text);font-size:12px;line-height:15px;color:var(--gray-500);margin-top:6px}
-.hy{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:.75px solid var(--gray-300);font-size:13px;line-height:16px}
-.hy:first-child{padding-top:0}
-.hy .tx{flex:1;min-width:0}
-.st{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:10px;font-size:12px;line-height:1;font-weight:500;white-space:nowrap;flex:none}
-.st.ok{background:var(--blue-700);color:var(--white)}
-.st.up{background:var(--blue-200);color:var(--blue-900)}
-
-/* Развилки */
-table.fk{width:100%;border-collapse:collapse;table-layout:fixed}
-.fk th{font-size:12px;line-height:15px;font-weight:500;text-align:left;padding:0 8px 6px 0;border-bottom:.75px solid var(--ink)}
-.fk td{font-size:13px;line-height:16px;padding:6px 8px 6px 0;vertical-align:top;border-bottom:.75px solid var(--gray-300)}
-.fk td.fn{font-weight:500}
-.fk td.ch{color:var(--blue-700);font-weight:500}
-
-/* Участники и use case */
-.uc-box{position:absolute;left:280px;top:124px;width:400px;height:344px;border:.75px solid var(--ink);border-radius:12px}
-.uc-box>.lbl{position:absolute;left:14px;top:10px}
-.uc{position:absolute;left:300px;width:360px;height:38px;border-radius:19px;display:flex;align-items:center;justify-content:center;gap:8px;
-  padding:0 16px;font-size:13px;line-height:16px;font-weight:500;text-align:center}
-.uc .code{height:16px;font-size:11px;padding:0 5px}
-.actor{position:absolute;width:140px;display:flex;flex-direction:column;align-items:center;text-align:center}
-.actor .ct{margin-top:6px;font-size:14px;line-height:17px}
-.actor .cb{font-size:12px;line-height:15px}
-.ava.out{background:var(--white);color:var(--gray-500);border:1.5px dashed var(--gray-500)}
-svg.links{position:absolute;left:0;top:0;width:960px;height:540px;pointer-events:none}
-
-/* Техника и качество */
-.mod{display:flex;align-items:center;gap:8px;height:33px;padding:0 12px;border-radius:8.6px;font-size:14px;line-height:17px}
-.mod b{font-weight:500}
-.body.qa{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
-.qa .card{padding:10px 12px}
-.qa .cb{font-size:13px;line-height:16px}
-
-/* Готово */
-.list-c.sm li{padding:7px 14px;font-size:13px;line-height:16px}
-
-/* Правки 24.10, вечер */
-.st.ch{background:var(--white);color:var(--blue-700);border:1.2px solid var(--blue-700)}
-.hy2{display:flex;flex-wrap:wrap;align-items:center;gap:3px 8px;padding:6px 0;border-bottom:.75px solid var(--gray-300);font-size:13px;line-height:16px}
-.hy2 .tx{flex:1 1 140px}
-.stat{display:flex;align-items:center;gap:12px;border-radius:8.6px;background:var(--blue-100);padding:9px 12px}
-.stat .big{font-size:26px;line-height:28px;font-weight:700;color:var(--blue-700);white-space:nowrap;flex:none}
-.stat .cb{font-size:13px;line-height:16px}
-.kv{display:grid;grid-template-columns:78px 1fr;gap:8px;padding:5px 0;border-bottom:.75px solid var(--gray-300);align-items:baseline}
-.kv:first-child{padding-top:0}
-.kv:last-child{border-bottom:none;padding-bottom:0}
-.stop{font-size:12px;line-height:15px;font-weight:500;color:var(--magenta-600);white-space:nowrap;flex:none}
-.crit small.sub{display:block;font-size:12px;line-height:15px;color:var(--gray-500)}
-.fx{display:grid;grid-template-columns:14px 1fr;gap:7px 6px;align-items:baseline}
-.fx .op{font-size:16px;font-weight:600;color:var(--blue-700)}
-.fx small{display:block;font-size:12px;line-height:15px;color:var(--blue-900)}
-.rm{display:grid;grid-template-columns:84px 1fr;gap:8px 16px;align-items:center}
-.rm .h{font-size:18px;line-height:22px;font-weight:500}
-.rm .bar{border-radius:4.3px;padding:7px 12px;font-size:14px;line-height:17px;font-weight:500}
-.rm .bar small{display:block;font-size:12px;line-height:15px;font-weight:400}
-.cells i.pt,.keys i.pt{background:linear-gradient(90deg,var(--blue-700) 50%,var(--blue-300) 50%)}
-.br td small{display:block;font-size:11px;line-height:13px;color:var(--gray-500)}
-.br.tall td{padding-top:4px;padding-bottom:4px}
-.chain.tight .lnk{padding:6px 10px}
-.list-c.sm.tight li{padding:6px 14px}
-
-@page{size:960px 540px;margin:0}
-.dnav{position:fixed;right:16px;bottom:14px;display:flex;gap:6px;z-index:5}
-.dnav button{width:36px;height:36px;border:0;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;font:20px/1 sans-serif;cursor:pointer}
-.dnav button:hover{background:rgba(0,0,0,.7)}
 @media print{
   html,body{background:#fff;height:auto}
   .deck{position:static;display:block;overflow:visible}
@@ -304,806 +99,549 @@ svg.links{position:absolute;left:0;top:0;width:960px;height:540px;pointer-events
   .dnav{display:none}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
+@page{size:960px 540px;margin:0}
+.dnav{position:fixed;right:14px;top:12px;opacity:.75;display:flex;gap:6px;z-index:5}
+.dnav button{width:36px;height:36px;border:0;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;font:20px/1 sans-serif;cursor:pointer}
+.dnav button:hover{background:rgba(0,0,0,.7)}
 </style>
 </head>
 <body>
-<!--ICONS:start--><svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-info" viewBox="0 0 28 28"><g fill="currentColor">
-<path d="M14 2C20.6274 2 26 7.37258 26 14C26 20.6274 20.6274 26 14 26C7.37258 26 2 20.6274 2 14C2 7.37258 7.37258 2 14 2ZM14 4C8.47715 4 4 8.47715 4 14C4 19.5228 8.47715 24 14 24C19.5228 24 24 19.5228 24 14C24 8.47715 19.5228 4 14 4ZM14.0736 12C14.3112 12 14.4604 12.0371 14.5907 12.1069C14.7211 12.1766 14.8234 12.2789 14.8931 12.4093C14.9629 12.5396 15 12.6888 15 12.9264V19.0736C15 19.3112 14.9629 19.4604 14.8931 19.5907C14.8234 19.7211 14.7211 19.8234 14.5907 19.8931C14.4604 19.9629 14.3112 20 14.0736 20H13.9264C13.6888 20 13.5396 19.9629 13.4093 19.8931C13.2789 19.8234 13.1766 19.7211 13.1069 19.5907C13.0371 19.4604 13 19.3112 13 19.0736V12.9264C13 12.6888 13.0371 12.5396 13.1069 12.4093C13.1766 12.2789 13.2789 12.1766 13.4093 12.1069C13.5396 12.0371 13.6888 12 13.9264 12H14.0736ZM14 7.6C14.7732 7.6 15.4 8.2268 15.4 9C15.4 9.7732 14.7732 10.4 14 10.4C13.2268 10.4 12.6 9.7732 12.6 9C12.6 8.2268 13.2268 7.6 14 7.6Z" fill="currentColor"/>
-</g></symbol><symbol id="i-question" viewBox="0 0 28 28"><g fill="currentColor"><path clip-rule="evenodd" d="m14.0184 5.5c-5.38507 0-9.48158 3.71891-9.48158 7.9989 0 1.537.51463 2.9789 1.42186 4.2007.12801.1724.19714.3814.19714.5961 0 1.0419-.27363 2.052-.61017 2.963-.21197.5738-.46379 1.1447-.70426 1.6752 2.05607-.2184 3.40491-.8768 4.21826-1.8339.27317-.3214.71868-.4369 1.11355-.2886 1.1723.4402 2.4726.6865 3.8452.6865 5.3851 0 9.4816-3.7189 9.4816-7.999 0-4.27999-4.0965-7.9989-9.4816-7.9989zm-11.48158 7.9989c0-5.65988 5.28901-9.9989 11.48158-9.9989 6.1926 0 11.4816 4.33902 11.4816 9.9989 0 5.66-5.289 9.999-11.4816 9.999-1.3731 0-2.693-.2099-3.918-.5966-1.44484 1.3485-3.54415 1.9967-6.11217 2.0976-1.0461.0411-1.80116-1.047-1.36313-2.0209.08969-.2008.18017-.3993.27011-.5966l.00016-.0004h.00001c.27571-.6049.54643-1.1988.77419-1.8153.2561-.6933.43053-1.3484.47504-1.9655-1.01683-1.4807-1.60779-3.2281-1.60779-5.1013zm11.45098-3.497c-.4289 0-.7918.2933-.8944.6918-.1376.5348-.6828.8568-1.2177.7192-.5348-.1377-.8568-.6829-.7191-1.2177.3244-1.26068 1.4676-2.19329 2.8312-2.19329 1.6145 0 2.9233 1.30883 2.9233 2.92339 0 1.2896-.7093 1.966-1.1892 2.414-.4695.4382-.6796.6413-.7442 1.0933-.0781.5467-.5846.9266-1.1313.8485-.5468-.0781-.9267-.5846-.8486-1.1314.1669-1.1679.852-1.8023 1.2907-2.2087l.0688-.0638c.4217-.3936.5538-.5587.5538-.9519 0-.51-.4134-.9234-.9233-.9234zm.0113 8.9981c.6904 0 1.25-.5596 1.25-1.25s-.5596-1.25-1.25-1.25c-.6903 0-1.25.5596-1.25 1.25s.5597 1.25 1.25 1.25z" fill="currentColor" fill-rule="evenodd"/></g></symbol><symbol id="i-shuffle" viewBox="0 0 28 28"><g fill="currentColor"><path fill-rule="evenodd" d="M21.752 4.714a1 1 0 0 1 1.414 0l2.537 2.537a1 1 0 0 1 0 1.415l-2.537 2.537a1 1 0 0 1-1.415-1.414l.831-.83H21.25c-2.103 0-3.932.963-5.523 2.3a1 1 0 0 1-1.286-1.532c1.788-1.501 4.06-2.769 6.81-2.769h1.33l-.83-.83a1 1 0 0 1 0-1.414ZM2 7.958a1 1 0 0 1 1-1c4.751 0 7.784 3.423 10.336 6.39l.287.333c1.211 1.41 2.328 2.71 3.538 3.697 1.282 1.045 2.583 1.663 4.09 1.663h1.33l-.83-.83a1 1 0 0 1 1.415-1.414l2.537 2.537a1 1 0 0 1 0 1.415l-2.537 2.537a1 1 0 1 1-1.415-1.414l.831-.83H21.25c-2.119 0-3.854-.892-5.352-2.113-1.345-1.096-2.568-2.517-3.74-3.883-1.156 1.357-2.377 2.76-3.721 3.851-1.526 1.238-3.294 2.145-5.43 2.145a1 1 0 1 1 0-2c1.522 0 2.858-.634 4.17-1.698 1.258-1.02 2.418-2.373 3.653-3.824C8.536 10.961 6.242 8.958 3 8.958a1 1 0 0 1-1-1Z" clip-rule="evenodd"/></g></symbol><symbol id="i-done" viewBox="0 0 28 28"><g fill="currentColor"><?xml version="1.0" encoding="UTF-8"?>
-<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
-    <title>done_outline_28</title>
-    <desc>Created with Sketch.</desc>
-    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="done_outline_28">
-            <rect x="0" y="0" width="28" height="28"></rect>
-            <path d="M11,18.5857864 L5.70710678,13.2928932 C5.31658249,12.9023689 4.68341751,12.9023689 4.29289322,13.2928932 C3.90236893,13.6834175 3.90236893,14.3165825 4.29289322,14.7071068 L10.2928932,20.7071068 C10.6834175,21.0976311 11.3165825,21.0976311 11.7071068,20.7071068 L23.7071068,8.70710678 C24.0976311,8.31658249 24.0976311,7.68341751 23.7071068,7.29289322 C23.3165825,6.90236893 22.6834175,6.90236893 22.2928932,7.29289322 L11,18.5857864 Z" id="↳-Icon-Color" fill="currentColor" fill-rule="nonzero"></path>
-        </g>
-    </g>
-</g></symbol><symbol id="i-error" viewBox="0 0 28 28"><g fill="currentColor"><path d="m14 2c6.6274 0 12 5.37258 12 12 0 6.6274-5.3726 12-12 12-6.62742 0-12-5.3726-12-12 0-6.62742 5.37258-12 12-12zm0 2c-5.52285 0-10 4.47715-10 10 0 5.5228 4.47715 10 10 10 5.5228 0 10-4.4772 10-10 0-5.52285-4.4772-10-10-10zm0 13.6c.7732 0 1.4.6268 1.4 1.4s-.6268 1.4-1.4 1.4-1.4-.6268-1.4-1.4.6268-1.4 1.4-1.4zm.0736-9.6c.2376 0 .3868.03713.5171.10685.1304.06973.2327.17204.3024.30241.0698.13037.1069.27952.1069.51712v6.14722c0 .2376-.0371.3868-.1069.5171-.0697.1304-.172.2327-.3024.3024-.1303.0698-.2795.1069-.5171.1069h-.1472c-.2376 0-.3868-.0371-.5171-.1069-.1304-.0697-.2327-.172-.3024-.3024-.0698-.1303-.1069-.2795-.1069-.5171v-6.14722c0-.2376.0371-.38675.1069-.51712.0697-.13037.172-.23268.3024-.30241.1303-.06972.2795-.10685.5171-.10685z" fill="currentColor"/></g></symbol><symbol id="i-flash" viewBox="0 0 28 28"><g fill="currentColor"><path d="M15.775 2.27c.455-.231 1.111-.42 1.743-.102.654.33.874.995.927 1.524.055.55-.034 1.198-.223 1.906l-.001.005-1.267 4.616 2.89.558c1.41.229 2.673.857 3.052 2.132.368 1.235-.276 2.518-1.243 3.607l-.006.008-.007.008-7.436 8.024-.01.011-.012.012c-.505.51-1.009.915-1.495 1.157-.452.226-1.123.422-1.76.078-.649-.353-.836-1.036-.875-1.547-.041-.543.052-1.184.24-1.882l1.175-4.674-2.954-.488C7.135 17 5.768 16.4 5.223 15.186c-.59-1.314.025-2.723 1.227-3.954l.008-.01.009-.007Q7.973 9.74 8.64 9.06c.662-.678 1.478-1.456 2.417-2.366.945-.916 2.034-1.986 3.273-3.275.476-.503.964-.905 1.445-1.15m.676 1.926a4.7 4.7 0 0 0-.674.603l-.004.006a129 129 0 0 1-3.325 3.326c-.96.93-1.741 1.675-2.379 2.327q-.69.706-2.188 2.17c-1.002 1.027-.91 1.565-.833 1.738.122.271.61.694 1.782.883h.005l3.61.598c.701.116 1.306.784 1.146 1.612q-.008.037-.019.075l.001.001-1.345 5.354-.004.015a5.3 5.3 0 0 0-.168.878c.187-.132.422-.326.697-.603l7.419-8.006c.832-.943.866-1.496.808-1.694-.044-.147-.295-.546-1.481-.732l-.017-.002-.017-.004-3.525-.68c-.694-.13-1.28-.797-1.117-1.616l.018-.077.003-.01L16.29 5.08c.1-.374.145-.666.161-.884"/></g></symbol><symbol id="i-check" viewBox="0 0 28 28"><g fill="currentColor"><path d="M21 22a1 1 0 1 1 0 2H7a1 1 0 1 1 0-2h14ZM14 2a1 1 0 0 1 1 1v13.585l2.293-2.292a1 1 0 0 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-7-7a1 1 0 1 1 1.414-1.414L13 16.585V3a1 1 0 0 1 1-1Z"/><path fill-rule="evenodd" d="M22 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm2.78 3.22a.75.75 0 0 0-1.06 0l-2.47 2.47-.97-.97a.75.75 0 1 0-1.06 1.06l1.5 1.5a.75.75 0 0 0 1.06 0l3-3a.75.75 0 0 0 0-1.06Z" clip-rule="evenodd"/></g></symbol><symbol id="i-future" viewBox="0 0 28 28"><g fill="currentColor"><?xml version="1.0" encoding="UTF-8"?>
-<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
-    <title>history_backward_outline_28</title>
-    <desc>Created with Sketch.</desc>
-    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="history_backward_outline_28">
-            <rect x="0" y="0" width="28" height="28"></rect>
-            <path d="M14,2 C20.627417,2 26,7.372583 26,14 C26,20.627417 20.627417,26 14,26 C10.7742667,26 7.74870739,24.7199979 5.51332937,22.4838919 C5.12286866,22.093304 5.12297174,21.4601391 5.51355961,21.0696783 C5.90414747,20.6792176 6.53731244,20.6793207 6.92777315,21.0699086 C8.79177853,22.934521 11.3102665,24 14,24 C19.5228475,24 24,19.5228475 24,14 C24,8.4771525 19.5228475,4 14,4 C11.2614312,4 8.71026275,5.10802948 6.85728368,7.00037181 L8.5,7 C9.05228475,7 9.5,7.44771525 9.5,8 C9.5,8.51283584 9.11395981,8.93550716 8.61662113,8.99327227 L8.5,9 L4.5,9 C3.98716416,9 3.56449284,8.61395981 3.50672773,8.11662113 L3.5,8 L3.5,4 C3.5,3.44771525 3.94771525,3 4.5,3 C5.01283584,3 5.43550716,3.38604019 5.49327227,3.88337887 L5.5,4 L5.49973128,5.52875247 C7.71675336,3.30256797 10.7494828,2 14,2 Z M14,8 C14.5128358,8 14.9355072,8.38604019 14.9932723,8.88337887 L15,9 L15,13.5857864 L17.7071068,16.2928932 C18.0976311,16.6834175 18.0976311,17.3165825 17.7071068,17.7071068 C17.3466228,18.0675907 16.7793918,18.0953203 16.3871006,17.7902954 L16.2928932,17.7071068 L13.2928932,14.7071068 C13.1366129,14.5508265 13.0374017,14.3481451 13.0086724,14.131444 L13,14 L13,9 C13,8.44771525 13.4477153,8 14,8 Z" id="↳-Icon-Color" fill="currentColor" fill-rule="nonzero"></path>
-        </g>
-    </g>
-</g></symbol><symbol id="i-education" viewBox="0 0 28 28"><g fill="currentColor"><path fill-rule="evenodd" d="M13.036 3.249a2 2 0 0 1 1.928 0l9.995 5.499A2.02 2.02 0 0 1 26 10.5V18a1 1 0 1 1-2 0v-5.22l-2 1.1v3.161c0 .425 0 .685-.014.912a7.5 7.5 0 0 1-7.033 7.033c-.317.02-.636.014-.953.014-.317 0-.636.006-.953-.014a7.5 7.5 0 0 1-7.033-7.033A16.16 16.16 0 0 1 6 17.04v-3.157l-2.967-1.631c-1.383-.76-1.383-2.746 0-3.506L13.036 3.25ZM8 14.983V17c0 .479 0 .674.01.832a5.5 5.5 0 0 0 5.158 5.158c.158.01.353.01.832.01s.674 0 .832-.01a5.5 5.5 0 0 0 5.158-5.158c.01-.158.01-.353.01-.832v-2.02l-5.036 2.771a2 2 0 0 1-1.928 0L8 14.983Zm6-9.982L3.996 10.5 14 15.999l9.995-5.499L14 5.001Z" clip-rule="evenodd"/></g></symbol><symbol id="i-building" viewBox="0 0 28 28"><g fill="currentColor"><path fill-rule="evenodd" d="M14.162 2c-.528 0-.982 0-1.357.03-.395.033-.788.104-1.167.297a3 3 0 0 0-1.31 1.311c-.194.378-.265.772-.297 1.167-.03.375-.03.83-.03 1.356v5.53a3 3 0 0 0-.868.128c-.376.113-.688.31-.978.532-.336.258-.65.549-.965.832l-1.866 1.68c-.325.292-.61.549-.822.867-.186.28-.324.589-.408.915C4 17.015 4 17.4 4 17.835v4.003c0 .528 0 .982.03 1.357.033.395.104.789.297 1.167a3 3 0 0 0 1.311 1.311c.379.193.772.264 1.167.296.375.031.83.031 1.357.031h11.677c.527 0 .982 0 1.356-.03.395-.033.789-.104 1.167-.297a3 3 0 0 0 1.311-1.311c.193-.378.264-.772.297-1.167.03-.375.03-.83.03-1.356V6.16c0-.527 0-.981-.03-1.356-.033-.395-.104-.789-.297-1.167a3 3 0 0 0-1.31-1.311c-.38-.193-.773-.264-1.168-.296C20.821 2 20.365 2 19.84 2h-5.677Zm-1.38 11.16a21.008 21.008 0 0 0-.782-.686V6.2c0-.577 0-.949.024-1.232.022-.272.06-.373.085-.422a1 1 0 0 1 .437-.437c.05-.025.15-.063.422-.085C13.251 4 13.624 4 14.2 4h5.6c.577 0 .949 0 1.232.024.272.022.373.06.422.085a1 1 0 0 1 .437.437c.025.05.063.15.085.422C22 5.25 22 5.623 22 6.2v15.6c0 .577 0 .949-.024 1.232-.022.272-.06.372-.085.422a1 1 0 0 1-.437.437c-.05.025-.15.063-.422.085-.249.02-.567.024-1.032.024v-1c0-.326 0-.49-.057-.617a.65.65 0 0 0-.326-.326C19.49 22 19.327 22 19 22c-.326 0-.49 0-.617.057a.65.65 0 0 0-.326.326C18 22.511 18 22.673 18 23v1h-2v-6.164c0-.436.001-.821-.094-1.191a2.999 2.999 0 0 0-.407-.915c-.212-.319-.498-.575-.823-.867l-1.893-1.704ZM14 17.924V24h-3v-2c0-.326 0-.49-.057-.617a.65.65 0 0 0-.326-.326C10.489 21 10.327 21 10 21c-.326 0-.49 0-.617.057a.65.65 0 0 0-.326.326C9 21.511 9 21.673 9 22v2h-.8c-.576 0-.949 0-1.232-.024-.272-.022-.372-.06-.422-.085a1 1 0 0 1-.437-.437c-.025-.05-.063-.15-.085-.422C6.001 22.75 6 22.377 6 21.8v-3.875c0-.576.007-.69.032-.783a1 1 0 0 1 .135-.305c.054-.08.133-.162.561-.547l1.8-1.62c.39-.351.64-.575.845-.733.195-.15.287-.188.338-.204a1 1 0 0 1 .578 0c.052.016.143.055.338.204.204.158.455.382.845.733l1.8 1.62c.428.385.507.466.561.547.062.093.108.197.136.305.024.094.031.207.031.783Zm.057-11.542C14 6.51 14 6.673 14 7c0 .326 0 .49.057.617a.65.65 0 0 0 .326.326C14.511 8 14.673 8 15 8c.326 0 .49 0 .617-.057a.65.65 0 0 0 .326-.326C16 7.49 16 7.327 16 7c0-.326 0-.49-.057-.617a.65.65 0 0 0-.326-.326C15.49 6 15.327 6 15 6c-.326 0-.49 0-.617.057a.65.65 0 0 0-.326.326ZM18 7c0-.326 0-.49.057-.617a.65.65 0 0 1 .326-.326C18.511 6 18.673 6 19 6c.326 0 .49 0 .617.057a.65.65 0 0 1 .326.326C20 6.51 20 6.673 20 7c0 .326 0 .49-.057.617a.65.65 0 0 1-.326.326C19.49 8 19.327 8 19 8c-.326 0-.49 0-.617-.057a.65.65 0 0 1-.326-.326C18 7.49 18 7.327 18 7Zm.057 3.383C18 10.511 18 10.673 18 11c0 .326 0 .49.057.617a.65.65 0 0 0 .326.326c.128.057.29.057.617.057.326 0 .49 0 .617-.057a.65.65 0 0 0 .326-.326C20 11.489 20 11.327 20 11c0-.326 0-.49-.057-.617a.65.65 0 0 0-.326-.326C19.49 10 19.327 10 19 10c-.326 0-.49 0-.617.057a.65.65 0 0 0-.326.326ZM14 11c0-.326 0-.49.057-.617a.65.65 0 0 1 .326-.326C14.511 10 14.673 10 15 10c.326 0 .49 0 .617.057a.65.65 0 0 1 .326.326c.057.128.057.29.057.617 0 .326 0 .49-.057.617a.65.65 0 0 1-.326.326C15.49 12 15.327 12 15 12c-.326 0-.49 0-.617-.057a.65.65 0 0 1-.326-.326C14 11.489 14 11.327 14 11Zm4.057 3.383C18 14.511 18 14.673 18 15c0 .326 0 .49.057.617a.65.65 0 0 0 .326.326c.128.057.29.057.617.057.326 0 .49 0 .617-.057a.65.65 0 0 0 .326-.326C20 15.489 20 15.327 20 15c0-.326 0-.49-.057-.617a.65.65 0 0 0-.326-.326C19.49 14 19.327 14 19 14c-.326 0-.49 0-.617.057a.65.65 0 0 0-.326.326ZM18 19c0-.326 0-.49.057-.617a.65.65 0 0 1 .326-.326C18.511 18 18.673 18 19 18c.326 0 .49 0 .617.057a.65.65 0 0 1 .326.326c.057.128.057.29.057.617 0 .326 0 .49-.057.617a.65.65 0 0 1-.326.326C19.49 20 19.327 20 19 20c-.326 0-.49 0-.617-.057a.65.65 0 0 1-.326-.326C18 19.489 18 19.327 18 19Zm-9-1c0-.326 0-.49.057-.617a.65.65 0 0 1 .326-.326C9.51 17 9.673 17 10 17c.326 0 .49 0 .617.057a.65.65 0 0 1 .326.326c.057.128.057.29.057.617 0 .326 0 .49-.057.617a.65.65 0 0 1-.326.326C10.489 19 10.327 19 10 19c-.326 0-.49 0-.617-.057a.65.65 0 0 1-.326-.326C9 18.489 9 18.327 9 18Z" clip-rule="evenodd"/></g></symbol><symbol id="i-globe" viewBox="0 0 28 28"><g fill="currentColor"><path fill-rule="evenodd" d="M14.003 2H14C7.373 2 2 7.373 2 14s5.373 12 12 12 12-5.373 12-12S20.629 2.001 14.003 2m2.31 21.731A10.02 10.02 0 0 0 22.664 19H18.38a16.6 16.6 0 0 1-1.503 3.796 15 15 0 0 1-.562.935M18.786 17h4.757A10 10 0 0 0 24 14a10 10 0 0 0-.458-3h-4.757c.136.924.215 1.924.215 3s-.079 2.076-.215 3m-2.024-6c.15.91.239 1.909.239 3s-.089 2.09-.239 3H11.24c-.15-.91-.239-1.909-.239-3s.089-2.09.239-3zm1.618-2h4.283a10.02 10.02 0 0 0-6.348-4.731q.277.422.562.935A16.5 16.5 0 0 1 18.379 9m-6.693-4.731A10.02 10.02 0 0 0 5.338 9H9.62c.401-1.529.95-2.791 1.503-3.796q.285-.512.562-.935M11.698 9c.338-1.131.76-2.072 1.178-2.83.403-.73.804-1.293 1.124-1.692.32.399.72.961 1.124 1.693.418.757.84 1.698 1.178 2.829zm-2.483 2H4.458A10 10 0 0 0 4 14c0 1.045.16 2.053.458 3h4.757A20.6 20.6 0 0 1 9 14c0-1.076.079-2.076.215-3m.406 8H5.338a10.02 10.02 0 0 0 6.348 4.731 15 15 0 0 1-.562-.935A16.5 16.5 0 0 1 9.621 19m2.077 0h4.604a14.3 14.3 0 0 1-1.178 2.83A12 12 0 0 1 14 23.521c-.32-.399-.72-.961-1.124-1.693A14.3 14.3 0 0 1 11.698 19" clip-rule="evenodd"/></g></symbol><symbol id="i-users" viewBox="0 0 28 28"><g fill="currentColor"><?xml version="1.0" encoding="UTF-8"?>
-<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
-    <title>users_outline_28</title>
-    <desc>Created with Sketch.</desc>
-    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="users_outline_28">
-            <rect x="0" y="0" width="28" height="28"></rect>
-            <path d="M9,15 C12.9972912,15 16.5,16.5424016 16.5,19.9285714 C16.5,21.7034954 15.8109265,22.5 14.3529412,22.5 L3.64705882,22.5 C2.18907351,22.5 1.5,21.7034954 1.5,19.9285714 C1.5,16.5424016 5.0027088,15 9,15 Z M19.5,15 C23.4972912,15 27,16.5424016 27,19.9285714 C27,21.7034954 26.3109265,22.5 24.8529412,22.5 L24.8529412,22.5 L19,22.5 C18.4477153,22.5 18,22.0522847 18,21.5 C18,20.9477153 18.4477153,20.5 19,20.5 L19,20.5 L24.9127761,20.5002554 C24.9297648,20.5004793 24.9438917,20.5008956 24.95544,20.5016652 L24.968,20.503 L24.9704149,20.4882303 C24.9809399,20.4070055 24.9944685,20.2672007 24.9986856,20.0606076 L25,19.9285714 C25,18.0953535 22.5125127,17 19.5,17 C19.0723091,17 18.6017534,17.0300184 18.130226,17.09085 C17.5824806,17.1615145 17.0811604,16.774764 17.0104959,16.2270186 C16.9398315,15.6792733 17.326582,15.1779531 17.8743273,15.1072886 C18.4310105,15.0354711 18.9870398,15 19.5,15 Z M9,17 C5.98748728,17 3.5,18.0953535 3.5,19.9285714 C3.5,20.2089335 3.51695478,20.3907577 3.52958485,20.4882286 L3.531,20.503 L3.54456253,20.5016651 L3.5638541,20.5007556 L14.4288214,20.5005494 C14.4388962,20.5007961 14.4477411,20.5011522 14.45544,20.5016652 L14.468,20.503 L14.4704149,20.4882303 C14.483045,20.3907605 14.5,20.2089356 14.5,19.9285714 C14.5,18.0953535 12.0125127,17 9,17 Z M19.5,5 C21.8479097,5 23.75,6.90209025 23.75,9.25 C23.75,11.5979097 21.8479097,13.5 19.5,13.5 C17.1520903,13.5 15.25,11.5979097 15.25,9.25 C15.25,6.90209025 17.1520903,5 19.5,5 Z M9,5 C11.3479097,5 13.25,6.90209025 13.25,9.25 C13.25,11.5979097 11.3479097,13.5 9,13.5 C6.65209025,13.5 4.75,11.5979097 4.75,9.25 C4.75,6.90209025 6.65209025,5 9,5 Z M19.5,7 C18.2566597,7 17.25,8.00665975 17.25,9.25 C17.25,10.4933403 18.2566597,11.5 19.5,11.5 C20.7433403,11.5 21.75,10.4933403 21.75,9.25 C21.75,8.00665975 20.7433403,7 19.5,7 Z M9,7 C7.75665975,7 6.75,8.00665975 6.75,9.25 C6.75,10.4933403 7.75665975,11.5 9,11.5 C10.2433403,11.5 11.25,10.4933403 11.25,9.25 C11.25,8.00665975 10.2433403,7 9,7 Z" id="↳-Icon-Color" fill="currentColor" fill-rule="nonzero"></path>
-        </g>
-    </g>
-</g></symbol><symbol id="i-userstar" viewBox="0 0 28 28"><g fill="currentColor"><path d="M9 19.77v.634c0 .33.273.596.61.596h8.78c.337 0 .61-.267.61-.596v-.635C19 17.615 15.669 17 14 17s-5 .615-5 2.77ZM14 16a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z M12.64 2.318a3.085 3.085 0 0 1 2.721 0c.62.304 1.032.883 1.373 1.48.347.608.724 1.433 1.189 2.45l.959 2.099 1.634.23c1.167.164 2.11.297 2.823.463.694.161 1.393.399 1.868.927.652.725.923 1.716.73 2.672-.14.697-.622 1.256-1.137 1.749-.53.505-1.274 1.099-2.195 1.833l-.815.65.74 2.67c.189.684.348 1.26.435 1.735.09.491.128.993-.017 1.496a3.09 3.09 0 0 1-1.347 1.77c-.446.275-.94.373-1.438.417-.48.043-1.078.043-1.787.043H9.604c-.713 0-1.313 0-1.796-.043-.5-.045-.996-.143-1.443-.42A3.09 3.09 0 0 1 5.02 22.76c-.144-.505-.103-1.009-.01-1.502.09-.477.254-1.054.448-1.74l.75-2.65-.811-.647c-.922-.734-1.667-1.328-2.196-1.833-.515-.493-.997-1.053-1.137-1.749a3.085 3.085 0 0 1 .73-2.672c.475-.528 1.174-.766 1.869-.927.712-.166 1.655-.3 2.822-.463l1.634-.23.96-2.1c.464-1.016.841-1.84 1.188-2.449.34-.597.753-1.176 1.373-1.48Zm1.839 1.794a1.085 1.085 0 0 0-.958 0c-.047.024-.21.137-.518.677-.297.52-.637 1.263-1.128 2.336l-1.038 2.272-.007.016c-.03.067-.116.264-.262.427a1.35 1.35 0 0 1-.43.322c-.2.093-.413.12-.486.13l-.016.002-1.822.256c-1.23.173-2.084.294-2.699.437-.642.15-.802.28-.835.317-.23.255-.324.604-.257.94.01.048.081.241.559.697.456.436 1.13.974 2.1 1.749l1 .797.016.012c.069.053.272.21.406.43.11.181.176.386.192.598.02.257-.055.503-.08.585l-.005.02-.818 2.887c-.21.74-.347 1.232-.419 1.61-.07.373-.05.516-.031.582.074.261.243.485.474.628.059.036.19.094.568.128.384.034.894.035 1.664.035h8.682c.766 0 1.273-.001 1.655-.035.375-.033.507-.091.566-.127.23-.142.4-.365.475-.625.019-.066.04-.208-.029-.578-.069-.377-.204-.867-.408-1.605l-.805-2.908-.006-.019a1.66 1.66 0 0 1-.076-.583 1.35 1.35 0 0 1 .193-.594 1.66 1.66 0 0 1 .404-.428l.016-.012 1.001-.798c.971-.775 1.645-1.313 2.102-1.749.477-.456.548-.649.558-.697a1.085 1.085 0 0 0-.257-.94c-.033-.037-.192-.167-.835-.317-.615-.143-1.469-.264-2.699-.437l-1.822-.256-.016-.003a1.645 1.645 0 0 1-.485-.13 1.35 1.35 0 0 1-.43-.32 1.622 1.622 0 0 1-.263-.428l-.007-.016-1.038-2.272c-.49-1.073-.831-1.815-1.128-2.336-.308-.54-.47-.653-.518-.676Z" clip-rule="evenodd"/></g></symbol><symbol id="i-user" viewBox="0 0 28 28"><g fill="currentColor"><path fill-rule="evenodd" d="M14 3a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Zm-3.5 5.5a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0Zm-6 13.475c0-4.109 4.415-6.475 9.5-6.475s9.5 2.366 9.5 6.475c0 2.135-.802 3.025-2.522 3.025H7.022c-1.72 0-2.522-.89-2.522-3.025Zm2 0c0-1.224.618-2.266 1.916-3.09C9.758 18.032 11.735 17.5 14 17.5c2.265 0 4.242.532 5.584 1.385 1.297.824 1.916 1.866 1.916 3.09 0 .417-.04.69-.085.859a.96.96 0 0 1-.042.127c-.06.016-.182.039-.395.039H7.022c-.213 0-.335-.023-.395-.039a.966.966 0 0 1-.042-.127c-.045-.168-.085-.442-.085-.86Z" clip-rule="evenodd"/></g></symbol><symbol id="i-wand" viewBox="0 0 28 28"><g fill="currentColor"><?xml version="1.0" encoding="UTF-8"?>
-<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
-    <title>magic_wand_outline_28</title>
-    <desc>Created with Sketch.</desc>
-    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="magic_wand_outline_28">
-            <rect x="0" y="0" width="28" height="28"></rect>
-            <path d="M15.3579221,12.6371068 C15.7484464,13.0276311 15.7484464,13.6607961 15.3579221,14.0513203 L4.75132034,24.6579221 C4.36079605,25.0484464 3.72763107,25.0484464 3.33710678,24.6579221 C2.94658249,24.2673978 2.94658249,23.6342328 3.33710678,23.2437085 L13.9437085,12.6371068 C14.3342328,12.2465825 14.9673978,12.2465825 15.3579221,12.6371068 Z M23.945391,14.1796377 C23.9917565,14.2673523 23.9917565,14.3723175 23.945391,14.4600321 L22.7084946,16.8 L23.945391,19.1399679 C24.0228197,19.2864481 23.9668425,19.4679622 23.8203623,19.545391 C23.7326477,19.5917565 23.6276825,19.5917565 23.5399679,19.545391 L21.2,18.3084946 L18.8600321,19.545391 C18.7135519,19.6228197 18.5320378,19.5668425 18.454609,19.4203623 C18.4082435,19.3326477 18.4082435,19.2276825 18.454609,19.1399679 L19.6915054,16.8 L18.454609,14.4600321 C18.3771803,14.3135519 18.4331575,14.1320378 18.5796377,14.054609 C18.6673523,14.0082435 18.7723175,14.0082435 18.8600321,14.054609 L21.2,15.2915054 L23.5399679,14.054609 C23.6864481,13.9771803 23.8679622,14.0331575 23.945391,14.1796377 Z M13.945391,4.17991273 C13.9917565,4.26762732 13.9917565,4.3725925 13.945391,4.46030709 L12.7084946,6.800275 L13.945391,9.14024291 C14.0228197,9.28672311 13.9668425,9.46823719 13.8203623,9.54566595 C13.7326477,9.59203149 13.6276825,9.59203149 13.5399679,9.54566595 L11.2,8.30876957 L8.86003209,9.54566595 C8.71355189,9.62309472 8.53203781,9.56711747 8.45460905,9.42063727 C8.40824351,9.33292268 8.40824351,9.2279575 8.45460905,9.14024291 L9.69150543,6.800275 L8.45460905,4.46030709 C8.37718028,4.31382689 8.43315753,4.13231281 8.57963773,4.05488405 C8.66735232,4.00851851 8.7723175,4.00851851 8.86003209,4.05488405 L11.2,5.29178043 L13.5399679,4.05488405 C13.6864481,3.97745528 13.8679622,4.03343253 13.945391,4.17991273 Z M23.945391,4.17963773 C23.9917565,4.26735232 23.9917565,4.3723175 23.945391,4.46003209 L22.7084946,6.8 L23.945391,9.13996791 C24.0228197,9.28644811 23.9668425,9.46796219 23.8203623,9.54539095 C23.7326477,9.59175649 23.6276825,9.59175649 23.5399679,9.54539095 L21.2,8.30849457 L18.8600321,9.54539095 C18.7135519,9.62281972 18.5320378,9.56684247 18.454609,9.42036227 C18.4082435,9.33264768 18.4082435,9.2276825 18.454609,9.13996791 L19.6915054,6.8 L18.454609,4.46003209 C18.3771803,4.31355189 18.4331575,4.13203781 18.5796377,4.05460905 C18.6673523,4.00824351 18.7723175,4.00824351 18.8600321,4.05460905 L21.2,5.29150543 L23.5399679,4.05460905 C23.6864481,3.97718028 23.8679622,4.03315753 23.945391,4.17963773 Z" id="↳-Icon-Color" fill="currentColor" fill-rule="nonzero"></path>
-        </g>
-    </g>
-</g></symbol><symbol id="i-link" viewBox="0 0 28 28"><g fill="currentColor"><?xml version="1.0" encoding="UTF-8"?>
-<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
-    <title>link_outline_28</title>
-    <desc>Created with Sketch.</desc>
-    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="link_outline_28">
-            <rect x="0" y="0" width="28" height="28"></rect>
-            <path d="M20.7083333,6.29166667 C21.2606181,6.29166667 21.7083333,6.73938192 21.7083333,7.29166667 L21.7083333,7.29166667 L21.7083333,17.7916667 C21.7083333,18.3439514 21.2606181,18.7916667 20.7083333,18.7916667 C20.1560486,18.7916667 19.7083333,18.3439514 19.7083333,17.7916667 L19.7083333,17.7916667 L19.708,9.70466667 L7.70710678,21.7071068 C7.34662282,22.0675907 6.77939176,22.0953203 6.38710056,21.7902954 L6.29289322,21.7071068 C5.90236893,21.3165825 5.90236893,20.6834175 6.29289322,20.2928932 L6.29289322,20.2928932 L18.293,8.29166667 L10.2083333,8.29166667 C9.69549749,8.29166667 9.27282617,7.90562648 9.21506106,7.40828779 L9.20833333,7.29166667 C9.20833333,6.73938192 9.65604858,6.29166667 10.2083333,6.29166667 L10.2083333,6.29166667 Z" id="↳-Icon-Color" fill="currentColor" fill-rule="nonzero"></path>
-        </g>
-    </g>
-</g></symbol><symbol id="i-view" viewBox="0 0 28 28"><g fill="currentColor"><path d="M14 6c5.994 0 11.5 4.557 11.5 8 0 3.443-5.506 8-11.5 8S2.5 17.443 2.5 14c0-3.443 5.506-8 11.5-8Zm0 2c-4.964 0-9.5 3.754-9.5 6s4.536 6 9.5 6 9.5-3.754 9.5-6-4.536-6-9.5-6Zm0 2a4 4 0 1 1 0 8 4 4 0 0 1 0-8Zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></g></symbol><symbol id="i-wrench" viewBox="0 0 28 28"><g fill="currentColor"><path fill-rule="evenodd" d="M16.49 19c4.15 0 7.51-3.36 7.51-7.5 0-.219-.008-.435-.027-.648l-2.273 2.27a3 3 0 0 1-2.12.878h-2.59a3 3 0 0 1-3-3V8.415a3 3 0 0 1 .88-2.123l2.267-2.265A7.65 7.65 0 0 0 16.49 4c-4.15 0-7.51 3.36-7.51 7.5 0 .593.068 1.167.197 1.717.226.963-.003 2.075-.803 2.873l-2.788 2.786a1.994 1.994 0 0 0 0 2.823l.711.71a2.005 2.005 0 0 0 2.833 0l2.802-2.798a3.069 3.069 0 0 1 2.86-.803A7.551 7.551 0 0 0 16.49 19Zm0 2c5.253 0 9.51-4.253 9.51-9.5 0-1.113-.19-2.18-.542-3.173-.225-.635-1.027-.759-1.504-.283l-3.667 3.663a1 1 0 0 1-.707.293h-2.59a1 1 0 0 1-1-1V8.415a1 1 0 0 1 .293-.708l3.665-3.66c.477-.477.353-1.28-.283-1.505A9.505 9.505 0 0 0 16.49 2c-5.252 0-9.51 4.253-9.51 9.5 0 .748.086 1.475.25 2.173.084.36-.008.742-.27 1.002L4.173 17.46a3.995 3.995 0 0 0 0 5.654l.712.71a4.005 4.005 0 0 0 5.66 0l2.802-2.798c.26-.26.64-.352.997-.27.69.16 1.409.244 2.147.244Z" clip-rule="evenodd"/></g></symbol><symbol id="i-shield" viewBox="0 0 28 28"><g fill="currentColor"><path d="M13.484 1.502c.35-.05.682-.05 1.032 0 .345.05.633.127 1.296.348l6.82 2.273A2 2 0 0 1 24 6.021V15.3c0 4.794-2.878 8.467-8.458 10.942l-.368.16a3 3 0 0 1-2.348 0C7.007 23.93 4 20.202 4 15.3V6.02a2 2 0 0 1 1.368-1.897l7.008-2.335c.533-.174.797-.242 1.108-.286Zm.75 1.98a1.579 1.579 0 0 0-.467 0c-.2.028-.389.08-.947.265L6 6.021V15.3c0 4.016 2.471 7.078 7.609 9.261.25.107.532.107.775.004l.354-.154C19.641 22.236 22 19.226 22 15.3V6.02l-6.977-2.325a5.976 5.976 0 0 0-.668-.192l-.122-.021Z"/><path d="M19.057 10.693a1 1 0 0 0-1.414 0l-4.893 4.893-1.893-1.893a1 1 0 0 0-1.414 1.414l2.6 2.6a1 1 0 0 0 1.414 0l5.6-5.6a1 1 0 0 0 0-1.414Z"/></g></symbol><symbol id="i-coins" viewBox="0 0 28 28"><g fill="currentColor"><?xml version="1.0" encoding="UTF-8"?>
-<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
-    <title>coins_outline_28</title>
-    <desc>Created with Sketch.</desc>
-    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="coins_outline_28">
-            <polygon points="0 0 28 0 28 28 0 28"></polygon>
-            <path d="M23.9953441,19.178234 C23.8312451,22.309436 19.351024,24.5 14,24.5 C8.54801328,24.5 4,22.2259934 4,19 L4,19 L4,9 L4.00465588,8.82176595 C4.16875494,5.69056401 8.648976,3.5 14,3.5 C19.4519867,3.5 24,5.77400664 24,9 L24,9 L24,19 Z M22.0010963,12.3654957 C20.1646364,13.6958252 17.2421578,14.5 14,14.5 C10.7584396,14.5 7.83644066,13.6961216 5.99991901,12.3662311 L6,14 C6,15.7445694 9.51086122,17.5 14,17.5 C18.4891388,17.5 22,15.7445694 22,14 L22,14 Z M14,5.5 C9.51086122,5.5 6,7.25543061 6,9 C6,10.7445694 9.51086122,12.5 14,12.5 C18.4891388,12.5 22,10.7445694 22,9 C22,7.25543061 18.4891388,5.5 14,5.5 Z M22.0010963,17.3654957 C20.1646364,18.6958252 17.2421578,19.5 14,19.5 C10.7584396,19.5 7.83644066,18.6961216 5.99991901,17.3662311 L6,19 L6.00517348,19.1163013 C6.15652138,20.8217216 9.61061986,22.5 14,22.5 C18.4891388,22.5 22,20.7445694 22,19 L22,19 Z" id="↳-Icon-Color" fill="currentColor" fill-rule="nonzero"></path>
-        </g>
-    </g>
-</g></symbol><symbol id="i-flag" viewBox="0 0 28 28"><g fill="currentColor"><path d="M6 3a1 1 0 0 1 1 1v1.33a6.023 6.023 0 0 0 3.773.02c1.72-.51 3.404-1.146 5.108-1.717 1.275-.425 2.575-.726 3.933-.607.837.073 1.763.396 2.494.833.468.28.692.815.692 1.36v9.84l-.008.051a.185.185 0 0 1-.276.105c-.166-.104-.32-.201-.47-.292-1.301-.742-2.819-.716-4.283-.427l-.315.058c-1.562.308-3.022.935-4.514 1.47-1.463.532-2.935 1.016-4.513.973-.551-.015-1.097-.158-1.621-.377V25a1 1 0 1 1-2 0V4a1 1 0 0 1 1-1Zm13.64 2.02c-.958-.085-1.952.12-3.126.511h-.001c-1.603.537-3.415 1.215-5.17 1.737l-.001-.001a8.022 8.022 0 0 1-4.091.202.205.205 0 0 0-.248.198c-.003 2.146-.004 4.288.002 6.43a.48.48 0 0 0 .238.418c.544.308 1.031.473 1.433.484 1.159.031 2.308-.32 3.775-.853l.007-.002c1.426-.513 3.258-1.299 5.174-1.62.94-.181 2.024-.292 3.136-.149a.205.205 0 0 0 .232-.201V5.549a.196.196 0 0 0-.112-.179 3.985 3.985 0 0 0-1.246-.351h-.002Z"/></g></symbol><symbol id="i-lightbulb" viewBox="0 0 28 28"><g fill="currentColor"><path fill-rule="evenodd" d="M14 2C8.446 2 4 6.48 4 12c0 2.85.986 4.693 2.165 6.128.45.55.94 1.05 1.379 1.499l.322.33c.492.51.897.962 1.202 1.437l.507 2.03.032.128c.128.518.257 1.037.563 1.446a2.5 2.5 0 0 0 1.033.807c.471.198 1.006.197 1.54.195h2.514c.534.002 1.069.003 1.54-.195a2.5 2.5 0 0 0 1.033-.807c.307-.409.435-.928.563-1.446l.032-.127.507-2.031c.305-.475.71-.927 1.202-1.436.103-.107.21-.218.322-.331.44-.45.928-.95 1.38-1.499C23.013 16.693 24 14.85 24 12c0-5.552-4.448-10-10-10ZM6 12c0-4.42 3.554-8 8-8 4.448 0 8 3.552 8 8 0 2.3-.764 3.707-1.71 4.86-.39.474-.802.895-1.234 1.337-.119.122-.24.245-.361.372-.42.435-.855.905-1.233 1.431H15v-2.5l1.6-1.2a1 1 0 0 0-1.2-1.6L14 15.75l-1.4-1.05a1 1 0 0 0-1.2 1.6l1.6 1.2V20h-2.463c-.377-.526-.811-.996-1.231-1.431l-.362-.372a20.744 20.744 0 0 1-1.234-1.338C6.764 15.707 6 14.3 6 12Zm5.28 10 .236.94c.185.74.224.818.255.86a.5.5 0 0 0 .206.161c.048.02.134.039.897.039h2.252c.763 0 .849-.02.897-.039a.5.5 0 0 0 .206-.161c.031-.042.07-.12.255-.86l.235-.94h-5.438Z" clip-rule="evenodd"/></g></symbol><symbol id="i-robot" viewBox="0 0 28 28"><g fill="currentColor"><path d="M16.395 12.878c1.033-.556 2.224-.556 3.274.385.41.368.444.998.074 1.407a1.003 1.003 0 0 1-1.412.074l-.1-.082c-.298-.22-.565-.203-.886-.03a1.14 1.14 0 0 0-.176.112l-.099.078a1.003 1.003 0 0 1-1.313-.152.994.994 0 0 1 .074-1.407c.124-.111.314-.25.564-.385Zm-4.895.872a1.75 1.75 0 1 0-3.5 0 1.75 1.75 0 0 0 3.5 0Zm.982 4.384a.992.992 0 0 0-.964 1.732c.107.06.217.116.33.168a5.18 5.18 0 0 0 2.152.458c.772 0 1.507-.163 2.151-.458.114-.052.224-.108.332-.168a.992.992 0 0 0-.966-1.732 2.71 2.71 0 0 1-.19.096 3.196 3.196 0 0 1-1.327.278c-.495 0-.947-.104-1.326-.278a2.71 2.71 0 0 1-.191-.096Z"/><path fill-rule="evenodd" d="M16.5 3.5A2.5 2.5 0 0 1 15 5.792V7h2.643c1.084 0 1.958 0 2.666.058.729.06 1.369.185 1.961.487a5 5 0 0 1 2.185 2.185c.302.592.428 1.232.487 1.961.058.708.058 1.582.058 2.666v3.286c0 1.084 0 1.958-.058 2.666-.06.729-.185 1.369-.487 1.961a5 5 0 0 1-2.185 2.185c-.592.302-1.232.428-1.961.487C19.6 25 18.727 25 17.643 25h-7.286c-1.084 0-1.958 0-2.666-.058-.728-.06-1.369-.185-1.96-.487a5 5 0 0 1-2.186-2.185c-.302-.592-.428-1.232-.487-1.961C3 19.6 3 18.727 3 17.643v-3.286c0-1.084 0-1.958.058-2.666.06-.729.185-1.369.487-1.961A5 5 0 0 1 5.73 7.545c.592-.302 1.233-.428 1.961-.487C8.4 7 9.273 7 10.357 7H13V5.792A2.5 2.5 0 1 1 16.5 3.5ZM6.638 9.327c.263-.134.611-.226 1.216-.276C8.471 9.001 9.264 9 10.4 9h7.2c1.137 0 1.929 0 2.546.051.605.05.953.142 1.216.276a3 3 0 0 1 1.311 1.311c.134.263.226.611.276 1.216.05.617.051 1.41.051 2.546v3.2c0 1.137 0 1.929-.051 2.546-.05.605-.142.953-.276 1.216a3 3 0 0 1-1.311 1.311c-.263.134-.611.226-1.216.276-.617.05-1.41.051-2.546.051h-7.2c-1.137 0-1.929 0-2.546-.051-.605-.05-.953-.142-1.216-.276a3 3 0 0 1-1.311-1.311c-.134-.263-.226-.611-.276-1.216C5.001 19.529 5 18.736 5 17.6v-3.2c0-1.137 0-1.929.051-2.546.05-.605.142-.953.276-1.216a3 3 0 0 1 1.311-1.311Z" clip-rule="evenodd"/></g></symbol><symbol id="i-target" viewBox="0 0 28 28"><g fill="currentColor"><?xml version="1.0" encoding="UTF-8"?>
-<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
-    <title>target_outline_28</title>
-    <desc>Created with Sketch.</desc>
-    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="target_outline_28">
-            <rect x="0" y="0" width="28" height="28"></rect>
-            <path d="M14,2 C14.5522847,2 15,2.44771525 15,3 L15.0010997,4.04948449 C19.7249658,4.51902358 23.481539,8.27589662 23.9506147,12.9998991 L25,13 C25.5522847,13 26,13.4477153 26,14 C26,14.5522847 25.5522847,15 25,15 L23.9505155,15.0010997 C23.4810095,19.7246329 19.7246329,23.4810095 15.0010997,23.9505155 L15,25 C15,25.5522847 14.5522847,26 14,26 C13.4477153,26 13,25.5522847 13,25 L12.9998991,23.9506147 C8.27589662,23.481539 4.51902358,19.7249658 4.04948449,15.0010997 L3,15 C2.44771525,15 2,14.5522847 2,14 C2,13.4477153 2.44771525,13 3,13 L4.04938526,12.9998991 C4.51849404,8.27556368 8.27556368,4.51849404 12.9998991,4.04938526 L13,3 C13,2.44771525 13.4477153,2 14,2 Z M15.0009551,6.06201291 L15,7 C15,7.55228475 14.5522847,8 14,8 C13.4477153,8 13,7.55228475 13,7 L13.0000487,6.06188768 C9.38129217,6.5131177 6.5131177,9.38129217 6.06188768,13.0000487 L7,13 C7.55228475,13 8,13.4477153 8,14 C8,14.5522847 7.55228475,15 7,15 L6.06201291,15.0009551 C6.51364811,18.6192382 9.38162677,21.486924 13.0000487,21.9381123 L13,21 C13,20.4477153 13.4477153,20 14,20 C14.5522847,20 15,20.4477153 15,21 L15.0009551,21.9379871 C18.6189036,21.4863937 21.4863937,18.6189036 21.9379871,15.0009551 L21,15 C20.4477153,15 20,14.5522847 20,14 C20,13.4477153 20.4477153,13 21,13 L21.9381123,13.0000487 C21.486924,9.38162677 18.6192382,6.51364811 15.0009551,6.06201291 Z M14,12 C15.1045695,12 16,12.8954305 16,14 C16,15.1045695 15.1045695,16 14,16 C12.8954305,16 12,15.1045695 12,14 C12,12.8954305 12.8954305,12 14,12 Z" id="↳-Icon-Color" fill="currentColor" fill-rule="nonzero"></path>
-        </g>
-    </g>
-</g></symbol><symbol id="i-comment" viewBox="0 0 28 28"><g fill="currentColor"><?xml version="1.0" encoding="UTF-8"?>
-<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
-    <title>comment_outline_28</title>
-    <desc>Created with Sketch.</desc>
-    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="comment_outline_28">
-            <polygon points="0 0 28 0 28 28 0 28"></polygon>
-            <path d="M16.060288,20.3541248 C16.3580307,20.0935998 16.7402144,19.95 17.1358455,19.95 L21.5833333,19.95 C22.7534344,19.95 23.45,19.2534344 23.45,18.0833333 L23.45,8.75 C23.45,7.57989897 22.7534344,6.88333331 21.5833333,6.88333331 L7.58333333,6.88333331 C6.41323231,6.88333331 5.71666664,7.57989897 5.71666664,8.75 L5.71666664,18.0833333 C5.71666664,19.2534344 6.41323231,19.95 7.58333333,19.95 L10.4988333,19.95 C11.3146883,20.1853117 11.3146883,20.1853117 11.55,21.0011667 L11.55,24.3011457 L16.060288,20.3541248 Z M10.3075,26.2879166 C9.75682135,25.8749076 9.45000003,25.146207 9.45000003,24.5 L9.45000003,22.05 L7.58333333,22.05 C5.25343436,22.05 3.61666669,20.4132323 3.61666669,18.0833333 L3.61666669,8.75 C3.61666669,6.42010103 5.25343436,4.78333336 7.58333333,4.78333336 L21.5833333,4.78333336 C23.9132323,4.78333336 25.55,6.42010103 25.55,8.75 L25.55,18.0833333 C25.55,20.4132323 23.9132323,22.05 21.5833333,22.05 L17.3111885,22.05 L12.9656834,25.8523169 C12.1106999,26.690914 11.1116951,26.891063 10.3075,26.2879166 Z" id="↳-Icon-Color" fill="currentColor" fill-rule="nonzero"></path>
-        </g>
-    </g>
-</g></symbol><symbol id="i-edit" viewBox="0 0 28 28"><g fill="currentColor">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M21.782 3.33539C20.9264 2.89941 19.9137 2.89941 19.0581 3.33539C18.6302 3.55338 18.2582 3.92633 17.8279 4.3578L4.67698 17.5088C4.32287 17.8628 4.06847 18.117 3.85947 18.4047C3.44206 18.9792 3.16654 19.6444 3.05545 20.3458C2.99983 20.697 2.99991 21.0567 3.00003 21.5573L3.00005 22.6L2.99985 22.681C2.99882 22.9628 2.99756 23.3091 3.09793 23.618C3.29577 24.2269 3.77314 24.7043 4.38201 24.9021C4.69094 25.0025 5.0373 25.0012 5.31907 25.0002L5.40005 25L6.44273 25C6.94338 25.0001 7.30306 25.0002 7.65425 24.9446C8.35566 24.8335 9.02081 24.558 9.59533 24.1406C9.883 23.9316 10.1373 23.6772 10.4912 23.3231L23.6422 10.1722C24.0737 9.74179 24.4466 9.36979 24.6646 8.94196C25.1006 8.08631 25.1006 7.07366 24.6646 6.21802C24.4467 5.79019 24.0737 5.4182 23.6423 4.98783L23.0122 4.35781C22.5819 3.92633 22.2099 3.55339 21.782 3.33539ZM19.9661 5.1174C20.2513 4.97208 20.5888 4.97208 20.874 5.1174C20.9796 5.17118 21.1114 5.2855 21.6928 5.86699L22.133 6.3072C22.7145 6.88868 22.8288 7.02045 22.8826 7.126C23.028 7.41121 23.028 7.74876 22.8826 8.03398C22.8288 8.13952 22.7145 8.27129 22.133 8.85278L21.275 9.7108L18.2892 6.72501L19.1473 5.86699C19.7287 5.2855 19.8605 5.17118 19.9661 5.1174ZM16.875 8.13922L6.14233 18.8719C5.71687 19.2974 5.58239 19.4359 5.4775 19.5803C5.24561 19.8994 5.09254 20.269 5.03083 20.6586C5.00291 20.8349 5.00005 21.0279 5.00005 21.6296V22.6C5.00005 22.797 5.00039 22.9048 5.00467 22.983L5.00536 22.9947L5.01702 22.9954C5.09529 22.9997 5.20302 23 5.40005 23H6.3704C6.97209 23 7.16513 22.9971 7.34138 22.9692C7.73105 22.9075 8.10058 22.7544 8.41976 22.5225C8.56413 22.4177 8.70266 22.2832 9.12812 21.8577L19.8608 11.125L16.875 8.13922Z" fill="currentColor"/>
-</g></symbol><symbol id="i-snowflake" viewBox="0 0 28 28"><g fill="currentColor"><path clip-rule="evenodd" d="m10.2929 2.79289c.3905-.39052 1.0237-.39052 1.4142 0l2.2929 2.2929 2.2929-2.29289c.3905-.39053 1.0237-.39053 1.4142-.00001.3905.39053.3905 1.02369 0 1.41422l-2.7071 2.70711v5.35368l4.6365-2.67682.9908-3.69798c.143-.53347.6913-.85005 1.2248-.70711s.85.69128.7071 1.22475l-.8393 3.13215 3.1322.83921c.5335.143.85.6913.7071 1.2248s-.6913.85-1.2247.7071l-3.698-.9909-4.6365 2.6769 4.6365 2.6768 3.698-.9908c.5334-.143 1.0818.1736 1.2247.7071.143.5334-.1736 1.0818-.7071 1.2247l-3.1321.8393.8392 3.1321c.143.5335-.1736 1.0818-.7071 1.2248-.5335.1429-1.0818-.1737-1.2247-.7071l-.9909-3.698-4.6365-2.6769v5.3538l2.7071 2.7071c.3905.3905.3905 1.0237 0 1.4142s-1.0237.3905-1.4142 0l-2.2929-2.2929-2.2929 2.2929c-.3905.3905-1.0237.3905-1.4142 0-.39052-.3905-.39052-1.0237 0-1.4142l2.7071-2.7071v-5.3538l-4.63646 2.6769-.99087 3.698c-.14294.5335-.69128.85-1.22475.7071-.53346-.1429-.85005-.6913-.7071-1.2248l.83926-3.1321-3.13216-.8393c-.53346-.1429-.85005-.6912-.7071-1.2247.14294-.5335.69128-.8501 1.22474-.7071l3.69798.9909 4.63646-2.6769-4.63645-2.6769-3.69798.9909c-.53347.1429-1.0818-.1737-1.22474-.7071-.14295-.5335.17364-1.0818.7071-1.2248l3.13216-.83923-.83926-3.13215c-.14295-.53346.17364-1.0818.7071-1.22475.53347-.14294 1.08181.17365 1.22475.70711l.99087 3.69798 4.63645 2.67684v-5.35368l-2.7071-2.70711c-.39052-.39053-.39052-1.02369 0-1.41422z" fill="currentColor" fill-rule="evenodd"/>
-</g></symbol><symbol id="i-services" viewBox="0 0 28 28"><g fill="currentColor"><path d="M9.116 15c1.065 0 1.623.108 2.204.419.541.289.972.72 1.261 1.26.311.582.419 1.14.419 2.205v2.232c0 1.065-.108 1.623-.419 2.205-.289.54-.72.971-1.26 1.26-.582.311-1.14.419-2.205.419H6.884c-1.065 0-1.623-.108-2.205-.419a3.05 3.05 0 0 1-1.26-1.26C3.108 22.739 3 22.18 3 21.116v-2.232c0-1.065.108-1.623.419-2.204.289-.541.72-.972 1.26-1.261.582-.311 1.14-.419 2.205-.419zm12 0c1.065 0 1.623.108 2.205.419.54.289.971.72 1.26 1.26.311.582.419 1.14.419 2.205v2.232c0 1.065-.108 1.623-.419 2.205-.289.54-.72.971-1.26 1.26-.582.311-1.14.419-2.205.419h-2.232c-1.065 0-1.623-.108-2.205-.419a3.05 3.05 0 0 1-1.26-1.26c-.311-.582-.419-1.14-.419-2.205v-2.232c0-1.065.108-1.623.419-2.204.289-.541.72-.972 1.26-1.261.582-.311 1.14-.419 2.205-.419zm-12 2H6.884c-.763 0-1.01.048-1.261.182a1.05 1.05 0 0 0-.44.44c-.135.253-.183.499-.183 1.262v2.232c0 .763.048 1.01.182 1.261q.153.288.44.44c.253.136.499.183 1.262.183h2.232c.763 0 1.01-.047 1.261-.182q.288-.153.44-.44c.135-.253.183-.499.183-1.262v-2.232c0-.763-.048-1.01-.182-1.261a1.05 1.05 0 0 0-.44-.44c-.253-.135-.499-.183-1.262-.183m12 0h-2.232c-.763 0-1.01.048-1.261.182a1.05 1.05 0 0 0-.44.44c-.135.253-.183.499-.183 1.262v2.232c0 .763.048 1.01.182 1.261q.153.288.44.44c.253.136.499.183 1.262.183h2.232c.763 0 1.01-.047 1.261-.182q.288-.153.44-.44c.135-.253.183-.499.183-1.262v-2.232c0-.763-.048-1.01-.182-1.261a1.05 1.05 0 0 0-.44-.44c-.253-.135-.499-.183-1.262-.183m-.224-14.587c.63.19 1.101.51 1.855 1.263l1.577 1.577c.754.754 1.072 1.225 1.263 1.856a3.04 3.04 0 0 1 0 1.782c-.19.631-.51 1.102-1.263 1.856l-1.577 1.577c-.754.754-1.225 1.072-1.855 1.264a3.05 3.05 0 0 1-1.783 0c-.631-.192-1.102-.51-1.856-1.264l-1.577-1.577c-.754-.754-1.072-1.225-1.263-1.856a3.04 3.04 0 0 1 0-1.782c.19-.631.51-1.102 1.263-1.856l1.577-1.577c.754-.754 1.225-1.072 1.855-1.263a3.04 3.04 0 0 1 1.784 0M9.116 3c1.065 0 1.623.108 2.204.419.541.289.972.72 1.261 1.26.311.582.419 1.14.419 2.205v2.232c0 1.065-.108 1.623-.419 2.205-.289.54-.72.971-1.26 1.26-.582.311-1.14.419-2.205.419H6.884c-1.065 0-1.623-.108-2.205-.419a3.05 3.05 0 0 1-1.26-1.26C3.108 10.739 3 10.18 3 9.116V6.884c0-1.065.108-1.623.419-2.205.289-.54.72-.971 1.26-1.26C5.261 3.108 5.82 3 6.884 3zm10.573 1.327c-.274.082-.482.223-1.021.763L17.09 6.668c-.54.54-.68.747-.763 1.02a1.05 1.05 0 0 0 0 .623c.082.274.223.482.763 1.021l1.578 1.578c.54.54.747.68 1.02.763.21.064.415.064.623 0 .274-.082.482-.223 1.021-.763l1.578-1.578c.54-.54.68-.747.763-1.02a1.05 1.05 0 0 0 0-.623c-.082-.274-.223-.482-.763-1.021L21.332 5.09c-.54-.54-.747-.68-1.02-.763a1.05 1.05 0 0 0-.623 0M9.116 5H6.884c-.763 0-1.01.048-1.261.182a1.05 1.05 0 0 0-.44.44c-.136.254-.183.5-.183 1.263v2.232c0 .763.048 1.01.182 1.261q.153.288.44.44c.253.136.499.183 1.262.183h2.232c.763 0 1.01-.047 1.261-.182q.288-.153.44-.44c.135-.253.183-.499.183-1.262V6.884c0-.763-.048-1.01-.182-1.261a1.05 1.05 0 0 0-.44-.44C10.124 5.047 9.878 5 9.115 5"/></g></symbol></svg><!--ICONS:end-->
 <div class="deck"><div class="stage" id="stage">
-<!-- 1. Обложка · 0:25 -->
-<section class="slide cover">
-  <div class="x c-date">Октябрь 2026</div>
-  <h1 class="x c-title">Полигон: симулятор продуктовых решений</h1>
-  <p class="x c-sub">Модуль практики перед интервью в карьерной школе банка</p>
-  <p class="x c-auth">Мария Прегер, Ольга Федорова, Софа Ибрагимова, Роман Салимгареев</p>
-  <p class="x c-course">Курс «Принципы и подходы к разработке цифровых продуктов», ВШЭ</p>
-  <div class="x c-lock">
-    <div class="qr-tile"><!--QR:start--><svg role="img" aria-label="QR-код платформы" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 33" shape-rendering="crispEdges"><path stroke="#003c7f" d="M0 0.5h7m2 0h3m2 0h1m3 0h1m3 0h1m3 0h7M0 1.5h1m5 0h1m1 0h1m2 0h1m1 0h2m1 0h2m2 0h3m1 0h1m1 0h1m5 0h1M0 2.5h1m1 0h3m1 0h1m1 0h1m2 0h1m1 0h1m2 0h3m2 0h1m1 0h1m2 0h1m1 0h3m1 0h1M0 3.5h1m1 0h3m1 0h1m1 0h1m12 0h4m1 0h1m1 0h3m1 0h1M0 4.5h1m1 0h3m1 0h1m2 0h1m1 0h3m1 0h1m1 0h2m2 0h1m1 0h1m2 0h1m1 0h3m1 0h1M0 5.5h1m5 0h1m3 0h1m5 0h1m3 0h1m5 0h1m5 0h1M0 6.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M8 7.5h5m1 0h1m3 0h1m3 0h2M0 8.5h1m5 0h1m1 0h1m1 0h6m1 0h1m4 0h5m2 0h3M0 9.5h6m3 0h4m2 0h1m2 0h2m1 0h3m4 0h3M0 10.5h3m1 0h1m1 0h7m2 0h1m2 0h1m3 0h1m5 0h1m1 0h2M1 11.5h1m2 0h2m5 0h2m1 0h3m2 0h2m1 0h1m1 0h1m2 0h5M4 12.5h1m1 0h2m1 0h2m1 0h3m1 0h3m1 0h3m1 0h1m1 0h1m5 0h1M1 13.5h2m5 0h1m2 0h1m2 0h1m1 0h2m2 0h2m1 0h1m2 0h2m2 0h3M2 14.5h1m2 0h2m4 0h1m5 0h1m1 0h1m1 0h2m2 0h2m1 0h1m2 0h1M0 15.5h2m2 0h1m2 0h1m2 0h1m2 0h3m3 0h1m2 0h2m1 0h1m1 0h1m2 0h1m1 0h1M1 16.5h2m1 0h4m2 0h4m3 0h1m1 0h1m2 0h1m1 0h2m1 0h2m3 0h1M4 17.5h1m2 0h2m1 0h1m1 0h4m1 0h1m1 0h3m1 0h1m2 0h1m2 0h4M0 18.5h7m1 0h2m2 0h2m1 0h2m2 0h1m3 0h1m3 0h1m1 0h2m1 0h1M0 19.5h2m2 0h2m1 0h1m4 0h3m2 0h2m2 0h1m3 0h2m1 0h3M3 20.5h4m2 0h1m1 0h2m1 0h1m1 0h1m2 0h7m1 0h3m2 0h1M0 21.5h2m5 0h1m3 0h1m4 0h1m1 0h1m1 0h4m4 0h2M0 22.5h1m3 0h1m1 0h1m1 0h3m2 0h1m1 0h3m2 0h1m1 0h1m2 0h2m1 0h1m2 0h1M0 23.5h1m2 0h2m2 0h1m2 0h1m2 0h1m4 0h1m5 0h1m1 0h5m1 0h1M0 24.5h3m1 0h1m1 0h1m2 0h1m3 0h1m1 0h2m2 0h2m3 0h6M8 25.5h2m1 0h1m1 0h4m1 0h3m3 0h1m3 0h1m1 0h1m1 0h1M0 26.5h7m3 0h1m2 0h4m1 0h1m1 0h2m1 0h2m1 0h1m1 0h1m1 0h2M0 27.5h1m5 0h1m3 0h1m1 0h2m1 0h2m6 0h2m3 0h3m1 0h1M0 28.5h1m1 0h3m1 0h1m3 0h2m2 0h2m2 0h2m1 0h1m2 0h6m1 0h1M0 29.5h1m1 0h3m1 0h1m2 0h1m1 0h1m1 0h2m1 0h2m2 0h4m1 0h1m1 0h2m3 0h1M0 30.5h1m1 0h3m1 0h1m2 0h3m2 0h1m1 0h3m1 0h1m4 0h1m1 0h2m1 0h3M0 31.5h1m5 0h1m2 0h1m3 0h4m2 0h2m1 0h2m1 0h6M0 32.5h7m1 0h1m2 0h4m2 0h1m1 0h1m2 0h3m2 0h1m3 0h1"/></svg><!--QR:end--></div>
-    <div class="c-link"><span>Платформа</span>nominalnominalovich.github.io/polygon</div>
-  </div>
+
+<!-- 1 · Обложка -->
+<section class="slide navy">
+  <svg class="rib" viewBox="0 0 960 540"><path class="r" stroke-width="66" d="M1020 40 C 840 70, 650 150, 700 290 C 740 400, 900 430, 860 600"/></svg>
+  <img class="a cut" src="img/man-walking-back.png" alt="" style="left:735px;top:208px;height:176px">
+  <div class="kick">Учебный проект · ВШЭ · октябрь 2026</div>
+  <h1 class="a big" style="left:50px;top:104px;font-size:132px;color:#fff">Полигон</h1>
+  <p class="a" style="left:56px;top:268px;width:520px;font-size:27px;line-height:34px;font-weight:700">Симулятор продуктовых решений. Модуль практики перед интервью в карьерной школе банка</p>
+  <p class="a cap" style="left:56px;top:402px;width:560px;font-size:16px;line-height:22px">Курс «Принципы и подходы к разработке цифровых продуктов»</p>
+  <p class="a" style="left:56px;top:432px;width:600px;font-size:16px;line-height:22px;font-weight:700">Мария Прегер · Ольга Федорова · Софа Ибрагимова · Роман Салимгареев</p>
+  <p class="a" style="left:56px;top:488px;font-size:14px;line-height:18px;font-weight:700;color:var(--on-navy)">nominalnominalovich.github.io/polygon</p>
 </section>
 
-<!-- 2. Оглавление: часть 1 -->
-<section class="slide divider">
-  <h2 class="d-title">Содержание</h2>
-  <ol class="agenda">
-    <li class="on"><span class="n">01</span><span>Задача и исследование<small>Задача · Исследование · Персоны · Дерево и развилки</small></span></li>
-    <li><span class="n">02</span><span>Продукт</span></li>
-    <li><span class="n">03</span><span>Стратегия</span></li>
-  </ol>
+<!-- 2 · Содержание 01 -->
+<section class="slide paper">
+  <svg class="rib" viewBox="0 0 960 540"><path class="r" stroke-width="22" d="M-40 470 C 60 430, 120 412, 200 410 C 300 408, 380 433, 480 430 C 580 427, 660 445, 760 440 C 860 435, 930 410, 1000 392"/></svg>
+  <div class="st big hl" style="left:200px;top:410px">01</div>
+  <div class="st ghost" style="left:480px;top:430px">02</div>
+  <div class="st ghost" style="left:760px;top:440px">03</div>
+  <p class="a" style="left:110px;top:448px;width:180px;text-align:center;font-size:15px;line-height:19px;font-weight:800;color:var(--navy)">Задача и исследование</p>
+  <p class="a" style="left:390px;top:460px;width:180px;text-align:center;font-size:15px;line-height:19px;font-weight:600;color:var(--slate)">Продукт</p>
+  <p class="a" style="left:670px;top:470px;width:180px;text-align:center;font-size:15px;line-height:19px;font-weight:600;color:var(--slate)">Стратегия</p>
+  <div class="a big" style="left:48px;top:46px;font-size:150px;color:var(--cobalt)">01</div>
+  <h2 class="a" style="left:56px;top:212px;width:820px;font-size:56px;line-height:60px;font-weight:800;letter-spacing:-.03em;color:var(--navy)">Задача и исследование</h2>
+  <p class="a" style="left:56px;top:286px;font-size:20px;line-height:26px;color:var(--slate);font-weight:500">Задача · Исследование · Персоны · Развилки</p>
 </section>
 
-<!-- 3. Задача и аудитория · 0:40 -->
+<!-- 3 · Задача -->
 <section class="slide">
-  <h2 class="t">Задача: <em>тренировать продуктовые решения так, чтобы последствия были объяснимы</em></h2>
-  <div class="cols" style="grid-template-columns:1.15fr 1fr">
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-error"/></svg>С чего началось</div>
-      <div class="body">
-        <div class="card sm c-prob grow">
-          <p class="ct">Учебная симуляция «Бизнес-курс: Максимум»</p>
-          <p class="kazino">«Казино»</p>
-          <p class="cb">Так её прозвали студенты: решение принято, результат есть, а почему он такой, не видно</p>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <div class="card sm c-prob"><p class="lbl">Игра по технике безопасности</p><p class="cb mt6">«Бесполезная трата рабочего времени»</p></div>
-          <div class="card sm c-prob"><p class="lbl">Стажировка без онбординга</p><p class="cb mt6">«Было очень тяжело»</p></div>
-        </div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-target"/></svg>Что делаем и для кого</div>
-      <div class="body">
-        <div class="card c-solid"><p class="ct18">Модуль практики перед интервью в карьерной школе банка</p><p class="cb mt6">Кандидат тренируется на последствиях, эксперт получает материал для живого вопроса. Решения о&nbsp;найме по карточке нет</p></div>
-        <ul class="who">
-          <li><svg class="ic"><use href="#i-user"/></svg><span class="nm">Кандидат на junior-PM<small>тренируется между шорт-листом и интервью</small></span></li>
-          <li><svg class="ic"><use href="#i-userstar"/></svg><span class="nm">Эксперт карьерной школы банка<small>разбирает переданную работу</small></span></li>
-          <li><svg class="ic"><use href="#i-building"/></svg><span class="nm">Банк<small>платит; для кандидата бесплатно</small></span></li>
-        </ul>
-      </div>
-    </div>
+  <svg class="rib" viewBox="0 0 960 540"><path class="r" stroke-width="30" d="M-40 560 C 150 500, 360 530, 560 470"/></svg>
+  <div class="a" style="left:540px;top:236px;width:440px;height:330px;background:var(--navy)"></div>
+  <div class="kick">Задача</div>
+  <h2 class="h" style="width:620px">Тренировать продуктовые решения так, чтобы последствия были&nbsp;объяснимы</h2>
+  <div class="a" style="left:56px;top:240px;width:440px">
+    <p class="lab">С чего началось · опыт команды</p>
+    <p style="margin-top:14px;font-size:27px;line-height:31px;font-weight:800;color:var(--navy)">«Казино»</p>
+    <p class="cap">Так студенты прозвали учебную симуляцию «Бизнес-курс: Максимум»: результат есть, а почему он такой, не видно</p>
+    <p style="margin-top:12px;font-size:22px;line-height:27px;font-weight:800;color:var(--navy)">«Бесполезная трата рабочего времени»</p>
+    <p class="cap">Игра по технике безопасности</p>
+    <p style="margin-top:12px;font-size:22px;line-height:27px;font-weight:800;color:var(--navy)">«Было очень тяжело»</p>
+    <p class="cap">Стажировка без онбординга</p>
   </div>
-  <div class="foot">Слева опыт самой команды: с него началась идея</div>
+  <div class="a" style="left:576px;top:262px;width:340px;color:#fff">
+    <p class="lab" style="color:var(--on-navy)">Что делаем и для кого</p>
+    <p style="margin-top:8px;font-size:23px;line-height:28px;font-weight:800">Модуль практики перед интервью в карьерной школе банка</p>
+    <p style="margin-top:14px;font-size:15px;line-height:20px"><b>Кандидат на junior-PM</b> тренируется между шорт-листом и интервью</p>
+    <p style="margin-top:6px;font-size:15px;line-height:20px"><b>Эксперт банка</b> разбирает переданную работу</p>
+    <p style="margin-top:6px;font-size:15px;line-height:20px"><b>Банк</b> платит, для кандидата бесплатно</p>
+  </div>
 </section>
 
-<!-- 4. Исследование · 1:35 -->
+<!-- 4 · Исследование -->
 <section class="slide">
-  <h2 class="t">Исследование: <em>объяснения «почему» не получал никто из пяти, две гипотезы пришлось переписать</em></h2>
-  <div class="cols" style="grid-template-columns:218px 1fr 292px;bottom:110px">
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-users"/></svg>Кого спросили</div>
-      <div class="body tight" style="gap:10px">
-        <div class="card sm c-blue row" style="gap:12px"><p class="hero-n">7</p><p class="cb">интервью с LLM&#8209;персонами по методу занятия 15.10</p></div>
-        <div class="grp"><p class="lbl">Будущие продакты · 5</p><p class="cb">аналитик и руководитель проектов (их предложил преподаватель), студентка, магистрантка, разработчик</p></div>
-        <div class="grp"><p class="lbl">Эксперт и наниматель · 2</p><p class="cb">эксперт карьерной школы банка, руководитель продукта в финтехе</p></div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-comment"/></svg>Что услышали</div>
-      <div class="body tight" style="gap:8px">
-        <div class="stat"><span class="big">0 из 5</span><p class="cb">получали объяснение, почему решение сработало<span class="q-by" style="display:block;margin-top:2px">уточняющий вопрос задавал интервьюер</span></p></div>
-        <div class="stat"><span class="big">4 из 5</span><p class="cb">не отделили результат от внешнего события: сезонность, реклама, смена подрядчика, пицца</p></div>
-        <div class="card sm c-pale" style="padding:9px 12px"><p class="q">«Я просто научилась угадывать формат»</p><p class="q-by" style="margin-top:3px">Ирина, руководитель проектов</p></div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-question"/></svg>Гипотезы</div>
-      <div class="body tight" style="gap:4px">
-        <p class="lbl acc">Статусы по интервью с LLM-персонами</p>
-        <div>
-          <div class="hy2"><span class="tx">«Анализ есть, решения нет»</span><span class="st ch">изменена</span></div>
-          <div class="hy2"><span class="tx">«Никто не объясняет, почему вышло именно так»</span><span class="st ok">подтверждена и расширена</span></div>
-          <div class="hy2"><span class="tx">«Допущения прячут от проверяющего»</span><span class="st ch">изменена</span></div>
-          <div class="hy2"><span class="tx">«Эксперт сначала смотрит расчёты»</span><span class="st up">подтверждена частично</span></div>
-          <div class="hy2"><span class="tx">«Критерии и заметки в разных местах»</span><span class="st ok">подтверждена</span></div>
-        </div>
-      </div>
+  <div class="kick">Исследование · 7 интервью с LLM-персонами</div>
+  <h2 class="h" style="width:560px">Объяснения «почему» не&nbsp;получал никто из&nbsp;пяти</h2>
+  <div class="a big" style="left:52px;top:170px;font-size:84px;color:var(--cobalt)">0 из 5</div>
+  <p class="a" style="left:56px;top:258px;width:380px;font-size:16px;line-height:21px">будущих продактов получали объяснение, почему решение сработало <span class="cap">(уточняющий вопрос задавал интервьюер)</span></p>
+  <div class="a big" style="left:52px;top:322px;font-size:84px;color:var(--navy)">4 из 5</div>
+  <p class="a" style="left:56px;top:410px;width:380px;font-size:16px;line-height:21px">не отделили результат от внешнего события: сезонность, реклама, смена подрядчика, пицца</p>
+  <div class="a" style="left:486px;top:212px;width:418px">
+    <p class="lab">Гипотезы · статусы по интервью с LLM-персонами</p>
+    <div style="margin-top:12px;display:grid;grid-template-columns:1fr auto;gap:9px 12px;align-items:center;font-size:15px;line-height:19px;font-weight:700;color:var(--navy)">
+      <span>«Анализ есть, решения нет»</span><span class="pill p-mist">изменена</span>
+      <span>«Никто не объясняет, почему вышло именно так»</span><span class="pill p-strong">подтверждена и расширена</span>
+      <span>«Допущения прячут от проверяющего»</span><span class="pill p-mist">изменена</span>
+      <span>«Эксперт сначала смотрит расчёты»</span><span class="pill p-soft">подтверждена частично</span>
+      <span>«Критерии и заметки в разных местах»</span><span class="pill p-strong">подтверждена</span>
     </div>
   </div>
-  <div class="card sm c-pale row" style="position:absolute;left:53px;right:53px;top:440px;gap:12px;padding:8px 14px">
-    <svg class="ic" style="color:var(--blue-700)"><use href="#i-info"/></svg>
-    <p class="cb"><b style="font-weight:500">Чего это не доказывает.</b> Персон придумала команда, а модель обобщает типичный опыт. Выводы проверяют формулировки гипотез, но не спрос. Следующий шаг: два-три живых интервью по тому же гайду</p>
-  </div>
-  <div class="foot">Модель получала биографию человека и отвечала от его лица; сессии отдельные, о «Полигоне» и гипотезах персоны не знали</div>
+  <img class="a cut" src="img/two-coworkers.png" alt="" style="left:606px;top:22px;width:330px">
+  <p class="a cap" style="left:56px;top:470px;width:820px;font-size:13px;line-height:17px">Метод занятия 15.10: пять будущих продактов и два эксперта. Чего это не доказывает: персон придумала команда, модель обобщает типичный опыт; выводы проверяют формулировки гипотез, а не спрос. Следующий шаг: два-три живых интервью по тому же гайду</p>
 </section>
 
-<!-- 5. Персоны и чего не ожидали · 0:50 -->
+<!-- 5 · Персоны -->
+<section class="slide paper">
+  <div class="kick">Персоны после интервью · имена условные</div>
+  <h2 class="h m">Алина застревает на выборе, Дмитрий начинает с расчётов</h2>
+  <img class="a cut" src="img/woman-laptop-icons8.png" alt="" style="left:22px;top:150px;height:300px">
+  <div class="a" style="left:286px;top:156px;width:200px">
+    <p style="font-size:40px;line-height:44px;font-weight:800;color:var(--navy);letter-spacing:-.02em">Алина</p>
+    <p class="cap">кандидат на junior-PM</p>
+    <ul style="margin-top:12px;font-size:15px;line-height:20px">
+      <li class="li">Анализировать умеет, застревает на выборе одного решения</li>
+      <li class="li" style="margin-top:6px">Прячет допущения: не знает критериев оценки</li>
+      <li class="li" style="margin-top:6px">Бросает курсы с долгой проверкой</li>
+    </ul>
+  </div>
+  <div class="a" style="left:506px;top:156px;width:200px">
+    <p style="font-size:40px;line-height:44px;font-weight:800;color:var(--navy);letter-spacing:-.02em">Дмитрий</p>
+    <p class="cap">эксперт карьерной школы банка</p>
+    <ul style="margin-top:12px;font-size:15px;line-height:20px">
+      <li class="li">Начинает с расчётов, вопрос берёт из места в работе</li>
+      <li class="li" style="margin-top:6px">Шкала нужна комиссии, решает по самой работе</li>
+      <li class="li" style="margin-top:6px">Разбирает вечерами, беспокоит разброс оценок</li>
+    </ul>
+  </div>
+  <img class="a cut" src="img/man-desk-laptop.png" alt="" style="left:700px;top:186px;height:264px">
+  <div class="a" style="left:0;top:458px;width:960px;height:82px;background:var(--navy)"></div>
+  <div class="a" style="left:56px;top:470px;width:780px;color:#fff">
+    <p class="lab" style="color:var(--on-navy)">Чего не ожидали</p>
+    <p style="margin-top:4px;font-size:15px;line-height:20px">Эксперты расходятся на 8–10 баллов из 30 · разбор получает примерно каждый пятый · ИИ видно по отсутствию своих цифр. В продукт добавили итог из трёх уровней и поле «Что я допускаю»</p>
+  </div>
+</section>
+
+<!-- 6 · Развилки -->
 <section class="slide">
-  <h2 class="t">Персоны после интервью: <em>Алина застревает на выборе и прячет допущения, Дмитрий начинает с расчётов</em></h2>
-  <div class="cols" style="grid-template-columns:1fr 1fr 1fr;column-gap:30.7px;bottom:130px">
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-education"/></svg>Кандидат</div>
-      <div class="body tight">
-        <div class="card c-blue grow" style="display:flex;flex-direction:column">
-          <div class="row" style="gap:12px">
-            <span class="ava"><svg class="ic"><use href="#i-user"/></svg></span>
-            <div><p class="ct18">Алина</p><p class="cb" style="font-weight:300">кандидат на junior-PM</p></div>
-          </div>
-          <ul class="b cb mt12" style="display:flex;flex-direction:column;gap:6px">
-            <li>Анализировать умеет, застревает на выборе одного решения</li><li>Прячет допущения: не знает критериев оценки</li><li>Бросает курсы с долгой проверкой</li>
-          </ul>
-          <p class="lbl" style="margin-top:auto;font-weight:400">Опора: Полина, Ксения, Денис</p>
-        </div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-userstar"/></svg>Эксперт</div>
-      <div class="body tight">
-        <div class="card c-blue grow" style="display:flex;flex-direction:column">
-          <div class="row" style="gap:12px">
-            <span class="ava"><svg class="ic"><use href="#i-userstar"/></svg></span>
-            <div><p class="ct18">Дмитрий</p><p class="cb" style="font-weight:300">эксперт карьерной школы банка</p></div>
-          </div>
-          <ul class="b cb mt12" style="display:flex;flex-direction:column;gap:6px">
-            <li>Начинает с расчётов, вопрос берёт из места в работе</li><li>Шкала нужна комиссии, решает по самой работе</li><li>Разбирает вечерами, беспокоит разброс оценок</li>
-          </ul>
-          <p class="lbl" style="margin-top:auto;font-weight:400">Опора: Олег, Марина</p>
-        </div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-lightbulb"/></svg>Чего не ожидали</div>
-      <div class="body tight">
-        <div class="card c-pale grow">
-          <ul class="b cb" style="display:flex;flex-direction:column;gap:10px">
-            <li><b style="font-weight:500">Калибровка.</b> Эксперты расходятся на 8–10 баллов из 30, на сверку полчаса</li>
-            <li><b style="font-weight:500">Шаблонный отказ.</b> Разбор получает примерно каждый пятый, а «Полигон» может дать его каждому</li>
-            <li><b style="font-weight:500">ИИ.</b> Эксперты вычисляют его по отсутствию своих цифр</li>
-          </ul>
-        </div>
-      </div>
-    </div>
+  <svg class="rib" viewBox="0 0 960 540"><path class="r" stroke-width="12" d="M84 168 L 84 476"/></svg>
+  <div class="kick">Дерево проблем и развилки</div>
+  <h2 class="h m">Шесть развилок: что выбрали и почему</h2>
+  <p class="a" style="left:56px;top:110px;width:848px;font-size:17px;line-height:23px">Проблема с двух сторон: кандидат не отделяет свой эффект от внешнего события, а эксперт ищет расчёты и допущения, которые кандидат прячет</p>
+  <div class="a" style="left:116px;top:176px;width:790px;display:grid;grid-template-columns:124px 196px 168px 1fr;column-gap:14px;font-size:12px;line-height:15px;font-weight:700;color:var(--slate)">
+    <span>Развилка</span><span>Выбрали</span><span>Отбросили</span><span>Почему</span>
   </div>
-  <div class="card sm c-pale row" style="position:absolute;left:53px;right:53px;top:424px;height:52px;gap:12px">
-    <svg class="ic" style="color:var(--blue-700)"><use href="#i-info"/></svg>
-    <p class="ct grow">В продукт добавили итог по заданию из трёх уровней и поле «Что я допускаю и в чём не уверен», его видит эксперт</p>
+  <div class="a" style="left:116px;top:198px;width:790px;display:grid;grid-template-columns:124px 196px 168px 1fr;column-gap:14px;grid-auto-rows:46px;align-items:center;font-size:14px;line-height:18px">
+    <b style="color:var(--navy)">Формат</b><b style="color:var(--cobalt)">Симуляция и разбор</b><s style="color:var(--slate)">Курс, проект с наставником</s><span>Объяснения «почему» не получал никто из пяти</span>
+    <b style="color:var(--navy)">Последствия</b><b style="color:var(--cobalt)">Открытые правила</b><s style="color:var(--slate)">Мир, который генерирует ИИ</s><span>«Казино»: нужна воспроизводимость</span>
+    <b style="color:var(--navy)">Оценка</b><b style="color:var(--cobalt)">Статусы и итог из трёх уровней</b><s style="color:var(--slate)">Числовой балл</s><span>Эксперт решает по работе, комиссии нужна грубая шкала</span>
+    <b style="color:var(--navy)">Кто видит работу</b><b style="color:var(--cobalt)">Только переданное</b><s style="color:var(--slate)">Работодатель видит всё</s><span>Черновики «для себя» есть у всех пятерых</span>
+    <b style="color:var(--navy)">Кто платит</b><b style="color:var(--cobalt)">Банк, B2B</b><s style="color:var(--slate)">Кандидат</s><span>Бюджет HR у персон-экспертов: довод, не доказательство</span>
+    <b style="color:var(--navy)">Сила эффектов</b><b style="color:var(--cobalt)">Ослабили вдвое</b><s style="color:var(--slate)">+9,6 п.п. от одного экрана</s><span>Внутренняя проверка модели: слишком щедро</span>
   </div>
-  <div class="foot">Имена условные. Опора: интервью с LLM-персонами</div>
+  <div class="st" style="left:84px;top:221px">1</div><div class="st" style="left:84px;top:267px">2</div><div class="st" style="left:84px;top:313px">3</div>
+  <div class="st" style="left:84px;top:359px">4</div><div class="st" style="left:84px;top:405px">5</div><div class="st" style="left:84px;top:451px">6</div>
+  <p class="foot">Основания: интервью с LLM-персонами и опыт команды. Полная схема от проблемы до экрана в отчёте</p>
 </section>
 
-<!-- 6. Дерево проблем и развилки · 1:15 -->
+<!-- 7 · Содержание 02 -->
+<section class="slide paper">
+  <svg class="rib" viewBox="0 0 960 540"><path class="r" stroke-width="22" d="M-40 470 C 60 430, 120 412, 200 410 C 300 408, 380 433, 480 430 C 580 427, 660 445, 760 440 C 860 435, 930 410, 1000 392"/></svg>
+  <div class="st ghost" style="left:200px;top:410px">01</div>
+  <div class="st big hl" style="left:480px;top:430px">02</div>
+  <div class="st ghost" style="left:760px;top:440px">03</div>
+  <p class="a" style="left:110px;top:448px;width:180px;text-align:center;font-size:15px;line-height:19px;font-weight:600;color:var(--slate)">Задача и исследование</p>
+  <p class="a" style="left:390px;top:468px;width:180px;text-align:center;font-size:15px;line-height:19px;font-weight:800;color:var(--navy)">Продукт</p>
+  <p class="a" style="left:670px;top:470px;width:180px;text-align:center;font-size:15px;line-height:19px;font-weight:600;color:var(--slate)">Стратегия</p>
+  <div class="a big" style="left:48px;top:46px;font-size:150px;color:var(--cobalt)">02</div>
+  <h2 class="a" style="left:56px;top:212px;width:820px;font-size:56px;line-height:60px;font-weight:800;letter-spacing:-.03em;color:var(--navy)">Продукт</h2>
+  <p class="a" style="left:56px;top:286px;width:840px;font-size:20px;line-height:26px;color:var(--slate);font-weight:500">Концепции · Участники · Путь · Демо · Прослеживаемость · Техника · Готово</p>
+</section>
+
+<!-- 8 · Концепции -->
 <section class="slide">
-  <h2 class="t">Дерево проблем: <em>у каждой развилки есть основание из исследования</em></h2>
-  <div class="cols" style="grid-template-columns:250px 1fr">
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-error"/></svg>Проблема с двух сторон</div>
-      <div class="body">
-        <div class="card sm c-prob grow" style="justify-content:flex-start">
-          <p class="lbl">Кандидат</p>
-          <p class="cb mt4" style="font-weight:500">Анализировать умеет, но не переходит к решению и не отделяет свой эффект от внешнего события</p>
-          <p class="cb mt6">Отзывы получает на подачу, а не на «почему»</p>
-        </div>
-        <div class="card sm c-prob grow" style="justify-content:flex-start">
-          <p class="lbl">Банк</p>
-          <p class="cb mt4" style="font-weight:500">Эксперт ищет расчёты и допущения, а кандидат прячет именно их</p>
-          <p class="cb mt6">Критерии и заметки в разных местах, разбор вечерами</p>
-        </div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-shuffle"/></svg>Развилки: что выбрали и почему</div>
-      <div class="body tight">
-        <table class="fk">
-          <colgroup><col style="width:96px"><col style="width:118px"><col style="width:118px"><col></colgroup>
-          <thead><tr><th>Развилка</th><th>Выбрали</th><th>Отбросили</th><th>Почему</th></tr></thead>
-          <tbody>
-            <tr><td class="fn">Формат</td><td class="ch">Симуляция и разбор</td><td>Курс, проект с наставником</td><td>Объяснения «почему» не получал никто из пяти</td></tr>
-            <tr><td class="fn">Последствия</td><td class="ch">Открытые правила</td><td>Мир, который генерирует ИИ</td><td>«Казино»: нужна воспроизводимость</td></tr>
-            <tr><td class="fn">Оценка</td><td class="ch">Статусы и итог из трёх уровней</td><td>Числовой балл</td><td>Эксперт решает по работе, а комиссии нужна грубая шкала</td></tr>
-            <tr><td class="fn">Кто видит работу</td><td class="ch">Только переданное</td><td>Работодатель видит всё</td><td>Черновики «для себя» есть у всех пятерых</td></tr>
-            <tr><td class="fn">Кто платит</td><td class="ch">Банк, B2B</td><td>Кандидат</td><td>Персоны-эксперты платили из бюджета HR: довод, не доказательство</td></tr>
-            <tr><td class="fn">Сила эффектов</td><td class="ch">Ослабили вдвое</td><td>+9,6 п.п. от одного экрана</td><td>Внутренняя проверка модели: слишком щедро</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-  <div class="foot">Основания: интервью с LLM-персонами и опыт команды. Полная схема от проблемы до экрана в отчёте</div>
-</section>
-
-<!-- 7. Оглавление: часть 2 -->
-<section class="slide divider">
-  <h2 class="d-title">Содержание</h2>
-  <ol class="agenda">
-    <li><span class="n">01</span><span>Задача и исследование</span></li>
-    <li class="on"><span class="n">02</span><span>Продукт<small>Концепции · Участники · Путь · Демо · Прослеживаемость · Техника · Готово</small></span></li>
-    <li><span class="n">03</span><span>Стратегия</span></li>
-  </ol>
-</section>
-
-<!-- 8. Три концепции · 0:30 -->
-<section class="slide">
-  <h2 class="t">Из трёх концепций выбрали непрерывную симуляцию с коротким разбором</h2>
-  <div class="cols" style="grid-template-columns:1fr 1fr 1fr;column-gap:30.7px;bottom:174px">
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-education"/></svg>Концепция А</div>
-      <div class="body"><div class="card c-gray grow">
-        <p class="ct18">Курс с заданиями</p>
-        <p class="lbl mt12">Сильная сторона</p><p class="cb mt4">Последовательно даёт основы</p>
-        <p class="lbl mt12">Ограничение</p><p class="cb mt4">Решения между упражнениями не связаны</p>
-      </div></div>
-    </div>
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-users"/></svg>Концепция Б</div>
-      <div class="body"><div class="card c-gray grow">
-        <p class="ct18">Сквозной проект с наставником</p>
-        <p class="lbl mt12">Сильная сторона</p><p class="cb mt4">Целостный проект</p>
-        <p class="lbl mt12">Ограничение</p><p class="cb mt4">Последствия после запуска остаются обсуждением</p>
-      </div></div>
-    </div>
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-shuffle"/></svg>Концепция В</div>
-      <div class="body"><div class="card c-solid grow">
-        <p class="ct18">Непрерывная симуляция</p>
-        <p class="lbl mt12">Сильная сторона</p><p class="cb mt4">Тренирует адаптацию к последствиям</p>
-        <p class="lbl mt12">Ограничение</p><p class="cb mt4">Нужны обоснованные правила сценария</p>
-      </div></div>
-    </div>
-  </div>
-  <div style="position:absolute;left:53px;right:53px;top:384px;height:76px;display:grid;grid-template-columns:1fr 1fr;column-gap:25.6px">
-    <div class="card sm c-out row" style="gap:12px"><svg class="ic" style="color:var(--blue-700)"><use href="#i-done"/></svg>
-      <div><p class="lbl acc">Выбор</p><p class="ct mt4">В плюс короткий разбор из А</p></div></div>
-    <div class="card sm c-risk row" style="gap:12px"><svg class="ic"><use href="#i-error"/></svg>
-      <div><p class="lbl">Риск В</p><p class="cb mt4">«Угадывание ответа автора»: поэтому правила последствий открыты</p></div></div>
-  </div>
-</section>
-
-<!-- 9. Участники и use case · 0:15 -->
-<section class="slide">
-  <h2 class="t">Участники: <em>кандидат и эксперт работают в MVP, автор кейса в прототипе, организатор за границей MVP</em></h2>
-  <svg class="links" viewBox="0 0 960 540" aria-hidden="true">
-    <g stroke="#000" stroke-width="1" fill="none">
-      <path d="M172 204 300 179"/><path d="M172 204 300 229"/>
-      <path d="M172 379 300 379"/>
-      <path d="M788 304 660 279"/><path d="M788 304 660 329"/>
-      <path d="M788 429 660 429" stroke-dasharray="4 2"/>
-    </g>
+  <svg class="rib" viewBox="0 0 960 540">
+    <path class="r-soft" stroke-width="10" d="M236 316 C 290 316, 296 200, 360 200"/>
+    <path class="r-soft" stroke-width="10" d="M236 316 L 360 316"/>
+    <path class="r" stroke-width="30" d="M-40 316 L 236 316 C 300 316, 300 430, 380 430 L 1000 430"/>
   </svg>
-  <div class="uc-box"><p class="lbl">Полигон</p></div>
-  <div class="uc c-blue" style="top:160px">Пройти модуль: решение, последствия, разбор</div>
-  <div class="uc c-blue" style="top:210px">Решить самостоятельную задачу и передать работу</div>
-  <div class="uc c-blue" style="top:260px">Разобрать работу: статусы, итог, вопрос к интервью</div>
-  <div class="uc c-blue" style="top:310px">Выгрузить разборы в CSV для таблицы программы</div>
-  <div class="uc c-pale" style="top:360px">Править кейс с проверкой сценария <span class="code g">прототип</span></div>
-  <div class="uc c-future" style="top:410px">Запустить поток и выдать кандидатам номера</div>
-  <div class="actor" style="left:80px;top:182px"><span class="ava"><svg class="ic"><use href="#i-user"/></svg></span><p class="ct">Кандидат</p></div>
-  <div class="actor" style="left:80px;top:357px"><span class="ava"><svg class="ic"><use href="#i-edit"/></svg></span><p class="ct">Автор кейса</p><p class="cb">HR или методист банка</p></div>
-  <div class="actor" style="left:740px;top:282px"><span class="ava"><svg class="ic"><use href="#i-userstar"/></svg></span><p class="ct">Эксперт банка</p></div>
-  <div class="actor" style="left:740px;top:407px"><span class="ava out"><svg class="ic"><use href="#i-building"/></svg></span><p class="ct">Организатор</p><p class="cb">программы</p></div>
-  <div class="foot">Пунктир: за границей MVP. Редактор кейса хранит правки в браузере, сервера и прав доступа нет. Сценарии с исключениями в отчёте</div>
+  <div class="st ghost" style="left:360px;top:200px">А</div>
+  <div class="st ghost" style="left:360px;top:316px">Б</div>
+  <div class="kick">Концепции</div>
+  <h2 class="h m" style="width:820px">Из трёх концепций выбрали непрерывную симуляцию с коротким разбором</h2>
+  <div class="a" style="left:392px;top:176px;width:262px">
+    <p style="font-size:19px;line-height:23px;font-weight:800;color:var(--navy)">Курс с заданиями</p>
+    <p style="font-size:14px;line-height:19px">+ последовательно даёт основы</p>
+    <p class="cap">− решения между упражнениями не связаны</p>
+  </div>
+  <div class="a" style="left:392px;top:292px;width:262px">
+    <p style="font-size:19px;line-height:23px;font-weight:800;color:var(--navy)">Сквозной проект с наставником</p>
+    <p style="font-size:14px;line-height:19px">+ целостный проект</p>
+    <p class="cap">− последствия после запуска остаются обсуждением</p>
+  </div>
+  <div class="a" style="left:400px;top:458px;width:470px">
+    <p style="font-size:22px;line-height:26px;font-weight:800;color:var(--cobalt)">В · Непрерывная симуляция</p>
+    <p style="font-size:14px;line-height:19px">+ тренирует адаптацию к последствиям · <span style="color:var(--slate)">− нужны обоснованные правила сценария</span></p>
+  </div>
+  <div class="a" style="left:672px;top:186px;width:232px">
+    <p class="lab">Выбор</p>
+    <p style="margin-top:6px;font-size:30px;line-height:34px;font-weight:800;color:var(--navy);letter-spacing:-.02em">В + короткий разбор из А</p>
+    <p style="margin-top:12px;font-size:15px;line-height:20px">Риск В: «угадывание ответа автора». Поэтому правила последствий открыты</p>
+  </div>
 </section>
 
-<!-- 10. Путь кандидата · 0:30 -->
+<!-- 9 · Участники -->
+<section class="slide paper">
+  <svg class="rib" viewBox="0 0 960 540">
+    <path class="r" stroke-width="18" d="M312 300 C 350 300, 350 292, 390 292 L 570 292 C 610 292, 610 300, 648 300"/>
+    <path class="r-navy" stroke-width="2" stroke-dasharray="5 6" d="M480 222 L 480 252 M480 332 L 480 372"/>
+  </svg>
+  <div class="kick">Участники и варианты использования</div>
+  <h2 class="h m">Кандидат и эксперт работают в MVP, автор кейса в&nbsp;прототипе</h2>
+  <div class="a" style="left:384px;top:252px;width:192px;height:80px;border-radius:16px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;letter-spacing:-.02em">Полигон</div>
+  <img class="a cut" src="img/woman-laptop-icons8.png" alt="" style="left:44px;top:138px;height:132px">
+  <div class="a" style="left:56px;top:280px;width:250px">
+    <p style="font-size:22px;line-height:26px;font-weight:800;color:var(--navy)">Кандидат</p>
+    <ul style="margin-top:8px;font-size:15px;line-height:20px">
+      <li class="li">Пройти модуль: решение, последствия, разбор</li>
+      <li class="li" style="margin-top:6px">Решить самостоятельную задачу и передать работу</li>
+    </ul>
+  </div>
+  <img class="a cut" src="img/man-desk-laptop.png" alt="" style="left:770px;top:148px;height:122px">
+  <div class="a" style="left:664px;top:280px;width:240px">
+    <p style="font-size:22px;line-height:26px;font-weight:800;color:var(--navy)">Эксперт банка</p>
+    <ul style="margin-top:8px;font-size:15px;line-height:20px">
+      <li class="li">Разобрать работу: статусы, итог, вопрос к интервью</li>
+      <li class="li" style="margin-top:6px">Выгрузить разборы в CSV для таблицы программы</li>
+    </ul>
+  </div>
+  <div class="a" style="left:360px;top:150px;width:240px;text-align:center">
+    <p style="font-size:17px;line-height:21px;font-weight:800;color:var(--navy)">Автор кейса <span class="pill p-soft" style="margin-left:4px">прототип</span></p>
+    <p class="cap" style="margin-top:4px">HR или методист банка правит кейс с проверкой сценария</p>
+  </div>
+  <div class="a dash" style="left:350px;top:374px;width:260px;padding:10px 14px;text-align:center">
+    <p style="font-size:17px;line-height:21px;font-weight:800;color:var(--slate)">Организатор программы</p>
+    <p class="cap" style="margin-top:2px">Запускает поток и выдаёт номера · за границей MVP</p>
+  </div>
+  <p class="foot">Пунктир: за границей MVP. Редактор кейса хранит правки в браузере, сервера и прав доступа нет. Сценарии с исключениями в отчёте</p>
+</section>
+
+<!-- 10 · Путь кандидата -->
 <section class="slide">
-  <h2 class="t narrow">Путь кандидата: <em>правило видно до решения, решение 1 не стирается</em></h2>
-  <div class="cols narrow" style="grid-template-columns:262px 1fr">
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-shuffle"/></svg>Путь · цель ≈ 45 минут</div>
-      <div class="body tight">
-        <ol class="steps" style="gap:5px">
-          <li style="height:29px;background:var(--blue-100)"><span class="num" style="background:var(--white);color:var(--blue-700)"><svg class="ic" style="width:16px;height:16px"><use href="#i-info"/></svg></span><span class="nm">Программа и вводный тур</span></li>
-          <li style="height:29px"><span class="num">1</span><span class="nm">Досье и правило заморозки</span></li>
-          <li style="height:29px"><span class="num">2</span><span class="nm">Решение и подсказки</span></li>
-          <li style="height:29px"><span class="num">3</span><span class="nm">Последствия и событие</span></li>
-          <li style="height:29px"><span class="num">4</span><span class="nm">Пересмотр</span></li>
-          <li style="height:29px"><span class="num">5</span><span class="nm">Разбор с понятиями</span></li>
-          <li style="height:29px"><span class="num">6</span><span class="nm">Самостоятельная задача</span></li>
-          <li style="height:29px"><span class="num">7</span><span class="nm">Карточка для эксперта</span></li>
-          <li style="height:29px;background:var(--blue-100)"><span class="num" style="background:var(--white);color:var(--blue-700)"><svg class="ic" style="width:16px;height:16px"><use href="#i-done"/></svg></span><span class="nm">Что у вас получилось</span></li>
-        </ol>
-      </div>
-    </div>
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-flash"/></svg>Ключевая механика</div>
-      <div class="body tight">
-        <div class="card sm c-blue"><p class="ct">Решение 1 не стирается</p><p class="cb mt4">Эпизод 2 учитывает его</p></div>
-        <div class="card sm c-pale"><p class="ct"><span class="acc">+4&nbsp;000</span> новых клиентов</p><p class="cb mt4">В общем дашборде смешаны с эффектом решения</p></div>
-        <div class="card sm c-risk grow"><div class="row"><svg class="ic" style="width:20px;height:20px"><use href="#i-snowflake"/></svg><p class="ct">Можно проиграть</p></div><p class="cb mt4">Правило в досье до решения: через два месяца автопополнение по всем целям не ниже 18%, иначе заморозка. Так кончаются 52 из 121 пути, у каждой заморозки в разборе есть причина</p></div>
-      </div>
-    </div>
+  <svg class="rib" viewBox="0 0 960 540"><path class="r" stroke-width="20" d="M-40 200 L 820 200 C 905 200, 930 250, 930 300 C 930 350, 905 400, 820 400 L 70 400 C 20 400, -10 420, -40 445"/></svg>
+  <div class="kick">Путь кандидата · цель ≈ 45 минут</div>
+  <h2 class="h m" style="width:860px">Правило видно до решения, решение 1 не стирается</h2>
+  <div class="st" style="left:120px;top:200px">01</div><div class="st" style="left:330px;top:200px">02</div><div class="st" style="left:540px;top:200px">03</div><div class="st" style="left:750px;top:200px">04</div>
+  <div class="st" style="left:750px;top:400px">05</div><div class="st" style="left:540px;top:400px">06</div><div class="st" style="left:330px;top:400px">07</div>
+  <div class="st hl" style="left:120px;top:400px;border-radius:10px">✓</div>
+  <p class="a" style="left:40px;top:228px;width:160px;text-align:center;font-size:15px;line-height:19px;font-weight:700">Досье и правило заморозки</p>
+  <p class="a" style="left:250px;top:228px;width:160px;text-align:center;font-size:15px;line-height:19px;font-weight:700">Решение и подсказки</p>
+  <p class="a" style="left:460px;top:228px;width:160px;text-align:center;font-size:15px;line-height:19px;font-weight:700">Последствия и событие</p>
+  <p class="a" style="left:670px;top:228px;width:160px;text-align:center;font-size:15px;line-height:19px;font-weight:700">Пересмотр</p>
+  <p class="a" style="left:670px;top:428px;width:160px;text-align:center;font-size:15px;line-height:19px;font-weight:700">Разбор с понятиями</p>
+  <p class="a" style="left:460px;top:428px;width:160px;text-align:center;font-size:15px;line-height:19px;font-weight:700">Самостоятельная задача</p>
+  <p class="a" style="left:250px;top:428px;width:160px;text-align:center;font-size:15px;line-height:19px;font-weight:700">Карточка для эксперта</p>
+  <p class="a" style="left:40px;top:428px;width:160px;text-align:center;font-size:15px;line-height:19px;font-weight:800;color:var(--cobalt)">Что у вас получилось</p>
+  <div class="a" style="left:120px;top:290px;width:330px;font-size:15px;line-height:20px">
+    <p><b style="color:var(--navy)">Решение 1 не стирается:</b> эпизод 2 учитывает его</p>
+    <p style="margin-top:6px"><b style="color:var(--navy)">+4 000 новых клиентов</b> в общем дашборде смешаны с эффектом решения</p>
   </div>
-  <div class="ev">
-    <p class="ev-cap" style="top:26px">Вводный тур: что делать и кто увидит работу</p>
-    <div class="shot" style="top:48px"><div class="bar"><i></i><i></i><i></i></div>
-      <div class="win" style="height:126px"><img src="img/02b-вводный-тур.png" alt="Вводный тур: первый экран из четырёх" style="width:736px;left:-215px;top:-170px"></div></div>
-    <p class="ev-cap" style="top:226px">Месяц спустя: событие и разбивка</p>
-    <div class="shot" style="top:248px"><div class="bar"><i></i><i></i><i></i></div>
-      <div class="win" style="height:132px"><img src="img/10b-месяц-спустя.png" alt="Самостоятельная задача: новость о тарифах и дашборд" style="width:700px;left:-49px;top:-68px"></div></div>
+  <div class="a" style="left:500px;top:276px;width:360px">
+    <p class="big" style="font-size:44px;color:var(--cobalt)">52 из 121</p>
+    <p style="margin-top:6px;font-size:14px;line-height:18px">путей кончаются заморозкой: через два месяца автопополнение ниже 18%. Причина каждой видна в разборе</p>
   </div>
-  <div class="foot narrow">45 минут: цель, замеров нет. Банк «Кварц», люди и данные вымышлены</div>
+  <img class="a cut" src="img/man-walking-back.png" alt="" style="left:842px;top:300px;height:112px">
+  <p class="foot">Перед стартом: программа и вводный тур. 45 минут: цель, замеров нет. Банк «Кварц», люди и данные вымышлены</p>
 </section>
 
-<!-- 11. Демо · 2:30 -->
+<!-- 11 · Демо -->
 <section class="slide">
-  <h2 class="t narrow">Демо: <em>глазами кандидата, потом глазами эксперта</em></h2>
-  <div class="cols narrow" style="grid-template-columns:200px 1fr">
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-link"/></svg>Платформа</div>
-      <div class="body" style="gap:0">
-        <div class="qr-big" style="width:176px;height:176px"><!--QR:start--><svg role="img" aria-label="QR-код платформы" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 33" shape-rendering="crispEdges"><path stroke="#003c7f" d="M0 0.5h7m2 0h3m2 0h1m3 0h1m3 0h1m3 0h7M0 1.5h1m5 0h1m1 0h1m2 0h1m1 0h2m1 0h2m2 0h3m1 0h1m1 0h1m5 0h1M0 2.5h1m1 0h3m1 0h1m1 0h1m2 0h1m1 0h1m2 0h3m2 0h1m1 0h1m2 0h1m1 0h3m1 0h1M0 3.5h1m1 0h3m1 0h1m1 0h1m12 0h4m1 0h1m1 0h3m1 0h1M0 4.5h1m1 0h3m1 0h1m2 0h1m1 0h3m1 0h1m1 0h2m2 0h1m1 0h1m2 0h1m1 0h3m1 0h1M0 5.5h1m5 0h1m3 0h1m5 0h1m3 0h1m5 0h1m5 0h1M0 6.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M8 7.5h5m1 0h1m3 0h1m3 0h2M0 8.5h1m5 0h1m1 0h1m1 0h6m1 0h1m4 0h5m2 0h3M0 9.5h6m3 0h4m2 0h1m2 0h2m1 0h3m4 0h3M0 10.5h3m1 0h1m1 0h7m2 0h1m2 0h1m3 0h1m5 0h1m1 0h2M1 11.5h1m2 0h2m5 0h2m1 0h3m2 0h2m1 0h1m1 0h1m2 0h5M4 12.5h1m1 0h2m1 0h2m1 0h3m1 0h3m1 0h3m1 0h1m1 0h1m5 0h1M1 13.5h2m5 0h1m2 0h1m2 0h1m1 0h2m2 0h2m1 0h1m2 0h2m2 0h3M2 14.5h1m2 0h2m4 0h1m5 0h1m1 0h1m1 0h2m2 0h2m1 0h1m2 0h1M0 15.5h2m2 0h1m2 0h1m2 0h1m2 0h3m3 0h1m2 0h2m1 0h1m1 0h1m2 0h1m1 0h1M1 16.5h2m1 0h4m2 0h4m3 0h1m1 0h1m2 0h1m1 0h2m1 0h2m3 0h1M4 17.5h1m2 0h2m1 0h1m1 0h4m1 0h1m1 0h3m1 0h1m2 0h1m2 0h4M0 18.5h7m1 0h2m2 0h2m1 0h2m2 0h1m3 0h1m3 0h1m1 0h2m1 0h1M0 19.5h2m2 0h2m1 0h1m4 0h3m2 0h2m2 0h1m3 0h2m1 0h3M3 20.5h4m2 0h1m1 0h2m1 0h1m1 0h1m2 0h7m1 0h3m2 0h1M0 21.5h2m5 0h1m3 0h1m4 0h1m1 0h1m1 0h4m4 0h2M0 22.5h1m3 0h1m1 0h1m1 0h3m2 0h1m1 0h3m2 0h1m1 0h1m2 0h2m1 0h1m2 0h1M0 23.5h1m2 0h2m2 0h1m2 0h1m2 0h1m4 0h1m5 0h1m1 0h5m1 0h1M0 24.5h3m1 0h1m1 0h1m2 0h1m3 0h1m1 0h2m2 0h2m3 0h6M8 25.5h2m1 0h1m1 0h4m1 0h3m3 0h1m3 0h1m1 0h1m1 0h1M0 26.5h7m3 0h1m2 0h4m1 0h1m1 0h2m1 0h2m1 0h1m1 0h1m1 0h2M0 27.5h1m5 0h1m3 0h1m1 0h2m1 0h2m6 0h2m3 0h3m1 0h1M0 28.5h1m1 0h3m1 0h1m3 0h2m2 0h2m2 0h2m1 0h1m2 0h6m1 0h1M0 29.5h1m1 0h3m1 0h1m2 0h1m1 0h1m1 0h2m1 0h2m2 0h4m1 0h1m1 0h2m3 0h1M0 30.5h1m1 0h3m1 0h1m2 0h3m2 0h1m1 0h3m1 0h1m4 0h1m1 0h2m1 0h3M0 31.5h1m5 0h1m2 0h1m3 0h4m2 0h2m1 0h2m1 0h6M0 32.5h7m1 0h1m2 0h4m2 0h1m1 0h1m2 0h3m2 0h1m3 0h1"/></svg><!--QR:end--></div>
-        <p class="qr-link">nominalnominalovich.github.io<wbr>/polygon</p>
-        <p class="lbl" style="margin-top:14px">Страница жюри</p>
-        <p class="qr-link" style="margin-top:2px">nominalnominalovich.github.io<wbr>/polygon/#/jury</p>
-      </div>
-    </div>
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-view"/></svg>На что смотреть</div>
-      <div class="body">
-        <ol class="look" style="gap:14px">
-          <li><span class="badge">1</span><span>Программа: модуль в витрине, ещё три в ряду</span></li>
-          <li><span class="badge">2</span><span>Досье: правило заморозки видно до решения</span></li>
-          <li><span class="badge">3</span><span>Ловушка баллов: срез, заморозка с причиной, понятие в разборе</span></li>
-          <li><span class="badge">4</span><span>«Что у вас получилось»: что потренировать дальше</span></li>
-          <li><span class="badge">5</span><span>Эксперт: номер кандидата, итог по заданию, CSV</span></li>
-        </ol>
-      </div>
-    </div>
-  </div>
-  <div class="ev">
-    <p class="ev-cap" style="top:26px">К пункту 1 · экран программы</p>
-    <div class="shot" style="top:48px"><div class="bar"><i></i><i></i><i></i></div>
-      <div class="win" style="height:170px"><img src="img/02-программа.png" alt="Экран программы: модуль в витрине и ряд модулей" style="width:560px;left:-76px;top:-82px"></div></div>
-    <p class="ev-cap" style="top:300px">К пункту 3 · проект заморожен</p>
-    <div class="shot" style="top:322px"><div class="bar"><i></i><i></i><i></i></div>
-      <div class="win" style="height:150px"><img src="img/16-ловушка-разбор.png" alt="Разбор провальной ветки: проект заморожен, где потеряли" style="width:720px;left:-10px;top:-74px"></div></div>
-  </div>
-  <div class="foot narrow">Живое демо ≈ 2,5 минуты; справа резерв. Банк «Кварц», люди и данные вымышлены</div>
-</section>
-
-<!-- 12. Прослеживаемость · 0:25 -->
-<section class="slide">
-  <h2 class="t narrow">Прослеживаемость: <em>от гипотезы до экрана, цепочку видно в продукте</em></h2>
-  <div class="cols narrow" style="grid-template-columns:1fr 1fr">
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-shuffle"/></svg>Одна цепочка целиком</div>
-      <div class="body tight" style="gap:0">
-        <div class="chain tight">
-          <div class="lnk c-hyp" style="flex-direction:column;gap:4px"><span class="row" style="gap:6px"><span class="code g">Гипотеза</span><span class="st ok" style="height:16px;font-size:11px;padding:0 6px">подтверждена и расширена</span></span><span>«Никто не объясняет, почему вышло именно так»</span></div>
-          <div class="arr"><svg width="10" height="14" viewBox="0 0 10 14"><path d="M5 0v9" stroke="#000" stroke-width="1"/><path d="M1.5 8.5 5 13.5 8.5 8.5z"/></svg></div>
-          <div class="lnk c-blue"><span class="code s">Потребность</span><span>Отличить последствия своего выбора от внешних обстоятельств</span></div>
-          <div class="arr"><svg width="10" height="14" viewBox="0 0 10 14"><path d="M5 0v9" stroke="#000" stroke-width="1"/><path d="M1.5 8.5 5 13.5 8.5 8.5z"/></svg></div>
-          <div class="lnk c-blue"><span class="code s">История</span><span>Пересмотреть решение</span></div>
-          <div class="arr"><svg width="10" height="14" viewBox="0 0 10 14"><path d="M5 0v9" stroke="#000" stroke-width="1"/><path d="M1.5 8.5 5 13.5 8.5 8.5z"/></svg></div>
-          <div class="lnk c-blue"><span class="code s">Фича</span><span>Связанные эпизоды и история решений</span></div>
-          <div class="arr"><svg width="10" height="14" viewBox="0 0 10 14"><path d="M5 0v9" stroke="#000" stroke-width="1"/><path d="M1.5 8.5 5 13.5 8.5 8.5z"/></svg></div>
-          <div class="lnk c-solid"><span class="code w">Экран</span><span>Изменение ситуации и разбор</span></div>
-        </div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-info"/></svg>Фичи и основания</div>
-      <div class="body tight">
-        <table class="ft">
-          <tr><td><span class="code s xs">1</span></td><td><b style="font-weight:500">Рабочее пространство кейса</b>
-            <div class="basis">«Анализ есть, решения нет»</div></td></tr>
-          <tr class="hl"><td><span class="code s xs">2</span></td><td><b style="font-weight:500">Связанные эпизоды и история решений</b>
-            <div class="basis">«Никто не объясняет, почему вышло именно так»</div></td></tr>
-          <tr><td><span class="code s xs">3</span></td><td><b style="font-weight:500">Разбор, понятия и подсказки</b>
-            <div class="basis">«Никто не объясняет…», «Допущения прячут от проверяющего»</div></td></tr>
-          <tr><td><span class="code s xs">4</span></td><td><b style="font-weight:500">Самостоятельная задача и карточка эксперта</b>
-            <div class="basis">«Допущения прячут…», «Эксперт сначала смотрит расчёты», «Критерии и заметки в разных местах»</div></td></tr>
-        </table>
-      </div>
-    </div>
-  </div>
-  <div class="ev">
-    <p class="ev-cap" style="top:26px">Режим обоснования · досье</p>
-    <div class="shot" style="top:50px"><div class="bar"><i></i><i></i><i></i></div>
-      <div class="win" style="height:345px"><img src="img/04-досье-обоснование.png" alt="Окно «Почему этот блок такой»: цепочка от гипотезы до экрана" style="width:800px;left:-221px;top:-80px"></div></div>
-  </div>
-  <div class="foot narrow">Справа под фичей: гипотезы-основания. Таблица с кодами в приложении к отчёту</div>
-</section>
-
-<!-- 13. Технические решения и качество · 0:25 -->
-<section class="slide">
-  <h2 class="t">Технические решения: <em>модульный монолит в MVP, отдельные сервисы в целевом продукте</em></h2>
-  <div class="cols" style="grid-template-columns:1fr 1.25fr;bottom:228px">
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-flash"/></svg>MVP · один статический сайт</div>
-      <div class="body tight" style="gap:6px">
-        <div class="mod c-blue"><b>Интерфейс</b><span>React + VKUI</span></div>
-        <div class="mod c-solid"><b>Движок сценария</b><span>детерминированный</span></div>
-        <div class="mod c-blue"><b>Хранение</b><span>в браузере</span></div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-services"/></svg>Целевой продукт · сервисы</div>
-      <div class="body tight" style="display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:33px;gap:6px">
-        <div class="mod c-blue"><b>Прохождение</b></div>
-        <div class="mod c-blue"><b>Разбор</b></div>
-        <div class="mod c-blue"><b>Кабинет эксперта</b></div>
-        <div class="mod c-blue"><b>Авторинг кейсов</b></div>
-        <div class="mod c-future" style="grid-column:1/3"><b>Внешний ИИ</b><span>только разбор текста, с проверкой экспертом</span></div>
-      </div>
-    </div>
-  </div>
-  <div class="cols" style="grid-template-columns:1fr;top:300px">
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-shield"/></svg>Качество: пять групп требований</div>
-      <div class="body tight qa" style="align-content:start">
-        <div class="card sm c-pale"><p class="lbl acc">Скорость и ёмкость</p><p class="cb mt4">Цель: модуль за ≈&nbsp;45&nbsp;минут, замеров нет; расчёт в браузере</p></div>
-        <div class="card sm c-pale"><p class="lbl acc">Надёжность и безопасность</p><p class="cb mt4">Данные вымышлены; в выгрузке номер кандидата, имя остаётся в кабинете</p></div>
-        <div class="card sm c-pale"><p class="lbl acc">Безопасность последствий и доступность</p><p class="cb mt4">Эксперт видит только переданное, решения о найме по карточке нет</p></div>
-        <div class="card sm c-pale"><p class="lbl acc">Изменяемость и наблюдаемость</p><p class="cb mt4">Автотесты перед каждой публикацией</p></div>
-        <div class="card sm c-pale"><p class="lbl acc">Стоимость</p><p class="cb mt4">Хостинг GitHub Pages; модуль 1&nbsp;≈&nbsp;14&nbsp;ч, оценка команды</p></div>
-      </div>
-    </div>
-  </div>
-  <div class="foot">Пунктир: целевая версия. Для банка мы SaaS: до покупки он проверит персональные данные, выгрузку и условия выхода</div>
-</section>
-
-<!-- 14. Реализовано / имитируется · 0:30 -->
-<section class="slide">
-  <h2 class="t narrow">Готово: <em>весь путь работает, ИИ-разбор и данные банка имитируются</em></h2>
-  <div class="cols narrow" style="grid-template-columns:1.55fr 1fr;column-gap:30.7px;bottom:104px">
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-check"/></svg>Реализовано</div>
-      <div class="body tight">
-        <ul class="list-c sm tight" style="gap:5px">
-          <li class="c-blue">Программа из 4 модулей, вводный тур</li>
-          <li class="c-blue">Заморозка с правилом и причиной</li>
-          <li class="c-blue">Разбор: понятия, словарь, подсказки</li>
-          <li class="c-blue">Самостоятельная задача, самопроверка</li>
-          <li class="c-blue">Поле «Что я допускаю и в чём не уверен»</li>
-          <li class="c-blue">«Что у вас получилось» в конце модуля</li>
-          <li class="c-blue">Эксперт: номер кандидата, итог, CSV</li>
-          <li class="c-blue">Режим обоснования, редактор кейса</li>
-        </ul>
-      </div>
-    </div>
-    <div class="col vdash">
-      <div class="sr"><svg class="ic"><use href="#i-info"/></svg>Имитируется</div>
-      <div class="body tight">
-        <ul class="list-c sm" style="gap:5px">
-          <li class="c-gray">ИИ-разбор текста<small>эвристика по словам, её можно обмануть</small></li>
-          <li class="c-gray">Данные банка и коллеги</li>
-          <li class="c-gray">Сервер и права доступа<small>передача и правки кейса в одном браузере</small></li>
-          <li class="c-gray">Модули 2–4<small>есть только витрина</small></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-  <div class="card sm c-solid" style="position:absolute;left:53px;right:348px;top:446px">
-    <p class="cb"><b style="font-weight:600">Прототип эволюционный.</b> Остаются движок, формат сценария и тесты; заменим эвристику и хранение в браузере</p>
-  </div>
-  <div class="ev">
-    <p class="ev-cap" style="top:26px">Кабинет эксперта: работы и выгрузка CSV</p>
-    <div class="shot" style="top:48px"><div class="bar"><i></i><i></i><i></i></div>
-      <div class="win" style="height:384px"><img src="img/12-эксперт-список.png" alt="Работы кандидатов: сводка, вкладки по статусам, выгрузка CSV" style="width:800px;left:-120px;top:-128px"></div></div>
-  </div>
-</section>
-
-<!-- 15. Оглавление: часть 3 -->
-<section class="slide divider">
-  <h2 class="d-title">Содержание</h2>
-  <ol class="agenda">
-    <li><span class="n">01</span><span>Задача и исследование</span></li>
-    <li><span class="n">02</span><span>Продукт</span></li>
-    <li class="on"><span class="n">03</span><span>Стратегия<small>Рынок · Позиционирование · Самое опасное предположение · Ворота · Roadmap</small></span></li>
+  <svg class="rib" viewBox="0 0 960 540"><path class="r" stroke-width="44" d="M560 600 C 600 500, 680 470, 760 440 C 850 405, 920 340, 1010 300"/></svg>
+  <div class="kick">Демо · ≈ 2,5 минуты</div>
+  <h2 class="h" style="width:520px">Глазами кандидата, потом эксперта</h2>
+  <div class="a qr" style="left:56px;top:168px"><!--QR:start--><svg role="img" aria-label="QR-код платформы" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 33" shape-rendering="crispEdges"><path stroke="#102B63" d="M0 0.5h7m2 0h3m2 0h1m3 0h1m3 0h1m3 0h7M0 1.5h1m5 0h1m1 0h1m2 0h1m1 0h2m1 0h2m2 0h3m1 0h1m1 0h1m5 0h1M0 2.5h1m1 0h3m1 0h1m1 0h1m2 0h1m1 0h1m2 0h3m2 0h1m1 0h1m2 0h1m1 0h3m1 0h1M0 3.5h1m1 0h3m1 0h1m1 0h1m12 0h4m1 0h1m1 0h3m1 0h1M0 4.5h1m1 0h3m1 0h1m2 0h1m1 0h3m1 0h1m1 0h2m2 0h1m1 0h1m2 0h1m1 0h3m1 0h1M0 5.5h1m5 0h1m3 0h1m5 0h1m3 0h1m5 0h1m5 0h1M0 6.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M8 7.5h5m1 0h1m3 0h1m3 0h2M0 8.5h1m5 0h1m1 0h1m1 0h6m1 0h1m4 0h5m2 0h3M0 9.5h6m3 0h4m2 0h1m2 0h2m1 0h3m4 0h3M0 10.5h3m1 0h1m1 0h7m2 0h1m2 0h1m3 0h1m5 0h1m1 0h2M1 11.5h1m2 0h2m5 0h2m1 0h3m2 0h2m1 0h1m1 0h1m2 0h5M4 12.5h1m1 0h2m1 0h2m1 0h3m1 0h3m1 0h3m1 0h1m1 0h1m5 0h1M1 13.5h2m5 0h1m2 0h1m2 0h1m1 0h2m2 0h2m1 0h1m2 0h2m2 0h3M2 14.5h1m2 0h2m4 0h1m5 0h1m1 0h1m1 0h2m2 0h2m1 0h1m2 0h1M0 15.5h2m2 0h1m2 0h1m2 0h1m2 0h3m3 0h1m2 0h2m1 0h1m1 0h1m2 0h1m1 0h1M1 16.5h2m1 0h4m2 0h4m3 0h1m1 0h1m2 0h1m1 0h2m1 0h2m3 0h1M4 17.5h1m2 0h2m1 0h1m1 0h4m1 0h1m1 0h3m1 0h1m2 0h1m2 0h4M0 18.5h7m1 0h2m2 0h2m1 0h2m2 0h1m3 0h1m3 0h1m1 0h2m1 0h1M0 19.5h2m2 0h2m1 0h1m4 0h3m2 0h2m2 0h1m3 0h2m1 0h3M3 20.5h4m2 0h1m1 0h2m1 0h1m1 0h1m2 0h7m1 0h3m2 0h1M0 21.5h2m5 0h1m3 0h1m4 0h1m1 0h1m1 0h4m4 0h2M0 22.5h1m3 0h1m1 0h1m1 0h3m2 0h1m1 0h3m2 0h1m1 0h1m2 0h2m1 0h1m2 0h1M0 23.5h1m2 0h2m2 0h1m2 0h1m2 0h1m4 0h1m5 0h1m1 0h5m1 0h1M0 24.5h3m1 0h1m1 0h1m2 0h1m3 0h1m1 0h2m2 0h2m3 0h6M8 25.5h2m1 0h1m1 0h4m1 0h3m3 0h1m3 0h1m1 0h1m1 0h1M0 26.5h7m3 0h1m2 0h4m1 0h1m1 0h2m1 0h2m1 0h1m1 0h1m1 0h2M0 27.5h1m5 0h1m3 0h1m1 0h2m1 0h2m6 0h2m3 0h3m1 0h1M0 28.5h1m1 0h3m1 0h1m3 0h2m2 0h2m2 0h2m1 0h1m2 0h6m1 0h1M0 29.5h1m1 0h3m1 0h1m2 0h1m1 0h1m1 0h2m1 0h2m2 0h4m1 0h1m1 0h2m3 0h1M0 30.5h1m1 0h3m1 0h1m2 0h3m2 0h1m1 0h3m1 0h1m4 0h1m1 0h2m1 0h3M0 31.5h1m5 0h1m2 0h1m3 0h4m2 0h2m1 0h2m1 0h6M0 32.5h7m1 0h1m2 0h4m2 0h1m1 0h1m2 0h3m2 0h1m3 0h1"/></svg><!--QR:end--></div>
+  <p class="a" style="left:56px;top:440px;width:480px;font-size:15px;line-height:20px;font-weight:800;color:var(--cobalt)">nominalnominalovich.github.io/polygon</p>
+  <p class="a cap" style="left:56px;top:462px;width:480px;font-size:13px;line-height:17px">Страница жюри: …/polygon/#/jury</p>
+  <ol class="a" style="left:244px;top:168px;width:280px;font-size:15px;line-height:20px">
+    <li style="display:flex;gap:10px"><b style="color:var(--cobalt)">1</b><span>Программа: модуль в витрине, ещё три в ряду</span></li>
+    <li style="display:flex;gap:10px;margin-top:10px"><b style="color:var(--cobalt)">2</b><span>Досье: правило заморозки до решения</span></li>
+    <li style="display:flex;gap:10px;margin-top:10px"><b style="color:var(--cobalt)">3</b><span>Ловушка баллов: срез, заморозка с причиной, понятие в разборе</span></li>
+    <li style="display:flex;gap:10px;margin-top:10px"><b style="color:var(--cobalt)">4</b><span>«Что у вас получилось»: что потренировать дальше</span></li>
+    <li style="display:flex;gap:10px;margin-top:10px"><b style="color:var(--cobalt)">5</b><span>Эксперт: номер кандидата, итог по заданию, CSV</span></li>
   </ol>
+  <div class="a shot" style="left:548px;top:126px;width:470px"><img src="img/frozen.png" alt="Разбор ветки «Ловушка баллов»: проект заморожен, причины"></div>
+  <p class="a pill p-mist" style="left:548px;top:96px">Резерв к пункту 3 · проект заморожен</p>
+  <p class="foot" style="right:440px">Справа резерв на случай проблем с сетью. Банк «Кварц», люди и данные вымышлены</p>
 </section>
 
-<!-- 16. Рынок · 0:25 -->
+<!-- 12 · Прослеживаемость -->
 <section class="slide">
-  <h2 class="t">Рынок: <em>последствия, разбор и материал для интервью по отдельности есть, вместе мы их не нашли</em></h2>
-  <table class="cmp">
-    <colgroup><col style="width:196px"><col style="width:150px"><col style="width:128px"><col style="width:124px"><col style="width:136px"><col style="width:120px"></colgroup>
-    <thead><tr>
-      <th></th>
-      <th>Последствия копятся между эпизодами</th><th>Разбор решений</th><th>Перенос на новую задачу</th><th>Материал для эксперта</th><th>Домен банка</th>
-    </tr></thead>
-    <tbody>
-      <tr><td class="nm">GoPractice<small>сюжетный симулятор</small></td>
-        <td><div class="cell"><i class="m p"></i>сюжет линейный</div></td>
-        <td><div class="cell"><i class="m p"></i>автопроверка</div></td>
-        <td><div class="cell na">н/д</div></td>
-        <td><div class="cell"><i class="m no"></i>передачи работ нет</div></td>
-        <td><div class="cell"><i class="m no"></i>B2C-мессенджер</div></td></tr>
-      <tr><td class="nm">Школа менеджеров Яндекса<small>реальный проект</small></td>
-        <td><div class="cell"><i class="m no"></i>симуляции нет</div></td>
-        <td><div class="cell"><i class="m y"></i>наставник</div></td>
-        <td><div class="cell na">н/д</div></td>
-        <td><div class="cell"><i class="m p"></i>офер части выпускников</div></td>
-        <td><div class="cell"><i class="m no"></i>продукты Яндекса</div></td></tr>
-      <tr><td class="nm">Forage<small>короткие job simulations</small></td>
-        <td><div class="cell"><i class="m no"></i>отдельные задания</div></td>
-        <td><div class="cell na">н/д</div></td>
-        <td><div class="cell na">н/д</div></td>
-        <td><div class="cell"><i class="m p"></i>профиль виден работодателю</div></td>
-        <td><div class="cell"><i class="m p"></i>банки есть, не проверено</div></td></tr>
-      <tr><td class="nm">Кейс-чемпионаты<small>Changellenge Cup и подобные</small></td>
-        <td><div class="cell"><i class="m no"></i>кейс на неделю</div></td>
-        <td><div class="cell"><i class="m p"></i>жюри</div></td>
-        <td><div class="cell na">н/д</div></td>
-        <td><div class="cell"><i class="m p"></i>преференции при найме</div></td>
-        <td><div class="cell"><i class="m p"></i>кейсы партнёров</div></td></tr>
-      <tr><td class="nm">Школы банков с отбором<small>Т-Банк, ВТБ, Альфа, игра ОТП</small></td>
-        <td><div class="cell"><i class="m p"></i>у ОТП, без переноса</div></td>
-        <td><div class="cell"><i class="m y"></i>наставник, ИИ по чек-листу</div></td>
-        <td><div class="cell na">н/д</div></td>
-        <td><div class="cell"><i class="m p"></i>путь к вакансии, карточки нет</div></td>
-        <td><div class="cell"><i class="m y"></i>финтех-кейсы</div></td></tr>
-      <tr class="us"><td class="nm">Полигон<small>MVP, модуль 1</small></td>
-        <td><div class="cell"><i class="m y"></i>отделены от внешнего события</div></td>
-        <td><div class="cell"><i class="m y"></i>по 6 критериям, с понятиями</div></td>
-        <td><div class="cell"><i class="m p"></i>ближний: «Автоплатёж»</div></td>
-        <td><div class="cell"><i class="m y"></i>вопрос и итог по заданию</div></td>
-        <td><div class="cell"><i class="m y"></i>накопления на цель</div></td></tr>
-    </tbody>
-  </table>
-  <div class="strip"><svg class="ic" style="color:#fff"><use href="#i-target"/></svg>Ниша: объяснимые последствия вместе с материалом для живого вопроса эксперта банка</div>
-  <div class="foot"><span class="lg"><i class="m y"></i>да</span><span class="lg"><i class="m p"></i>частично</span><span class="lg"><i class="m no"></i>нет</span><span class="lg">н/д: не нашли</span>Источники на 23.10.2026: сайты аналогов, vc.ru, kod.ru, Хабр</div>
+  <svg class="rib" viewBox="0 0 960 540"><path class="r" stroke-width="12" d="M76 190 L 76 478"/></svg>
+  <div class="kick">Прослеживаемость</div>
+  <h2 class="h m">Цепочку от гипотезы до экрана видно в&nbsp;продукте</h2>
+  <div class="st" style="left:76px;top:190px">Г</div><div class="st" style="left:76px;top:262px">П</div><div class="st" style="left:76px;top:334px">И</div><div class="st" style="left:76px;top:406px">Ф</div><div class="st hl" style="left:76px;top:478px">Э</div>
+  <div class="a" style="left:110px;top:172px;width:320px">
+    <p class="lab">Гипотеза · подтверждена и расширена</p>
+    <p style="font-size:16px;line-height:20px;font-weight:700;color:var(--navy)">«Никто не объясняет, почему вышло именно так»</p>
+  </div>
+  <div class="a" style="left:110px;top:244px;width:320px">
+    <p class="lab">Потребность</p>
+    <p style="font-size:16px;line-height:20px;font-weight:700;color:var(--navy)">Отличить последствия своего выбора от внешних обстоятельств</p>
+  </div>
+  <div class="a" style="left:110px;top:322px;width:320px">
+    <p class="lab">История</p>
+    <p style="font-size:16px;line-height:20px;font-weight:700;color:var(--navy)">Пересмотреть решение</p>
+  </div>
+  <div class="a" style="left:110px;top:394px;width:320px">
+    <p class="lab">Фича</p>
+    <p style="font-size:16px;line-height:20px;font-weight:700;color:var(--navy)">Связанные эпизоды и история решений</p>
+  </div>
+  <div class="a" style="left:110px;top:466px;width:320px">
+    <p class="lab">Экран</p>
+    <p style="font-size:16px;line-height:20px;font-weight:700;color:var(--navy)">Изменение ситуации и разбор</p>
+  </div>
+  <p class="a lab" style="left:470px;top:150px">Режим обоснования · досье</p>
+  <div class="a shot" style="left:470px;top:174px;width:470px"><img src="img/04-досье-обоснование.png" alt="Режим обоснования: цепочка гипотеза, потребность, история, фича, экран"></div>
+  <p class="a cap" style="left:470px;top:478px;width:430px;font-size:13px;line-height:17px">Под каждой фичей в продукте видно гипотезы-основания. Таблица всех цепочек с кодами в приложении Д отчёта</p>
 </section>
 
-<!-- 17. Позиционирование, бюджет, рынок под клин, стоимость · 0:50 -->
+<!-- 13 · Технические решения -->
 <section class="slide">
-  <h2 class="t">Позиционирование: <em>модуль практики перед интервью в карьерной школе банка</em></h2>
-  <div class="card sm c-solid" style="position:absolute;left:53px;right:53px;top:122px;padding:10px 16px">
-    <p class="ct">Кандидат тренируется на последствиях, эксперт получает материал для живого вопроса. Решения о&nbsp;найме по карточке нет</p>
+  <svg class="rib" viewBox="0 0 960 540"><path class="r" stroke-width="22" d="M372 236 L 446 236"/><path d="M440 218 L 470 236 L 440 254 Z" style="fill:#1646E8"/></svg>
+  <div class="kick">Технические решения</div>
+  <h2 class="h m">Модульный монолит в MVP, отдельные сервисы в&nbsp;целевом продукте</h2>
+  <div class="a" style="left:56px;top:156px;width:300px">
+    <p class="lab">Сейчас · один статический сайт</p>
+    <p style="margin-top:10px;font-size:15px;line-height:20px"><b style="color:var(--navy)">Интерфейс</b> · React + VKUI</p>
+    <p style="margin-top:6px;font-size:15px;line-height:20px"><b style="color:var(--navy)">Движок сценария</b> · детерминированный</p>
+    <p style="margin-top:6px;font-size:15px;line-height:20px"><b style="color:var(--navy)">Хранение</b> · в браузере</p>
   </div>
-  <div class="cols" style="grid-template-columns:1fr 1fr 1fr;column-gap:30.7px;top:184px">
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-coins"/></svg>Бюджет: две гипотезы</div>
-      <div class="body tight" style="gap:8px">
-        <div class="card sm c-hyp"><div class="row"><span class="ct">Отбор</span><span class="cb" style="margin-left:auto">от 15 тыс. ₽ за участника</span></div><p class="lbl mt4" style="font-weight:400">ключ закрыт, задача меняется каждый поток</p></div>
-        <div class="card sm c-hyp"><div class="row"><span class="ct">Подготовка</span><span class="cb" style="margin-left:auto">≈ 7 тыс. ₽</span></div><p class="lbl mt4" style="font-weight:400">шаблон открыт, вопрос эксперта виден заранее</p></div>
-        <p class="cb">Выбор после первого разговора с банком. Персоны-эксперты платили из бюджетов HR: довод за «отбор», не доказательство</p>
-      </div>
+  <div class="a" style="left:490px;top:156px;width:414px">
+    <p class="lab">Целевой продукт · сервисы</p>
+    <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:15px;line-height:19px;font-weight:700;color:var(--navy)">
+      <div class="dash" style="padding:8px 12px">Прохождение</div><div class="dash" style="padding:8px 12px">Разбор</div>
+      <div class="dash" style="padding:8px 12px">Кабинет эксперта</div><div class="dash" style="padding:8px 12px">Авторинг кейсов</div>
     </div>
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-globe"/></svg>Рынок под клин (SAM)</div>
-      <div class="body tight">
-        <div class="card sm c-blue fx">
-          <span class="op"></span><p class="cb">20 организаций с карьерными школами<small>допущение обзора рынка</small></p>
-          <span class="op">×</span><p class="cb">≈ 60 участников за поток<small>со слов персоны</small></p>
-          <span class="op">×</span><p class="cb">1–2 потока в год<small>допущение</small></p>
-          <span class="op">×</span><p class="cb">7–15 тыс. ₽ за участника</p>
-          <span class="op">≈</span><p class="hero-n" style="font-size:22px;line-height:28px;white-space:nowrap">8–36 млн ₽ в год</p>
-        </div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-wrench"/></svg>Полная стоимость</div>
-      <div class="body tight">
-        <div class="card sm c-blue">
-          <ul class="b cb" style="display:flex;flex-direction:column;gap:6px">
-            <li>Модуль 1 ≈&nbsp;14&nbsp;ч: оценка команды задним числом, вместе со сценарием, разбором, движком и тестами</li>
-            <li>Новая закрытая задача на каждый поток</li>
-            <li>Часы экспертов банка</li>
-            <li>Проверка ИБ и интеграция: CSV, номера кандидатов, контур банка</li>
-          </ul>
-        </div>
-      </div>
-    </div>
+    <p class="cap" style="margin-top:8px">Внешний ИИ: только разбор текста, с проверкой экспертом</p>
   </div>
-  <div class="foot">Цены: гипотезы команды. Интеграция в полной стоимости: занятие 1, слайд 9</div>
+  <p class="a lab" style="left:56px;top:338px">Качество: пять групп требований</p>
+  <div class="a" style="left:56px;top:362px;width:848px;display:grid;grid-template-columns:repeat(5,1fr);gap:18px">
+    <div><p class="big" style="font-size:24px;color:var(--cobalt)">01</p><p style="margin-top:6px;font-size:14px;line-height:18px;font-weight:800;color:var(--navy)">Скорость и ёмкость</p><p class="cap" style="font-size:13px;line-height:17px">Цель ≈ 45 минут, замеров нет; расчёт в браузере</p></div>
+    <div><p class="big" style="font-size:24px;color:var(--cobalt)">02</p><p style="margin-top:6px;font-size:14px;line-height:18px;font-weight:800;color:var(--navy)">Надёжность и безопасность</p><p class="cap" style="font-size:13px;line-height:17px">Данные вымышлены; в выгрузке номер, имя в кабинете</p></div>
+    <div><p class="big" style="font-size:24px;color:var(--cobalt)">03</p><p style="margin-top:6px;font-size:14px;line-height:18px;font-weight:800;color:var(--navy)">Безопасность последствий</p><p class="cap" style="font-size:13px;line-height:17px">Эксперт видит только переданное; решения о найме нет</p></div>
+    <div><p class="big" style="font-size:24px;color:var(--cobalt)">04</p><p style="margin-top:6px;font-size:14px;line-height:18px;font-weight:800;color:var(--navy)">Изменяемость</p><p class="cap" style="font-size:13px;line-height:17px">Автотесты перед каждой публикацией</p></div>
+    <div><p class="big" style="font-size:24px;color:var(--cobalt)">05</p><p style="margin-top:6px;font-size:14px;line-height:18px;font-weight:800;color:var(--navy)">Стоимость</p><p class="cap" style="font-size:13px;line-height:17px">GitHub Pages; модуль 1 ≈ 14 ч, оценка команды</p></div>
+  </div>
+  <p class="foot">Пунктир: целевая версия. Для банка мы SaaS: до покупки он проверит персональные данные, выгрузку и условия выхода</p>
 </section>
 
-<!-- 18. Самое опасное предположение · 0:50 -->
+<!-- 14 · Готово -->
 <section class="slide">
-  <h2 class="t">Самое опасное предположение учебное: <em>его проверяют ворота перед вторым модулем</em></h2>
-  <div class="cols" style="grid-template-columns:1fr 1fr">
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-target"/></svg>Что может не подтвердиться</div>
-      <div class="body tight">
-        <div class="card c-solid"><p class="ct18">Последствия и разбор учат отделять эффект своего решения от внешнего события лучше, чем кейс с разбором</p></div>
-        <div class="card sm c-pale"><p class="lbl acc">Техническое предположение закрыто</p><p class="cb mt4">Модель прозрачна и воспроизводима: это держат автотесты</p></div>
-        <div class="card sm c-risk"><p class="lbl">Банковский пилот этого не измерит</p><p class="cb mt4">Как и качество найма: на одну программу мало наймов. Не обещаем</p></div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-flag"/></svg>Ворота перед вторым модулем</div>
-      <div class="body tight" style="gap:8px">
-        <div class="card sm c-out">
-          <div class="kv"><p class="lbl acc">Где</p><p class="cb">Учебный поток вуза</p></div>
-          <div class="kv"><p class="lbl acc">Сравнение</p><p class="cb">Модуль против кейса с разбором (концепция А)</p></div>
-          <div class="kv"><p class="lbl acc">Метрика</p><p class="cb">Доля работ «Автоплатёж», где эксперт вслепую ставит «видно» по разделению эффектов и ограничениям</p></div>
-          <div class="kv"><p class="lbl acc">Успех</p><p class="ct">Разница не меньше 15 п.п.</p></div>
-          <div class="kv"><p class="lbl acc">Решение</p><p class="cb">Второй модуль строим, только если ворота пройдены</p></div>
-        </div>
-        <p class="cb" style="color:var(--gray-500)">«Автоплатёж» проверяет ближний перенос: идёт сразу после разбора и повторяет скелет тренировки. Дальний перенос: новые варианты задачи</p>
-      </div>
-    </div>
+  <svg class="rib" viewBox="0 0 960 540"><path class="r" stroke-width="46" d="M-40 500 C 60 470, 150 430, 300 380"/></svg>
+  <div class="kick">Что готово</div>
+  <h2 class="h m">Весь путь работает; ИИ-разбор и данные банка имитируются</h2>
+  <div class="a shot" style="left:56px;top:160px;width:430px"><img src="img/12-эксперт-список.png" alt="Кабинет эксперта: номера кандидатов, вкладки, выгрузка CSV"></div>
+  <p class="a" style="left:56px;top:448px;width:430px;font-size:15px;line-height:20px;font-weight:700;color:#fff;padding:10px 14px;background:var(--navy);border-radius:10px">Прототип эволюционный: остаются движок, формат сценария и тесты; заменим эвристику и хранение в браузере</p>
+  <div class="a" style="left:526px;top:156px;width:378px">
+    <p class="lab">Работает</p>
+    <ul style="margin-top:8px;font-size:15px;line-height:19px">
+      <li class="li">Программа из 4 модулей, вводный тур</li>
+      <li class="li" style="margin-top:4px">Заморозка с правилом и причиной</li>
+      <li class="li" style="margin-top:4px">Разбор: понятия, словарь, подсказки</li>
+      <li class="li" style="margin-top:4px">Самостоятельная задача и самопроверка</li>
+      <li class="li" style="margin-top:4px">Поле «Что я допускаю и в чём не уверен»</li>
+      <li class="li" style="margin-top:4px">«Что у вас получилось» в конце модуля</li>
+      <li class="li" style="margin-top:4px">Эксперт: номер кандидата, итог, CSV</li>
+      <li class="li" style="margin-top:4px">Режим обоснования, редактор кейса</li>
+    </ul>
+    <p class="lab" style="margin-top:14px;color:var(--slate)">Имитируется</p>
+    <ul style="margin-top:6px;font-size:14px;line-height:18px;color:#3B4456">
+      <li>ИИ-разбор текста: эвристика по словам, её можно обмануть</li>
+      <li style="margin-top:3px">Данные банка и коллеги · модули 2–4: только витрина</li>
+      <li style="margin-top:3px">Сервер и права: передача и правки кейса в одном браузере</li>
+    </ul>
   </div>
-  <div class="foot">Ворота 0, 1 и 2 проверяют ключ модели, принятие и деньги: следующий кадр</div>
 </section>
 
-<!-- 19. Ворота пилота · 0:50 -->
-<section class="slide">
-  <h2 class="t">Пилот: <em>ворота 0, 1 и 2 записаны числами до старта</em></h2>
-  <div class="cols" style="grid-template-columns:1fr 1.3fr 1fr;column-gap:22px;bottom:120px">
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-check"/></svg>0 · до пилота</div>
-      <div class="body tight" style="gap:8px">
-        <div class="card sm c-out cb crit">Слепая проверка ключа двумя практиками: напоминания, понятный автоперевод, гибкое пополнение</div>
-        <div class="card sm c-out cb crit">Ключ устоял, если оба дают не меньше половины значения модели. Иначе пересобираем</div>
-        <div class="card sm c-risk cb crit">Гибкое пополнение вдвое слабее: сильных путей не остаётся</div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-users"/></svg>1 · после потока ≈&nbsp;60 человек</div>
-      <div class="body tight" style="gap:6px">
-        <div class="card sm c-out cb crit row"><span class="grow">Завершили ≥ 70%</span><span class="stop">стоп &lt; 50%</span></div>
-        <div class="card sm c-out cb crit row"><span class="grow">Вопрос из карточки задан на&nbsp;≥&nbsp;2/3&nbsp;интервью</span><span class="stop">стоп &lt; 1/3</span></div>
-        <div class="card sm c-out cb crit">Угадывали правила ≤ 20%</div>
-        <div class="card sm c-out cb crit">Медиана минут эксперта на карточку ≤ 10<small class="sub">база со слов персоны: 20–40 минут на работу</small></div>
-        <div class="card sm c-out cb crit">«Отбор»: не больше половины работ с одинаковым набором статусов</div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-coins"/></svg>2 · деньги</div>
-      <div class="body tight" style="gap:8px">
-        <div class="card sm c-solid cb crit">Второй поток ≥ 60 участников по ≥ 15 тыс. ₽, это ≈&nbsp;0,9&nbsp;млн&nbsp;₽ за поток</div>
-        <div class="card sm c-out cb crit">или письмо о намерениях до бюджетной защиты</div>
-        <p class="cb">Закупку и проверку ИБ, 3–6 месяцев со слов персон, закладываем в календарь</p>
-      </div>
-    </div>
-  </div>
-  <div style="position:absolute;left:53px;right:53px;top:408px;display:grid;grid-template-columns:1fr 1.25fr;gap:16px">
-    <div class="card sm c-pale row" style="gap:10px;align-items:flex-start"><svg class="ic" style="color:var(--blue-700)"><use href="#i-userstar"/></svg>
-      <div><p class="lbl acc">Кто решает на воротах</p><p class="cb mt4">Владелец пилота с нашей стороны вместе с руководителем программы банка</p></div></div>
-    <div class="card sm c-pale row" style="gap:10px;align-items:flex-start"><svg class="ic" style="color:var(--blue-700)"><use href="#i-shield"/></svg>
-      <div><p class="lbl acc">Данные</p><p class="cb mt4">В выгрузке номер кандидата, имя остаётся в кабинете. Работа в контуре банка, решения о найме по карточке нет</p></div></div>
-  </div>
-  <div class="foot">Пороги предлагает команда и фиксирует до старта: Stage-Gate, занятие 2, слайд 71. ≈&nbsp;60 участников за поток: со слов персоны</div>
+<!-- 15 · Содержание 03 -->
+<section class="slide paper">
+  <svg class="rib" viewBox="0 0 960 540"><path class="r" stroke-width="22" d="M-40 470 C 60 430, 120 412, 200 410 C 300 408, 380 433, 480 430 C 580 427, 660 445, 760 440 C 860 435, 930 410, 1000 392"/></svg>
+  <div class="st ghost" style="left:200px;top:410px">01</div>
+  <div class="st ghost" style="left:480px;top:430px">02</div>
+  <div class="st big hl" style="left:760px;top:440px">03</div>
+  <p class="a" style="left:110px;top:448px;width:180px;text-align:center;font-size:15px;line-height:19px;font-weight:600;color:var(--slate)">Задача и исследование</p>
+  <p class="a" style="left:390px;top:460px;width:180px;text-align:center;font-size:15px;line-height:19px;font-weight:600;color:var(--slate)">Продукт</p>
+  <p class="a" style="left:670px;top:478px;width:180px;text-align:center;font-size:15px;line-height:19px;font-weight:800;color:var(--navy)">Стратегия</p>
+  <div class="a big" style="left:48px;top:46px;font-size:150px;color:var(--cobalt)">03</div>
+  <h2 class="a" style="left:56px;top:212px;width:820px;font-size:56px;line-height:60px;font-weight:800;letter-spacing:-.03em;color:var(--navy)">Стратегия</h2>
+  <p class="a" style="left:56px;top:286px;width:840px;font-size:20px;line-height:26px;color:var(--slate);font-weight:500">Рынок · Позиционирование · Самое опасное предположение · Ворота · Roadmap</p>
 </section>
 
-<!-- 20. Roadmap и что не доказано · 0:45 -->
+<!-- 16 · Рынок -->
 <section class="slide">
-  <h2 class="t">Roadmap: <em>сначала пилот одного потока, новые модули только после проверки обучения</em></h2>
-  <div class="rm" style="position:absolute;left:53px;right:53px;top:128px">
-    <p class="h">Сейчас</p><div class="bar ph-ana">Пилот одного потока<small>ворота 0, 1 и 2</small></div>
-    <p class="h">Дальше</p><div class="bar ph-del">Модули «Удержание», «Монетизация», «Стейкхолдеры» и новые варианты закрытой задачи<small>после ворот перед вторым модулем</small></div>
-    <p class="h">Потом</p><div class="bar ph-und">Библиотека модулей по отраслям<small>довод: персоне Ирины банковский кейс не подойдёт</small></div>
+  <div class="kick">Рынок и аналоги</div>
+  <h2 class="h m" style="font-size:28px;line-height:32px">Последствия, разбор и материал для интервью есть по отдельности, вместе мы их не нашли</h2>
+  <div class="a" style="left:56px;top:138px;width:848px">
+    <table class="tb tb-s">
+      <colgroup><col style="width:178px"><col><col><col><col><col></colgroup>
+      <thead><tr><th></th><th>Последствия копятся между эпизодами</th><th>Разбор решений</th><th>Перенос на новую задачу</th><th>Материал для эксперта</th><th>Домен банка</th></tr></thead>
+      <tbody>
+        <tr><td class="nm">GoPractice<small>сюжетный симулятор</small></td><td><i class="mk p"></i>сюжет линейный</td><td><i class="mk p"></i>автопроверка</td><td class="na">н/д</td><td><i class="mk no"></i>передачи работ нет</td><td><i class="mk no"></i>B2C-мессенджер</td></tr>
+        <tr><td class="nm">Школа менеджеров Яндекса<small>реальный проект</small></td><td><i class="mk no"></i>симуляции нет</td><td><i class="mk y"></i>наставник</td><td class="na">н/д</td><td><i class="mk p"></i>офер части выпускников</td><td><i class="mk no"></i>продукты Яндекса</td></tr>
+        <tr><td class="nm">Forage<small>короткие job simulations</small></td><td><i class="mk no"></i>отдельные задания</td><td class="na">н/д</td><td class="na">н/д</td><td><i class="mk p"></i>профиль виден работодателю</td><td><i class="mk p"></i>банки есть, не проверено</td></tr>
+        <tr><td class="nm">Кейс-чемпионаты<small>Changellenge Cup и подобные</small></td><td><i class="mk no"></i>кейс на неделю</td><td><i class="mk p"></i>жюри</td><td class="na">н/д</td><td><i class="mk p"></i>преференции при найме</td><td><i class="mk p"></i>кейсы партнёров</td></tr>
+        <tr><td class="nm">Школы банков с отбором<small>Т-Банк, ВТБ, Альфа, игра ОТП</small></td><td><i class="mk p"></i>у ОТП, без переноса</td><td><i class="mk y"></i>наставник, ИИ по чек-листу</td><td class="na">н/д</td><td><i class="mk p"></i>путь к вакансии, карточки нет</td><td><i class="mk y"></i>финтех-кейсы</td></tr>
+        <tr class="us"><td class="nm" style="color:var(--cobalt)">Полигон<small>MVP, модуль 1</small></td><td><i class="mk y"></i>отделены от внешнего события</td><td><i class="mk y"></i>по 6 критериям, с понятиями</td><td><i class="mk p"></i>ближний: «Автоплатёж»</td><td><i class="mk y"></i>вопрос и итог по заданию</td><td><i class="mk y"></i>накопления на цель</td></tr>
+      </tbody>
+    </table>
   </div>
-  <div class="cols" style="grid-template-columns:1.2fr 1fr;top:312px">
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-education"/></svg>Покрытие ISPMA SPMBoK 2.0</div>
-      <div class="body tight" style="gap:0">
-        <div class="cells" id="cells"></div>
-        <div class="keys"><span><i style="background:var(--blue-700)"></i>5 тренируем</span><span><i class="pt"></i>1 частично</span><span><i style="background:var(--blue-300)"></i>8 как ограничения</span><span><i style="background:var(--gray-200)"></i>26 не покрываем</span></div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-question"/></svg>Чего MVP не доказывает</div>
-      <div class="body tight">
-        <div class="card sm c-hyp" style="padding:8px 14px">
-          <ul class="b cb" style="display:flex;flex-direction:column;gap:3px">
-            <li><b style="font-weight:500">Эффект обучения:</b> ворота перед вторым модулем</li>
-            <li><b style="font-weight:500">Спрос банка:</b> ворота 2</li>
-            <li><b style="font-weight:500">Качество найма:</b> пилот не измерит</li>
-            <li>Живых прохождений модуля пока нет</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="foot">ISPMA: 40 элементов рамки; подсчёт покрытия наш, границы спорны</div>
+  <p class="a" style="left:56px;top:458px;width:848px;font-size:18px;line-height:23px;font-weight:800;color:var(--navy)">Ниша: объяснимые последствия вместе с материалом для живого вопроса эксперта банка</p>
+  <p class="foot"><i class="mk y"></i>да &nbsp; <i class="mk p"></i>частично &nbsp; <i class="mk no"></i>нет &nbsp; н/д: не нашли. Источники на 23.10.2026: сайты аналогов, vc.ru, kod.ru, Хабр</p>
 </section>
 
-<!-- 21. Резерв к вопросам: модель -->
+<!-- 17 · Позиционирование -->
 <section class="slide">
-  <h2 class="t">Резерв · модель: <em>сильный итог только у путей с понятным автопереводом, заморожено 52 из 121</em></h2>
-  <div class="cols" style="grid-template-columns:280px 1fr">
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-flash"/></svg>Что держит ключ</div>
-      <div class="body tight" style="gap:8px">
-        <div class="card sm c-risk" style="padding:9px 12px"><p class="lbl">Правило, видно в досье до решения</p><p class="cb mt4" style="font-size:13px;line-height:16px">Через два месяца автопополнение по всем целям направления должно быть не ниже 18%, иначе проект заморозят</p></div>
-        <div class="card sm c-blue" style="padding:9px 12px"><p class="lbl acc">Самый сильный эффект</p><p class="cb mt4" style="font-size:13px;line-height:16px">Гибкое пополнение у «нерегулярного дохода»: +25 п.п. активности, +40 п.п. автопополнения. Ослабить вдвое: сильных путей не остаётся</p></div>
-        <div class="card sm c-pale" style="padding:9px 12px"><p class="lbl acc">Месяц 1: ловушка общего дашборда</p><p class="cb mt4" style="font-size:13px;line-height:16px">Прежняя аудитория → общий показатель: напоминания 18,9 → 15,1; напоминания и автоперевод 23,7 → 18,7; автоперевод и исследование 22,8 → 17,9</p></div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="sr"><svg class="ic"><use href="#i-shuffle"/></svg>Шесть путей из 121, месяц 2</div>
-      <div class="body tight">
-        <table class="br tall">
-          <colgroup><col><col style="width:64px"><col style="width:86px"><col style="width:132px"></colgroup>
-          <thead><tr><th>Путь: эпизод 1 → эпизод 2</th><th class="v">Активные, %</th><th class="v">С автопопол&shy;нением, %</th><th>Исход</th></tr></thead>
-          <tbody>
-            <tr><td>«Сильный путь»<small>напоминания, автоперевод → гибкое пополнение, «автоперевод без страха», пуши реже</small></td><td class="v best">55,0</td><td class="v">30,8</td><td>сильный рост</td></tr>
-            <tr><td>«Сначала исследование»<small>автоперевод, исследование → гибкое пополнение, «автоперевод без страха»</small></td><td class="v">51,1</td><td class="v best">31,4</td><td>сильный рост</td></tr>
-            <tr><td>Напоминания, автоперевод<small>→ умные напоминания, гибкое пополнение</small></td><td class="v">54,2</td><td class="v">29,3</td><td>уверенный рост</td></tr>
-            <tr><td>Напоминания<small>→ пуши как были, гибкое пополнение</small></td><td class="v">46,7</td><td class="v">25,6</td><td>уверенный рост</td></tr>
-            <tr><td>«Ловушка баллов»<small>напоминания → пуши реже, баллы</small></td><td class="v">44,0</td><td class="v">15,1</td><td><span class="code n xs">заморожен</span><small>средняя сумма 1&nbsp;900&nbsp;₽</small></td></tr>
-            <tr><td>Баллы, исследование<small>→ баллы без накрутки, наблюдать</small></td><td class="v">40,0</td><td class="v">14,3</td><td><span class="code n xs">заморожен</span></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+  <svg class="rib" viewBox="0 0 960 540">
+    <path class="r" stroke-width="26" d="M-40 340 L 140 340 C 200 340, 200 276, 262 276"/>
+    <path class="r" stroke-width="26" d="M140 340 C 200 340, 200 404, 262 404"/>
+  </svg>
+  <div class="st" style="left:262px;top:276px"></div><div class="st" style="left:262px;top:404px"></div>
+  <div class="kick">Позиционирование</div>
+  <h2 class="h" style="width:660px">Модуль практики перед интервью в&nbsp;карьерной школе банка</h2>
+  <p class="a" style="left:56px;top:158px;width:600px;font-size:17px;line-height:23px">Кандидат тренируется на последствиях, эксперт получает материал для живого вопроса. Решения о найме по карточке нет</p>
+  <p class="a lab" style="left:56px;top:228px;width:300px">Бюджет: две гипотезы</p>
+  <div class="a" style="left:292px;top:250px;width:290px">
+    <p style="font-size:14px;line-height:18px;font-weight:700;color:var(--slate)">Отбор</p>
+    <p style="font-size:22px;line-height:26px;font-weight:800;color:var(--navy)">от 15 тыс. ₽ за участника</p>
+    <p class="cap" style="font-size:13px;line-height:17px">ключ закрыт, задача меняется каждый поток</p>
   </div>
-  <div class="foot">Старт: активные цели 37,2%, с автопополнением 18%. Сильный итог от 30%; без понятного автоперевода потолок 24,9–27,0%</div>
+  <div class="a" style="left:292px;top:378px;width:290px">
+    <p style="font-size:14px;line-height:18px;font-weight:700;color:var(--slate)">Подготовка</p>
+    <p style="font-size:22px;line-height:26px;font-weight:800;color:var(--navy)">≈ 7 тыс. ₽</p>
+    <p class="cap" style="font-size:13px;line-height:17px">шаблон открыт, вопрос эксперта виден заранее</p>
+  </div>
+  <p class="a cap" style="left:56px;top:470px;width:520px;font-size:13px;line-height:17px">Выбор после первого разговора с банком. Персоны-эксперты платили из бюджетов HR: довод за «отбор», не доказательство</p>
+  <div class="a" style="left:620px;top:218px;width:284px">
+    <p class="lab">Рынок под клин · SAM</p>
+    <p class="big" style="margin-top:8px;font-size:58px;color:var(--cobalt)">≈ 8–36</p>
+    <p style="font-size:18px;line-height:22px;font-weight:800;color:var(--navy)">млн ₽ в год</p>
+    <p class="cap" style="margin-top:8px;font-size:13px;line-height:17px">20 организаций с карьерными школами (допущение) × ≈ 60 участников за поток (со слов персоны) × 1–2 потока в год × 7–15 тыс. ₽</p>
+  </div>
+  <div class="a" style="left:620px;top:408px;width:284px">
+    <p class="lab" style="color:var(--slate)">Полная стоимость</p>
+    <p style="margin-top:4px;font-size:13px;line-height:17px">Модуль 1 ≈ 14 ч, оценка команды задним числом · новая закрытая задача на каждый поток · часы экспертов банка · проверка ИБ и интеграция</p>
+  </div>
+</section>
+
+<!-- 18 · Самое опасное предположение -->
+<section class="slide">
+  <div class="a" style="left:610px;top:0;width:350px;height:540px;background:var(--navy)"></div>
+  <div class="kick">Самое опасное предположение · учебное</div>
+  <p class="a" style="left:56px;top:68px;width:520px;font-size:31px;line-height:37px;font-weight:800;letter-spacing:-.02em;color:var(--navy)">Учат ли последствия и разбор отделять эффект решения от внешнего события лучше, чем кейс с&nbsp;разбором?</p>
+  <img class="a cut" src="img/man-reading-letter.png" alt="" style="left:30px;top:290px;height:250px">
+  <div class="a" style="left:262px;top:300px;width:320px;font-size:15px;line-height:20px">
+    <p><b style="color:var(--navy)">Техническое предположение закрыто:</b> модель прозрачна и воспроизводима, это держат автотесты</p>
+    <p style="margin-top:10px"><b style="color:var(--navy)">Банковский пилот этого не измерит,</b> как и качество найма. Не обещаем</p>
+    <p class="cap" style="margin-top:10px;font-size:13px;line-height:17px">«Автоплатёж» проверяет только ближний перенос: идёт сразу после разбора и повторяет скелет тренировки</p>
+  </div>
+  <div class="a" style="left:642px;top:66px;width:290px;color:#fff">
+    <p class="lab" style="color:var(--on-navy)">Ворота перед вторым модулем</p>
+    <p style="margin-top:14px;font-size:14px;line-height:19px"><b>Где:</b> учебный поток вуза</p>
+    <p style="margin-top:8px;font-size:14px;line-height:19px"><b>Сравнение:</b> модуль против кейса с разбором (концепция А)</p>
+    <p style="margin-top:8px;font-size:14px;line-height:19px"><b>Метрика:</b> доля работ «Автоплатёж», где эксперт вслепую ставит «видно» по разделению эффектов и ограничениям</p>
+    <p style="margin-top:16px;font-size:14px;line-height:19px"><b>Успех:</b></p>
+    <p class="big" style="font-size:52px;color:#fff">≥ 15 п.п.</p>
+    <p style="font-size:14px;line-height:19px;color:#C7D2EA">разница в пользу модуля</p>
+    <p style="margin-top:14px;font-size:14px;line-height:19px"><b>Решение:</b> второй модуль строим, только если ворота пройдены</p>
+  </div>
+  <p class="a cap" style="left:642px;top:498px;width:290px;font-size:12px;line-height:16px">Ворота 0, 1 и 2 про ключ, принятие и деньги: следующий кадр</p>
+</section>
+
+<!-- 19 · Ворота пилота -->
+<section class="slide">
+  <svg class="rib" viewBox="0 0 960 540"><path class="r" stroke-width="18" d="M-40 176 L 1000 176"/></svg>
+  <div class="kick">Пилот · Stage-Gate</div>
+  <h2 class="h m">Ворота 0, 1 и 2 записаны числами до&nbsp;старта</h2>
+  <div class="st big" style="left:110px;top:176px">0</div><div class="st big" style="left:420px;top:176px">1</div><div class="st big" style="left:730px;top:176px">2</div>
+  <div class="a" style="left:56px;top:214px;width:292px;font-size:14px;line-height:19px">
+    <p style="font-size:18px;line-height:22px;font-weight:800;color:var(--navy)">До пилота: ключ модели</p>
+    <p style="margin-top:6px">Слепая проверка двумя практиками: напоминания, понятный автоперевод, гибкое пополнение</p>
+    <p style="margin-top:6px">Устоял, если оба дают <b>не меньше половины</b> значения модели. Иначе пересобираем</p>
+    <p style="margin-top:6px;color:var(--cobalt);font-weight:700">Гибкое пополнение вдвое слабее: сильных путей не остаётся</p>
+  </div>
+  <div class="a" style="left:366px;top:214px;width:290px;font-size:14px;line-height:19px">
+    <p style="font-size:18px;line-height:22px;font-weight:800;color:var(--navy)">После потока ≈ 60 человек</p>
+    <p style="margin-top:6px">Завершили <b>≥ 70%</b> · стоп &lt; 50%</p>
+    <p style="margin-top:4px">Вопрос из карточки задан на <b>≥ 2/3</b> интервью · стоп &lt; 1/3</p>
+    <p style="margin-top:4px">Угадывали правила <b>≤ 20%</b></p>
+    <p style="margin-top:4px">Медиана минут эксперта на карточку <b>≤ 10</b> <span class="cap" style="font-size:13px">(база со слов персоны: 20–40)</span></p>
+    <p style="margin-top:4px">«Отбор»: <b>не больше половины</b> работ с одинаковым набором статусов</p>
+  </div>
+  <div class="a" style="left:676px;top:214px;width:228px;font-size:14px;line-height:19px">
+    <p style="font-size:18px;line-height:22px;font-weight:800;color:var(--navy)">Деньги</p>
+    <p style="margin-top:6px">Второй поток <b>≥ 60</b> участников по <b>≥ 15 тыс. ₽</b>, это <b>≈ 0,9 млн ₽</b> за поток</p>
+    <p style="margin-top:4px">или письмо о намерениях до бюджетной защиты</p>
+    <p style="margin-top:4px">Закупку и ИБ, 3–6 месяцев со слов персон, закладываем в календарь</p>
+  </div>
+  <div class="a" style="left:0;top:446px;width:960px;height:94px;background:var(--paper)"></div>
+  <div class="a" style="left:56px;top:460px;width:400px;font-size:14px;line-height:19px"><p class="lab">Кто решает</p><p style="margin-top:4px">Владелец пилота с нашей стороны вместе с руководителем программы банка</p></div>
+  <div class="a" style="left:490px;top:460px;width:400px;font-size:14px;line-height:19px"><p class="lab">Данные</p><p style="margin-top:4px">В выгрузке номер кандидата, имя в кабинете. Работа в контуре банка, решения о найме по карточке нет</p></div>
+</section>
+
+<!-- 20 · Roadmap -->
+<section class="slide navy">
+  <svg class="rib" viewBox="0 0 960 540"><path class="r" stroke-width="34" d="M-40 530 C 60 510, 120 495, 180 482 C 300 455, 380 410, 480 380 C 600 344, 680 300, 780 250 C 860 210, 930 170, 1010 140"/></svg>
+  <div class="st big" style="left:180px;top:482px;background:#fff;color:var(--navy);box-shadow:none">1</div>
+  <div class="st big" style="left:480px;top:380px;background:#fff;color:var(--navy);box-shadow:none">2</div>
+  <div class="st big" style="left:780px;top:250px;background:#fff;color:var(--navy);box-shadow:none">3</div>
+  <img class="a cut" src="img/man-walking-back.png" alt="" style="left:852px;top:110px;height:104px">
+  <div class="kick">Roadmap</div>
+  <h2 class="h" style="width:520px;font-size:34px;line-height:39px">Сначала пилот одного потока, новые модули после проверки обучения</h2>
+  <div class="a" style="left:40px;top:388px;width:126px;text-align:right">
+    <p class="lab">Сейчас</p>
+    <p style="margin-top:2px;font-size:15px;line-height:19px;font-weight:800">Пилот одного потока</p>
+    <p class="cap" style="font-size:12px;line-height:16px">ворота 0, 1 и 2</p>
+  </div>
+  <div class="a" style="left:236px;top:244px;width:214px;text-align:right">
+    <p class="lab">Дальше</p>
+    <p style="margin-top:2px;font-size:15px;line-height:19px;font-weight:800">Модули «Удержание», «Монетизация», «Стейкхолдеры» и новые варианты закрытой задачи</p>
+    <p class="cap" style="font-size:12px;line-height:16px">после ворот перед вторым модулем</p>
+  </div>
+  <div class="a" style="left:560px;top:150px;width:196px;text-align:right">
+    <p class="lab">Потом</p>
+    <p style="margin-top:2px;font-size:15px;line-height:19px;font-weight:800">Библиотека модулей по отраслям</p>
+    <p class="cap" style="font-size:12px;line-height:16px">персоне Ирины банковский кейс не подойдёт</p>
+  </div>
+  <div class="a" style="left:592px;top:344px;width:300px">
+    <p class="lab">Чего MVP не доказывает</p>
+    <ul style="margin-top:6px;font-size:14px;line-height:19px">
+      <li class="li">Эффект обучения: ворота перед вторым модулем</li>
+      <li class="li">Спрос банка: ворота 2</li>
+      <li class="li">Качество найма: пилот не измерит</li>
+      <li class="li">Живых прохождений модуля пока нет</li>
+    </ul>
+    <p class="lab" style="margin-top:12px">ISPMA SPMBoK 2.0 · 40 элементов</p>
+    <div id="cells" style="margin-top:6px;display:grid;grid-template-columns:repeat(40,5.5px);gap:2px"></div>
+    <p class="cap" style="margin-top:6px;font-size:12px;line-height:16px">5 тренируем · 1 частично · 8 ограничения · 26 нет</p>
+  </div>
+</section>
+
+<!-- 21 · Резерв: модель -->
+<section class="slide paper">
+  <div class="kick">Резерв · модель</div>
+  <h2 class="h m" style="font-size:28px;line-height:33px">Сильный итог только у путей с понятным автопереводом, заморожено 52 из 121</h2>
+  <div class="a" style="left:56px;top:150px;width:270px;font-size:14px;line-height:19px">
+    <p class="lab">Правило, видно в досье</p>
+    <p style="margin-top:4px">Через два месяца автопополнение по всем целям направления не ниже 18%, иначе проект заморозят</p>
+    <p class="lab" style="margin-top:14px">Самый сильный эффект</p>
+    <p style="margin-top:4px">Гибкое пополнение у «нерегулярного дохода»: <b>+25 п.п.</b> активности, <b>+40 п.п.</b> автопополнения. Вдвое слабее: сильных путей нет</p>
+    <p class="lab" style="margin-top:14px">Месяц 1: ловушка дашборда</p>
+    <p style="margin-top:4px">Прежняя аудитория → общий показатель: напоминания 18,9 → 15,1; напоминания и автоперевод 23,7 → 18,7; автоперевод и исследование 22,8 → 17,9</p>
+  </div>
+  <div class="a" style="left:356px;top:134px;width:548px">
+    <table class="tb tb-s">
+      <colgroup><col><col style="width:62px"><col style="width:80px"><col style="width:108px"></colgroup>
+      <thead><tr><th>Путь: эпизод 1 → эпизод 2</th><th>Активные, %</th><th>С авто­пополнением, %</th><th>Исход</th></tr></thead>
+      <tbody>
+        <tr><td><b style="color:var(--navy)">«Сильный путь»</b><br><span class="cap" style="font-size:11px;line-height:14px">напоминания, автоперевод → гибкое пополнение, «автоперевод без страха», пуши реже</span></td><td><b style="color:var(--cobalt)">55,0</b></td><td>30,8</td><td>сильный рост</td></tr>
+        <tr><td><b style="color:var(--navy)">«Сначала исследование»</b><br><span class="cap" style="font-size:11px;line-height:14px">автоперевод, исследование → гибкое пополнение, «автоперевод без страха»</span></td><td>51,1</td><td><b style="color:var(--cobalt)">31,4</b></td><td>сильный рост</td></tr>
+        <tr><td><b style="color:var(--navy)">Напоминания, автоперевод</b><br><span class="cap" style="font-size:11px;line-height:14px">→ умные напоминания, гибкое пополнение</span></td><td>54,2</td><td>29,3</td><td>уверенный рост</td></tr>
+        <tr><td><b style="color:var(--navy)">Напоминания</b><br><span class="cap" style="font-size:11px;line-height:14px">→ пуши как были, гибкое пополнение</span></td><td>46,7</td><td>25,6</td><td>уверенный рост</td></tr>
+        <tr><td><b style="color:var(--navy)">«Ловушка баллов»</b><br><span class="cap" style="font-size:11px;line-height:14px">напоминания → пуши реже, баллы · средняя сумма 1&nbsp;900&nbsp;₽</span></td><td>44,0</td><td>15,1</td><td><span class="pill p-strong">заморожен</span></td></tr>
+        <tr><td><b style="color:var(--navy)">Баллы, исследование</b><br><span class="cap" style="font-size:11px;line-height:14px">→ баллы без накрутки, наблюдать</span></td><td>40,0</td><td>14,3</td><td><span class="pill p-strong">заморожен</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="foot">Старт: активные цели 37,2%, с автопополнением 18%. Сильный итог от 30%; без понятного автоперевода потолок 24,9–27,0%. Фото: Unsplash (Icons8, Vitaly Gariev, selcuk sarikoz)</p>
 </section>
 
 </div></div>
@@ -1115,7 +653,7 @@ svg.links{position:absolute;left:0;top:0;width:960px;height:540px;pointer-events
   var cur=0;
   // ячейки ISPMA: 5 тренируем, 1 частично, 8 как ограничения, 26 не покрываем
   var cells=document.getElementById('cells');
-  for(var i=0;i<40;i++){var c=document.createElement('i');if(i<5)c.className='tr';else if(i<6)c.className='pt';else if(i<14)c.className='cx';cells.appendChild(c);}
+  for(var i=0;i<40;i++){var c=document.createElement('i');c.style.cssText='display:block;width:5.5px;height:12px;border-radius:1px;background:'+(i<5?'#FFFFFF':i<6?'#AFC2FF':i<14?'#1646E8':'rgba(255,255,255,.16)');cells.appendChild(c);}
   slides.forEach(function(s,k){if(k>0){var d=document.createElement('div');d.className='pn';d.textContent=k+1;s.appendChild(d);}});
   function fit(){var k=Math.min(innerWidth/960,innerHeight/540);stage.style.transform='scale('+k+')';}
   function show(i){
